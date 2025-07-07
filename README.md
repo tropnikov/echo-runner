@@ -1,3 +1,24 @@
+## Как работать с проектом:
+
+- Используем [Ant Design](https://ant.design/components/overview/)
+- Используем css-модули (создаем файлы `Component.module.css`) или инлайн стили
+- Если вам нужны брейкпоинты для медиа-запросов, используйте их из файла `@/helpers/breakpoints.css`:
+
+  ```css
+  @import '@/helpers/breakpoints.css';
+
+  @media (--sm) {
+    .component {
+      /* styles */
+    }
+  }
+  ```
+
+- Храним компоненты в папке `src/components`, страницы в `src/pages`, общие типы в `src/types` и т.д. по смыслу
+- Экспортируем компоненты по умолчанию
+- Желательно установить плагины Prettier, Eslint, Stylelint для своей IDE
+- При коммите запускается prettier, stylelint, eslint, проверка типов. Нужно исправить их ошибки для успешного коммита
+
 ## Порядок работы с git
 
 Ветка `dev` – основная рабочая ветка, `main` – продакшн ветка

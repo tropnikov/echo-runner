@@ -1,91 +1,88 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { GameEngine } from './engine/GameEngine'
-import { Player } from './engine/Player'
-import { Obstacle } from './engine/Obstacle'
-import { Coin } from './engine/Coin'
-import './styles.css'
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { Coin } from './engine/Coin';
+import { GameEngine } from './engine/GameEngine';
+import { Obstacle } from './engine/Obstacle';
+import { Player } from './engine/Player';
+
+import './styles.css';
 
 export function Game({ maxDamage = 10 }: { maxDamage?: number }) {
-  const [score, setScore] = useState(0)
-  const [damage, setDamage] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
+  const [score, setScore] = useState(0);
+  const [damage, setDamage] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const engineRef = useRef<GameEngine | null>(null)
-  const obstacleRef = useRef<Obstacle | null>(null)
-  const playerRef = useRef<Player | null>(null)
-  const coinRef = useRef<Coin | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const engineRef = useRef<GameEngine | null>(null);
+  const obstacleRef = useRef<Obstacle | null>(null);
+  const playerRef = useRef<Player | null>(null);
+  const coinRef = useRef<Coin | null>(null);
 
   const handleOnScore = useCallback(() => {
-    setScore(prev => prev + 1)
-  }, [])
+    setScore((prev) => prev + 1);
+  }, []);
 
   const handleOnDamage = useCallback(() => {
-    setDamage(prev => {
-      const next = prev + 1
+    setDamage((prev) => {
+      const next = prev + 1;
 
       if (next >= maxDamage) {
-        engineRef.current?.stop()
-        setIsPaused(false)
+        engineRef.current?.stop();
+        setIsPaused(false);
       }
-      return next
-    })
-  }, [maxDamage])
+      return next;
+    });
+  }, [maxDamage]);
 
   const handleOnPause = () => {
-    setIsPaused(prev => {
-      const newState = !prev
+    setIsPaused((prev) => {
+      const newState = !prev;
 
       if (engineRef.current) {
-        newState ? engineRef.current.pause() : engineRef.current.resume()
+        newState ? engineRef.current.pause() : engineRef.current.resume();
       }
 
-      return newState
-    })
-  }
+      return newState;
+    });
+  };
 
   const handleRestart = () => {
-    setScore(0)
-    setDamage(0)
+    setScore(0);
+    setDamage(0);
 
-    const canvas = canvasRef.current
+    const canvas = canvasRef.current;
 
-    if (!canvas) return
+    if (!canvas) return;
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d');
 
-    if (!ctx) return
+    if (!ctx) return;
 
-    if (
-      engineRef.current &&
-      playerRef.current &&
-      obstacleRef.current &&
-      coinRef.current
-    ) {
+    if (engineRef.current && playerRef.current && obstacleRef.current && coinRef.current) {
       engineRef.current
         .removeAllSceneObjects()
         .clearAndRenderEmpty()
         .initSceneObject(playerRef.current.reset())
         .initSceneObject(obstacleRef.current.reset())
         .initSceneObject(coinRef.current.reset())
-        .init()
+        .init();
     }
 
-    engineRef.current?.start()
-  }
+    engineRef.current?.start();
+  };
 
   const handleKeys = useCallback((e: KeyboardEvent) => {
     switch (e.code) {
       case 'Space':
-        playerRef.current?.jump()
-        break
+        playerRef.current?.jump();
+        break;
       case 'KeyP':
-        handleOnPause()
-        break
+        handleOnPause();
+        break;
       default:
-        break
+        break;
     }
-  }, [])
+  }, []);
 
   const initGame = useCallback(
     (ctx: CanvasRenderingContext2D) => {
@@ -94,54 +91,54 @@ export function Game({ maxDamage = 10 }: { maxDamage?: number }) {
           ctx,
           onDamage: handleOnDamage,
           onScore: handleOnScore,
-        })
+        });
       }
 
-      if (!playerRef.current) playerRef.current = new Player(ctx)
-      if (!obstacleRef.current) obstacleRef.current = new Obstacle(ctx)
-      if (!coinRef.current) coinRef.current = new Coin(ctx)
+      if (!playerRef.current) playerRef.current = new Player(ctx);
+      if (!obstacleRef.current) obstacleRef.current = new Obstacle(ctx);
+      if (!coinRef.current) coinRef.current = new Coin(ctx);
 
       engineRef.current
         .initSceneObject(playerRef.current)
         .initSceneObject(obstacleRef.current)
         .initSceneObject(coinRef.current)
-        .init()
+        .init();
     },
-    [handleOnDamage, handleOnScore]
-  )
+    [handleOnDamage, handleOnScore],
+  );
 
   const resizeCanvas = useCallback(() => {
-    const canvas = canvasRef.current
+    const canvas = canvasRef.current;
 
-    if (!canvas) return
+    if (!canvas) return;
 
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-  }, [])
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current
+    const canvas = canvasRef.current;
 
-    if (!canvas) return
+    if (!canvas) return;
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d');
 
-    if (!ctx) return
+    if (!ctx) return;
 
-    initGame(ctx)
+    initGame(ctx);
 
-    window.addEventListener('keydown', handleKeys)
-    window.addEventListener('resize', resizeCanvas)
+    window.addEventListener('keydown', handleKeys);
+    window.addEventListener('resize', resizeCanvas);
 
-    resizeCanvas()
-    engineRef.current?.start()
+    resizeCanvas();
+    engineRef.current?.start();
 
     return () => {
-      engineRef.current?.stop()
-      window.removeEventListener('keydown', handleKeys)
-      window.removeEventListener('resize', resizeCanvas)
-    }
-  }, [initGame, handleKeys, resizeCanvas])
+      engineRef.current?.stop();
+      window.removeEventListener('keydown', handleKeys);
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, [initGame, handleKeys, resizeCanvas]);
 
   return (
     <div className="game-container">
@@ -166,5 +163,5 @@ export function Game({ maxDamage = 10 }: { maxDamage?: number }) {
 
       <canvas ref={canvasRef} className="canvas" />
     </div>
-  )
+  );
 }

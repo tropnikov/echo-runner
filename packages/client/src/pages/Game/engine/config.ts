@@ -1,4 +1,4 @@
-import { GameConfig } from './types'
+import { GameConfig } from './types';
 
 export const config: GameConfig = {
   /**
@@ -98,4 +98,4 @@ export const config: GameConfig = {
      */
     maxDistanceY: 300,
   },
-}
+};

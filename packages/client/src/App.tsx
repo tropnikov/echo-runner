@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 
-import './App.css';
+import { ConfigProvider, theme } from 'antd';
+
+import BaseLayout from './components/BaseLayout/BaseLayout';
 
 function App() {
   useEffect(() => {
@@ -13,7 +15,17 @@ function App() {
 
     fetchServerData();
   }, []);
-  return <div className="App">Вот тут будет жить ваше приложение :)</div>;
+
+  return (
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+      }}>
+      <BaseLayout>
+        <div className="App">Вот тут будет жить ваше приложение :)</div>
+      </BaseLayout>
+    </ConfigProvider>
+  );
 }
 
 export default App;

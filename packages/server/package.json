@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "build": "tsc --p ./tsconfig.prod.json",
+    "typecheck": "tsc --noEmit --project ./tsconfig.json",
     "preview": "node ./dist/index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.ts",
     "lint": "eslint .",

@@ -12,17 +12,21 @@
     "lint": "eslint . && stylelint \"src/**/*.{css,scss}\"",
     "lint:fix": "eslint . --fix && stylelint \"src/**/*.{css,scss}\" --fix",
     "format": "prettier --write .",
-    "test": "jest ./"
+    "test": "jest ./",
+    "generate-api": "rtk-query-codegen-openapi src/api/generated/apiConfig.cjs"
   },
   "dependencies": {
     "@ant-design/icons": "5.x",
+    "@reduxjs/toolkit": "^2.8.2",
     "antd": "^5.26.4",
     "dotenv": "^16.0.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
+    "@rtk-query/codegen-openapi": "^2.0.0",
     "@testing-library/react": "^13.3.0",
     "@types/jest": "^28.1.8",
     "@types/react": "^18.0.17",

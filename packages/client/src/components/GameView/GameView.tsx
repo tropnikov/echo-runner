@@ -1,6 +1,5 @@
 import { Button } from 'antd';
-import PauseCircleOutlined from '@ant-design/icons/lib/icons/PauseCircleOutlined';
-import PlayCircleOutlined from '@ant-design/icons/lib/icons/PlayCircleOutlined';
+import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons/lib/icons';
 
 import { GameViewProps } from './types';
 

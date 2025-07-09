@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-
-import './App.css';
-
 import { Outlet } from 'react-router-dom';
+
+import { ConfigProvider, theme } from 'antd';
+
+import BaseLayout from './components/BaseLayout/BaseLayout';
 
 function App() {
   useEffect(() => {
@@ -16,7 +17,16 @@ function App() {
     fetchServerData();
   }, []);
 
-  return <Outlet />;
+  return (
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+      }}>
+      <BaseLayout>
+        <Outlet />
+      </BaseLayout>
+    </ConfigProvider>
+  );
 }
 
 export default App;

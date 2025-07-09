@@ -9,6 +9,10 @@ export default {
   globals: {
     __SERVER_PORT__: process.env.SERVER_PORT,
   },
-  setupFiles: ['<rootDir>/jest.setup.ts']
+  setupFiles: ['<rootDir>/jest.setup.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+  },
 };
 

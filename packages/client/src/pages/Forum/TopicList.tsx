@@ -1,39 +1,37 @@
-import { useState } from 'react'
-import { Table, Layout, Flex, Typography, Button } from 'antd'
-import { FolderTwoTone, FileTwoTone } from '@ant-design/icons'
-import TopicModal from '../../components/Forum/TopicModal'
+import { useState } from 'react';
 
-import type { TableProps } from 'antd'
+import { Button, Flex, Table, Typography } from 'antd';
+import type { TableProps } from 'antd';
+import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
-const { Content } = Layout
-const { Text, Title, Link } = Typography
+import TopicModal from '../../components/Forum/TopicModal';
+
+const { Text, Title, Link } = Typography;
 
 interface DataType {
-  key: string
+  key: string;
   topic: {
-    id: number
-    title: string
-    author: string
-    created_at: string
-  }
-  count: number
+    id: number;
+    title: string;
+    author: string;
+    created_at: string;
+  };
+  count: number;
   last: {
-    user: string
-    date: string
-  }
+    user: string;
+    date: string;
+  };
 }
 
 const columns: TableProps<DataType>['columns'] = [
   {
     key: 'icon',
     width: 32,
-    render: () => (
-      <FolderTwoTone twoToneColor="#eb2f96" style={{ fontSize: '32px' }} />
-    ),
+    render: () => <FolderTwoTone twoToneColor="#eb2f96" style={{ fontSize: '32px' }} />,
   },
   {
     dataIndex: 'topic',
-    render: topic => (
+    render: (topic) => (
       <Flex vertical>
         <Link href={`topics/${topic.id}`}>
           <Title level={4}>{topic.title}</Title>
@@ -48,19 +46,19 @@ const columns: TableProps<DataType>['columns'] = [
   {
     dataIndex: 'count',
     width: 150,
-    render: count => <Text>Комментариев: {count}</Text>,
+    render: (count) => <Text>Комментариев: {count}</Text>,
   },
   {
     dataIndex: 'last',
     width: 150,
-    render: last => (
+    render: (last) => (
       <Flex vertical>
         <Text>{last.user}</Text>
         <Text>{last.date}</Text>
       </Flex>
     ),
   },
-]
+];
 
 const data: DataType[] = [
   {
@@ -91,50 +89,44 @@ const data: DataType[] = [
       date: '25 марта 2025',
     },
   },
-]
+];
 
 function TopicList() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOk = () => {
-    setIsModalOpen(false)
-  }
+    setIsModalOpen(false);
+  };
 
   const handleCancel = () => {
-    setIsModalOpen(false)
-  }
+    setIsModalOpen(false);
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
 
   return (
-    <Layout style={{ margin: '100px' }}>
-      <Content>
-        <Table<DataType>
-          columns={columns}
-          dataSource={data}
-          showHeader={false}
-          title={() => <Title level={2}>Форум игры</Title>}
-          pagination={{
-            showTotal: total => (
-              <div>
-                {`Всего тем: ${total}`}
-                <Button
-                  type="primary"
-                  icon={<FileTwoTone />}
-                  onClick={() => setIsModalOpen(true)}
-                  style={{ marginLeft: 8 }}>
-                  Создать тему
-                </Button>
-                <TopicModal
-                  show={isModalOpen}
-                  handleOk={handleOk}
-                  handleCancel={handleCancel}
-                />
-              </div>
-            ),
-          }}
-        />
-      </Content>
-    </Layout>
-  )
+    <Flex vertical style={{ margin: '100px' }}>
+      <Title level={2}>Форум игры</Title>
+      <Table<DataType>
+        columns={columns}
+        dataSource={data}
+        showHeader={false}
+        pagination={{
+          showTotal: (total) => (
+            <div>
+              {`Всего тем: ${total}`}
+              <Button type="primary" icon={<FileTwoTone />} onClick={openModal} style={{ marginLeft: 8 }}>
+                Создать тему
+              </Button>
+              <TopicModal show={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
+            </div>
+          ),
+        }}
+      />
+    </Flex>
+  );
 }
 
-export default TopicList
+export default TopicList;

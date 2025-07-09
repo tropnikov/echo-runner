@@ -27,9 +27,6 @@ export class GameEngine {
 
   private speedTimer = 0;
 
-  private isRunning = false;
-  private lastTimestamp = 0;
-
   constructor(props: { ctx: CanvasRenderingContext2D; onDamage: () => void; onScore: () => void }) {
     this.onDamage = props.onDamage;
     this.onScore = props.onScore;

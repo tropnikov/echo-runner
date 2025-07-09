@@ -5,7 +5,7 @@ import { GameEngine } from './engine/GameEngine';
 import { Obstacle } from './engine/Obstacle';
 import { Player } from './engine/Player';
 
-import './styles.css';
+import styles from './styles.module.css';
 
 export function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   const [score, setScore] = useState(0);
@@ -141,19 +141,17 @@ export function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   }, [initGame, handleKeys, resizeCanvas]);
 
   return (
-    <div className="game-container">
+    <div className={styles.gameContainer}>
       {damage >= maxDamage ? (
-        <div className="header">
+        <div className={styles.header}>
           <span>Игра окончена, вы набрали очков: {score}</span>
           <button onClick={handleRestart}>Начать заново</button>
         </div>
       ) : (
-        <div className="header">
+        <div className={styles.header}>
           Очки: {score} / Урон: {damage}
-          <div className="menu">
-            <button className="pause-button" onClick={handleOnPause}>
-              {isPaused ? 'Продолжить' : 'Пауза'}
-            </button>
+          <div className={styles.menu}>
+            <button onClick={handleOnPause}>{isPaused ? 'Продолжить' : 'Пауза'}</button>
             <span>
               или нажмите <strong>P</strong> для паузы
             </span>
@@ -161,7 +159,7 @@ export function Game({ maxDamage = 10 }: { maxDamage?: number }) {
         </div>
       )}
 
-      <canvas ref={canvasRef} className="canvas" />
+      <canvas ref={canvasRef} className={styles.canvas} />
     </div>
   );
 }

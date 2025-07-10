@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Outlet } from 'react-router';
 
 import { ConfigProvider, theme } from 'antd';
 
@@ -22,7 +23,7 @@ function App() {
         algorithm: theme.darkAlgorithm,
       }}>
       <BaseLayout>
-        <div className="App">Вот тут будет жить ваше приложение :)</div>
+        <Outlet />
       </BaseLayout>
     </ConfigProvider>
   );

@@ -1,3 +1,4 @@
+import React from 'react';
 import { RouterProvider } from 'react-router';
 
 import ReactDOM from 'react-dom/client';
@@ -8,4 +9,8 @@ import './index.css';
 
 const root = document.getElementById('root');
 
-ReactDOM.createRoot(root as HTMLElement).render(<RouterProvider router={router} />);
+ReactDOM.createRoot(root as HTMLElement).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>,
+);

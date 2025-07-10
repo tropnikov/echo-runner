@@ -13,23 +13,23 @@ const { useToken } = theme;
 
 const menuItems = [
   {
-    key: 'main',
-    path: '/',
+    key: appRoutes.MAIN,
+    path: appRoutes.MAIN,
     label: <NavLink to={appRoutes.MAIN}>Главная</NavLink>,
   },
   {
-    key: 'game',
-    path: 'play',
+    key: appRoutes.GAME,
+    path: appRoutes.GAME,
     label: <NavLink to={appRoutes.GAME}>Игра</NavLink>,
   },
   {
-    key: 'forum',
-    path: 'forum',
+    key: appRoutes.TOPICS,
+    path: appRoutes.TOPICS,
     label: <NavLink to={appRoutes.TOPICS}>Форум</NavLink>,
   },
   {
-    key: 'leaderboard',
-    path: 'leaderboard',
+    key: appRoutes.LEADERBOARD,
+    path: appRoutes.LEADERBOARD,
     label: <NavLink to={appRoutes.LEADERBOARD}>Лидерборд</NavLink>,
   },
 ];

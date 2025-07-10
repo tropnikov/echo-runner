@@ -12,13 +12,13 @@ export abstract class GameObject {
 
   protected _collisions: Collision[] = [];
 
-  protected nextX: number;
+  protected nextSpawnX: number;
 
   abstract effectType: ObjectEffectType;
 
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
-    this.nextX = ctx.canvas.width;
+    this.nextSpawnX = ctx.canvas.width;
   }
 
   get collisions() {
@@ -29,51 +29,57 @@ export abstract class GameObject {
    * Генерирует коллизии.
    */
   protected createCollisions({ minDistanceX, maxDistanceX, callback }: GenerateCollisionsParams) {
-    callback(this.nextX);
+    callback(this.nextSpawnX);
     const distance = minDistanceX + Math.random() * (maxDistanceX - minDistanceX);
-    this.nextX += distance;
+    this.nextSpawnX += distance;
+  }
+
+  /**
+   * Проверяет, нужно ли создавать новый объект.
+   */
+  protected shouldSpawnNewObject({
+    last,
+    minDistanceX,
+    canvasRight,
+  }: {
+    last: Collision;
+    minDistanceX: number;
+    canvasRight: number;
+  }): boolean {
+    // Если нет коллизий, значит нужно создать первый объект
+    if (!last) {
+      return true;
+    }
+
+    // Если последний объект ушёл полностью, создаём новый справа
+    const lastRight = last.x + last.width;
+
+    if (lastRight < 0) {
+      return true;
+    }
+
+    // Последний объект ещё виден — ничего не делаем
+    if (last.x < canvasRight) {
+      return false;
+    }
+
+    // Проверяем расстояние до nextSpawnX
+    const distanceToNext = this.nextSpawnX - last.x;
+
+    return distanceToNext >= minDistanceX;
   }
 
   /**
    * Обновляет коллизии.
    */
   protected updateCollisions({ minDistanceX, maxDistanceX, callback }: GenerateCollisionsParams) {
-    // Удаляем объекты за левым краем
-    this._collisions = this._collisions.filter((collision) => collision.x + collision.width > 0);
-
     const last = this._collisions[this._collisions.length - 1];
     const canvasRight = this.ctx.canvas.width;
 
-    if (!last) {
-      // Первый объект: справа за канвасом с рандомным расстоянием
+    if (!last || this.shouldSpawnNewObject({ last, canvasRight, minDistanceX })) {
       const distance = minDistanceX + Math.random() * (maxDistanceX - minDistanceX);
-      this.nextX = canvasRight + distance;
-      callback(this.nextX);
-      return;
-    }
-
-    const lastRight = last.x + last.width;
-
-    if (lastRight < 0) {
-      // Если последний объект ушёл полностью, генерируем новый справа
-      const distance = minDistanceX + Math.random() * (maxDistanceX - minDistanceX);
-      this.nextX = canvasRight + distance;
-      callback(this.nextX);
-      return;
-    }
-
-    if (last.x < canvasRight) {
-      // Последний объект ещё виден — ничего не делаем
-      return;
-    }
-
-    // Проверяем расстояние до nextX
-    const distanceToNext = this.nextX - last.x;
-
-    if (distanceToNext >= minDistanceX) {
-      const distance = minDistanceX + Math.random() * (maxDistanceX - minDistanceX);
-      this.nextX = last.x + distance;
-      callback(this.nextX);
+      this.nextSpawnX = (last ? last.x : canvasRight) + distance;
+      callback(this.nextSpawnX);
     }
   }
 
@@ -99,7 +105,7 @@ export abstract class GameObject {
    */
   reset() {
     this._collisions = [];
-    this.nextX = this.ctx.canvas.width;
+    this.nextSpawnX = this.ctx.canvas.width;
     return this;
   }
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export const useKeyboardControls = ({
   isActive = true,
@@ -9,10 +9,8 @@ export const useKeyboardControls = ({
   onJump: () => void;
   onPause: () => void;
 }) => {
-  useEffect(() => {
-    if (!isActive) return;
-
-    const handleKeys = (e: KeyboardEvent) => {
+  const handleKeys = useCallback(
+    (e: KeyboardEvent) => {
       switch (e.code) {
         case 'Space':
           onJump();
@@ -23,10 +21,15 @@ export const useKeyboardControls = ({
         default:
           break;
       }
-    };
+    },
+    [onJump, onPause],
+  );
+
+  useEffect(() => {
+    if (!isActive) return;
 
     window.addEventListener('keydown', handleKeys);
 
     return () => window.removeEventListener('keydown', handleKeys);
-  }, [onJump, onPause, isActive]);
+  }, [handleKeys, isActive]);
 };

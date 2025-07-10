@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 
 import GameView from '@/components/GameView/GameView';
 
+import { getCanvasContext } from './helpers/getCanvasContext';
 import { useGameSetup } from './hooks/useGameSetup';
 import { useKeyboardControls } from './hooks/useKeyboardControls';
 
@@ -32,11 +33,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
 
     setIsStarted(true);
 
-    const canvas = canvasRef.current;
-
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
+    const ctx = getCanvasContext(canvasRef);
 
     if (!ctx) return;
 
@@ -55,10 +52,8 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     setScore(0);
     setDamage(0);
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const ctx = getCanvasContext(canvasRef);
 
-    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     resetScene();
@@ -85,7 +80,6 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   });
 
   const { canvasRef, engineRef, playerRef, initGame, resetScene } = useGameSetup({
-    isStarted,
     handleOnScore,
     handleOnDamage,
   });

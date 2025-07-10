@@ -15,11 +15,9 @@ export class GameEngine {
 
   private onScore: () => void;
 
-  private sceneParts: GameObject[] = [];
+  private gameObjects: GameObject[] = [];
 
   private animationId: number | null = null;
-
-  private isPaused = false;
 
   private gameSpeed = config.initialSpeed;
 
@@ -36,8 +34,8 @@ export class GameEngine {
   /**
    * Добавляет объект сцены в список для обновления и рендеринга.
    */
-  initSceneObject(sceneObject: GameObject) {
-    this.sceneParts.push(sceneObject);
+  initGameObject(gameObjects: GameObject) {
+    this.gameObjects.push(gameObjects);
     return this;
   }
 
@@ -48,7 +46,7 @@ export class GameEngine {
     this.lastTime = performance.now();
 
     const sceneTimer = (now: number) => {
-      if (this.isPaused) return;
+      if (!this.animationId) return;
 
       const deltaTime = (now - this.lastTime) / 1000;
       this.lastTime = now;
@@ -57,9 +55,9 @@ export class GameEngine {
       this.clearScene();
 
       this.renderBackground();
-      this.sceneParts.forEach((obj) => obj.update(deltaTime, this.gameSpeed));
+      this.gameObjects.forEach((obj) => obj.update(deltaTime, this.gameSpeed));
       this.checkCollisions();
-      this.sceneParts.forEach((obj) => obj.render());
+      this.gameObjects.forEach((obj) => obj.render());
 
       this.animationId = requestAnimationFrame(sceneTimer);
     };
@@ -104,7 +102,6 @@ export class GameEngine {
 
     this.gameSpeed = config.initialSpeed;
     this.speedTimer = 0;
-    this.isPaused = false;
     this.lastTime = performance.now();
 
     this.loop();
@@ -115,7 +112,6 @@ export class GameEngine {
    */
   stop() {
     if (!this.animationId) return;
-
     cancelAnimationFrame(this.animationId);
     this.animationId = null;
   }
@@ -125,8 +121,6 @@ export class GameEngine {
    */
   pause() {
     if (!this.animationId) return;
-
-    this.isPaused = true;
     cancelAnimationFrame(this.animationId);
     this.animationId = null;
   }
@@ -135,9 +129,7 @@ export class GameEngine {
    * Возобновляет игру.
    */
   resume() {
-    if (!this.isPaused) return;
-
-    this.isPaused = false;
+    if (this.animationId) return;
     this.lastTime = performance.now();
     this.loop();
   }
@@ -154,7 +146,7 @@ export class GameEngine {
    * Удаляет все объекты сцены.
    */
   removeAllSceneObjects() {
-    this.sceneParts = [];
+    this.gameObjects = [];
     return this;
   }
 
@@ -169,11 +161,11 @@ export class GameEngine {
    * Проверяет столкновения.
    */
   private checkCollisions() {
-    const player = this.sceneParts.find((p) => p instanceof Player) as Player;
+    const player = this.gameObjects.find((p) => p instanceof Player) as Player;
 
     if (!player) return;
 
-    const others = this.sceneParts.filter((obj) => obj !== player);
+    const others = this.gameObjects.filter((obj) => obj !== player);
 
     for (const obj of others) {
       for (const collision of obj.collisions) {

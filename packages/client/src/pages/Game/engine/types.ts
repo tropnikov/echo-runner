@@ -39,6 +39,7 @@ export type GameConfig = {
     collisionSize: number;
     minDistanceX: number;
     maxDistanceX: number;
+    offsetY: number;
   };
   coins: {
     collisionSize: number;

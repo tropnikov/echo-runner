@@ -71,6 +71,11 @@ export const config: GameConfig = {
      * Максимальное расстояние между препятствиями.
      */
     maxDistanceX: 800,
+
+    /**
+     * Смещение по Y.
+     */
+    offsetY: 0,
   },
 
   /**

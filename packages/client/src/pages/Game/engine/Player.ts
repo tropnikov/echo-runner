@@ -46,7 +46,7 @@ export class Player extends GameObject {
     this.jumpVelocity -= this.gravity * delta * config.fps;
     this._collision.y += this.jumpVelocity * delta * config.fps;
 
-    const groundY = 0;
+    const groundY = config.player.offset.y;
 
     // Проверка касания земли
     if (this._collision.y <= groundY) {

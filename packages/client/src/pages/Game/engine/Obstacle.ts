@@ -21,11 +21,9 @@ export class Obstacle extends GameObject {
       width: this.collisionSize,
       height: this.collisionSize,
       x,
-      y: 0,
+      y: config.obstacles.offsetY,
     });
   }
-
-  lastUpdateTime = 0;
 
   update(delta: number, gameSpeed: number): void {
     this.updateCollisions({

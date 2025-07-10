@@ -6,11 +6,9 @@ import { Obstacle } from '../engine/Obstacle';
 import { Player } from '../engine/Player';
 
 export function useGameSetup({
-  isStarted = false,
   handleOnScore,
   handleOnDamage,
 }: {
-  isStarted: boolean;
   handleOnScore: () => void;
   handleOnDamage: () => void;
 }) {
@@ -28,6 +26,8 @@ export function useGameSetup({
           onDamage: handleOnDamage,
           onScore: handleOnScore,
         });
+
+        resizeCanvas();
       }
 
       if (!playerRef.current) playerRef.current = new Player(ctx);
@@ -35,9 +35,9 @@ export function useGameSetup({
       if (!coinRef.current) coinRef.current = new Coin(ctx);
 
       engineRef.current
-        .initSceneObject(playerRef.current)
-        .initSceneObject(obstacleRef.current)
-        .initSceneObject(coinRef.current)
+        .initGameObject(playerRef.current)
+        .initGameObject(obstacleRef.current)
+        .initGameObject(coinRef.current)
         .init();
     },
     [handleOnDamage, handleOnScore],
@@ -53,28 +53,26 @@ export function useGameSetup({
   }, []);
 
   const resetScene = useCallback(() => {
-    if (engineRef.current && playerRef.current && obstacleRef.current && coinRef.current) {
-      engineRef.current
-        .removeAllSceneObjects()
-        .clearAndRenderEmpty()
-        .initSceneObject(playerRef.current.reset())
-        .initSceneObject(obstacleRef.current.reset())
-        .initSceneObject(coinRef.current.reset())
-        .init();
+    if (!engineRef.current || !playerRef.current || !obstacleRef.current || !coinRef.current) {
+      throw new Error('useGameSetup: Not all game entities initialized');
     }
+
+    engineRef.current
+      .removeAllSceneObjects()
+      .clearAndRenderEmpty()
+      .initGameObject(playerRef.current.reset())
+      .initGameObject(obstacleRef.current.reset())
+      .initGameObject(coinRef.current.reset())
+      .init();
   }, []);
 
   useEffect(() => {
-    if (!isStarted) return;
-
     window.addEventListener('resize', resizeCanvas);
-
-    resizeCanvas();
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [isStarted, resizeCanvas]);
+  }, [resizeCanvas]);
 
   return {
     canvasRef,

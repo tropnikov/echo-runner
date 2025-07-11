@@ -2,16 +2,15 @@ import { createBrowserRouter } from 'react-router';
 
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
-import MainPage from './pages/MainPage/MainPage';
 import Login from './pages/Login/Login';
-
+import MainPage from './pages/MainPage/MainPage';
 
 export default createBrowserRouter([
   {
     path: appRoutes.MAIN,
     Component: App,
     children: [
-      { index: true, element: <MainPage /> },
+      { index: true, Component: MainPage },
       {
         path: appRoutes.TOPICS,
         children: [

@@ -1,9 +1,9 @@
-import { NavLink, useNavigate } from 'react-router';
+import { NavLink, useLocation, useNavigate } from 'react-router';
 
 import { Button, Layout, Menu, Space, theme } from 'antd/lib';
 import { LoginOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 
-import { appRoutes } from '../../constants/appRoutes';
+import { appRoutes } from '@/constants/appRoutes';
 
 import styles from './BaseLayout.module.css';
 
@@ -36,14 +36,23 @@ const menuItems = [
 
 function BaseLayout({ children }: { children: React.ReactNode }) {
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = useToken();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleAuthClick = (action: string) => {
-    console.log(`Клик по кнопке: ${action}`);
     navigate(action);
+  };
+
+  const getCurrentKey = () => {
+    const pathname = location.pathname;
+    const currentPath = pathname === '/' ? '/' : pathname.replace(/^\//, '');
+
+    const routeKey = Object.values(appRoutes).find((route) => route === currentPath);
+
+    return routeKey ? [routeKey] : [];
   };
 
   return (
@@ -55,7 +64,7 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
             <Menu
               theme="dark"
               mode="horizontal"
-              defaultSelectedKeys={['2']}
+              selectedKeys={getCurrentKey()}
               items={menuItems}
               style={{ flex: 1, minWidth: 0, border: 'none' }}
             />
@@ -91,8 +100,7 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
           style={{
             background: colorBgContainer,
             minHeight: '100%',
-            borderRadius: borderRadiusLG,
-            height: '100%',
+            height: 'calc(100vh - 129.5px)',
             padding: '24px',
             maxWidth: '1440px',
             margin: '0 auto',
@@ -104,7 +112,6 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
       <Footer
         style={{
           textAlign: 'center',
-          position: 'fixed',
           bottom: 0,
           width: '100%',
           borderTop: '1px solid #1677FF',

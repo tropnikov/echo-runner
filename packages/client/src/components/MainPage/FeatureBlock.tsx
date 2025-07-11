@@ -17,8 +17,8 @@ const FeatureBlock = () => {
       <SectionHeader title={title} description={description} />
       <Row gutter={[16, 16]} justify="center" align="stretch">
         {features.map((feature, index) => (
-          <Col key={index} xs={24} sm={12} md={6} className={styles['feature-block__col']}>
-            <Card className={styles['feature-block__card']}>
+          <Col key={index} xs={24} sm={12} md={6} className={styles.featureBlockCol}>
+            <Card className={styles.featureBlockCard}>
               <FeatureCard feature={feature} />
             </Card>
           </Col>

@@ -1,12 +1,12 @@
-.review-block__row {
+.reviewBlockRow {
   display: flex;
 }
 
-.review-block__col {
+.reviewBlockCol {
   display: flex;
 }
 
-.review-block__card-wrapper {
+.reviewBlockCardWrapper {
   width: 100%;
   display: flex;
   flex-direction: column;

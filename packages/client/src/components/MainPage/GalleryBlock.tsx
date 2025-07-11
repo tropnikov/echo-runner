@@ -18,8 +18,8 @@ const GalleryBlock = () => {
         {galleryImages.map((image, index) => {
           return (
             <Col key={index} xs={24} sm={12} md={6}>
-              <div className={styles['gallery-block__image-wrapper']}>
-                <img src={image.url} alt="Изображение галереи" className={styles['gallery-block__image']} />
+              <div className={styles.galleryBlockImageWrapper}>
+                <img src={image.url} alt="Изображение галереи" className={styles.galleryBlockImage} />
               </div>
             </Col>
           );

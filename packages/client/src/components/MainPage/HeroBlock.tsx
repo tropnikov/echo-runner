@@ -31,26 +31,8 @@ const HeroBlock = () => {
           </Button>
         </Col>
         <Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 2 }}>
-          <div
-            className={styles.skeletonWide}
-            style={{
-              position: 'relative',
-              width: '100%',
-              borderRadius: 8,
-              overflow: 'hidden',
-              background: '#f0f0f0',
-            }}>
-            <img
-              src={cover}
-              alt="Обложка HeroBlock"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                borderRadius: 8,
-                display: 'block',
-              }}
-            />
+          <div className={styles.heroHeaderCoverWrapper}>
+            <img src={cover} alt="Обложка HeroBlock" className={styles.heroHeaderCoverImage} />
           </div>
         </Col>
       </Row>

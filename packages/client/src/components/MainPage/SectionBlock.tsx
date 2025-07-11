@@ -11,7 +11,7 @@ interface SectionBlockProps {
 
 const SectionBlock: React.FC<SectionBlockProps> = ({ className, children }) => (
   <div className={className}>
-    <Space direction="vertical" size="large" className={styles['section-block__space']}>
+    <Space direction="vertical" size="large" className={styles.sectionBlockSpace}>
       {children}
     </Space>
   </div>

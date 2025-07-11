@@ -14,10 +14,10 @@ const ReviewBlock = () => {
   return (
     <SectionBlock className="reviews-block">
       <SectionHeader title={title} description={description} />
-      <Row gutter={[32, 32]} align="stretch" className={styles['review-block__row']}>
+      <Row gutter={[32, 32]} align="stretch" className={styles.reviewBlockRow}>
         {userReviews.map((review) => (
-          <Col span={8} key={review.id} xs={24} sm={12} md={8} className={styles['review-block__col']}>
-            <div className={styles['review-block__card-wrapper']}>
+          <Col span={8} key={review.id} xs={24} sm={12} md={8} className={styles.reviewBlockCol}>
+            <div className={styles.reviewBlockCardWrapper}>
               <ReviewCard review={review} />
             </div>
           </Col>

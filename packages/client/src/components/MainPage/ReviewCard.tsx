@@ -17,9 +17,9 @@ interface ReviewCardProps {
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
   return (
-    <Card className={styles['review-card']}>
+    <Card className={styles.reviewCard}>
       <Card.Meta avatar={<Avatar src={review.avatar} size={'large'} />} title={review.name} description={review.date} />
-      <div className={styles['review-card__content']}>
+      <div className={styles.reviewCardContent}>
         <Rate disabled defaultValue={review.rating} />
         <p>{review.text}</p>
       </div>

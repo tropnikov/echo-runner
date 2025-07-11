@@ -1,8 +1,8 @@
-.feature-block__col {
+.featureBlockCol {
   display: flex;
 }
 
-.feature-block__card {
+.featureBlockCard {
   flex: 1;
   display: flex;
   flex-direction: column;

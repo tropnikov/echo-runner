@@ -14,7 +14,7 @@ interface FeatureCardProps {
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => (
   <div>
-    <div className={styles['feature-card__icon']}>{React.cloneElement(feature.icon)}</div>
+    <div className={styles.featureCardIcon}>{React.cloneElement(feature.icon)}</div>
     <div>
       <h3>{feature.text}</h3>
       <p>{feature.description}</p>

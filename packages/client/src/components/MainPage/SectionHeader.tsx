@@ -9,7 +9,7 @@ interface SectionHeaderProps {
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ title, description }) => (
   <Row justify="center">
-    <Col span={12} className={styles['section-header__col']}>
+    <Col className={styles.sectionHeaderCol}>
       <h1>{title}</h1>
       <p>{description}</p>
     </Col>

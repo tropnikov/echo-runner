@@ -1,4 +1,4 @@
-.gallery-block__image-wrapper {
+.galleryBlockImageWrapper {
   width: 100%;
   height: 240px;
   background: #f0f0f0;
@@ -10,7 +10,7 @@
   justify-content: center;
 }
 
-.gallery-block__image {
+.galleryBlockImage {
   width: 100%;
   height: 100%;
   object-fit: cover;

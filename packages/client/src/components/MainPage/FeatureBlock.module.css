@@ -1,0 +1,10 @@
+.feature-block__col {
+  display: flex;
+}
+
+.feature-block__card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}

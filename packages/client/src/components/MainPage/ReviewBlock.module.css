@@ -1,0 +1,13 @@
+.review-block__row {
+  display: flex;
+}
+
+.review-block__col {
+  display: flex;
+}
+
+.review-block__card-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}

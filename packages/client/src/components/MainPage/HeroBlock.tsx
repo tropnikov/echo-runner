@@ -25,7 +25,7 @@ const HeroBlock = () => {
       <Row gutter={16} align="middle">
         <Col xs={{ span: 24, order: 2 }} md={{ span: 12, order: 1 }}>
           <h1 style={{ fontSize: '80px' }}>{title}</h1>
-          <p>{description}</p>
+          <p className={styles.heroHeaderDescription}>{description}</p>
           <Button type="primary" size="large" icon={<PlayCircleFilled />} onClick={handleStartClick}>
             Начать играть
           </Button>

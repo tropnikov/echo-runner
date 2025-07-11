@@ -13,3 +13,11 @@
   border-radius: 8px;
   display: block;
 }
+
+.heroHeaderDescription {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #555;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}

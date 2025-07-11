@@ -1,0 +1,2811 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Chat & OAuth API",
+    "description": "Интерактивная документация API",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://ya-praktikum.tech/api/v2"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Auth operations"
+    },
+    {
+      "name": "Chats",
+      "description": "Chats operations"
+    },
+    {
+      "name": "Leaderboard",
+      "description": "Leaderboard operations (prefix /game/api/v2)"
+    },
+    {
+      "name": "Oauth",
+      "description": "Oauth service"
+    },
+    {
+      "name": "Users",
+      "description": "Users operations"
+    },
+    {
+      "name": "Charts",
+      "description": "Charts operations"
+    },
+    {
+      "name": "Videos",
+      "description": "Videos operations"
+    },
+    {
+      "name": "Stickers",
+      "description": "Stickers operations"
+    }
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign up (create user)",
+        "requestBody": {
+          "description": "User data",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignUpResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "signUpRequest"
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign in",
+        "requestBody": {
+          "description": "User data",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "signInRequest"
+      }
+    },
+    "/auth/user": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get user info",
+        "responses": {
+          "200": {
+            "description": "An array of user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/chats": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Get chats",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of items to skip before starting to collect the result set",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The numbers of items to return",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Chat's title to filter by",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatsResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Create chat",
+        "requestBody": {
+          "description": "Chat data",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "createChatRequest"
+      },
+      "delete": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Delete chat by ID",
+        "description": "Delete works only for admin role.",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatDeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatDeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "deleteChatRequest"
+      }
+    },
+    "/chats/{id}/files": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Get chat sent files",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Numeric chat id",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatMessage"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found chat",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/chats/archive": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Get archived chats",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of items to skip before starting to collect the result set",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The numbers of items to return",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Chat's title to filter by",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatsResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Archive chat by ID",
+        "description": "Archive chat",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatArchiveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatArchiveResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "archiveChatRequest"
+      }
+    },
+    "/chats/unarchive": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "UnArchive chat by ID",
+        "description": "UnArchive chat",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatArchiveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatArchiveResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "unarchiveChatRequest"
+      }
+    },
+    "/chats/{id}/common": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Get common chat with current chat user (only works for two users chats)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Numeric chat id",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatsResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found chat",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/chats/{id}/users": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Get chat users",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Numeric chat id",
+            "required": true,
+            "schema": {}
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of items to skip before starting to collect the result set",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The numbers of items to return",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "User's '{first_name} {second_name}' to filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "User's email to filter",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatUserResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found chat",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/chats/new/{id}": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Get new messages count",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Numeric chat id",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/chats/avatar": {
+      "put": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Upload chat avatar",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "avatar",
+                  "chatId"
+                ],
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "integer",
+                    "description": "Chat id",
+                    "format": "int32"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "description": "Avatar (JPEG, JPG, PNG, GIF, WebP are allowed)",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/chats/users": {
+      "put": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Add users to chat",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/UsersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "usersRequest"
+      },
+      "delete": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Delete users from chat",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/UsersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "usersRequest"
+      }
+    },
+    "/chats/token/{id}": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "summary": "Get chat users",
+        "description": "Request token to connect to messages server",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Numeric chat id",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatsMessagesTokenResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/leaderboard": {
+      "post": {
+        "tags": [
+          "Leaderboard"
+        ],
+        "summary": "Add user to leaderboard",
+        "requestBody": {
+          "description": "Leader data",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderboardNewLeaderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "leaderboardNewLeaderRequest"
+      }
+    },
+    "/leaderboard/all": {
+      "post": {
+        "tags": [
+          "Leaderboard"
+        ],
+        "summary": "Get all leaderboard",
+        "requestBody": {
+          "description": "Leaderboard request",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderboardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "leaderboardRequest"
+      }
+    },
+    "/leaderboard/{teamName}": {
+      "post": {
+        "tags": [
+          "Leaderboard"
+        ],
+        "summary": "Get team leaderboard",
+        "parameters": [
+          {
+            "name": "teamName",
+            "in": "path",
+            "description": "Name of the team, which leaderboard you want to get",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "requestBody": {
+          "description": "Leaderboard request. Cursor is used for pagination. If limit is 10, then for the 1st page - cursor=0, for the 2nd page - cursor=10.",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderboardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "leaderboardRequest"
+      }
+    },
+    "/oauth/yandex": {
+      "post": {
+        "tags": [
+          "Oauth"
+        ],
+        "summary": "Sign in / sign up with yandex",
+        "requestBody": {
+          "description": "Oauth data",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/OauthSignInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request (No such redirect_uri or wrong code)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "OauthSignInRequest"
+      }
+    },
+    "/oauth/yandex/service-id": {
+      "get": {
+        "tags": [
+          "Oauth"
+        ],
+        "summary": "Get service id",
+        "parameters": [
+          {
+            "name": "redirect_uri",
+            "in": "query",
+            "description": "Redirect uri that you are using for oauth",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Yandex client id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceId"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (No such redirect_uri refistered)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/user/profile": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Change user profile",
+        "requestBody": {
+          "description": "User data",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "userRequest"
+      }
+    },
+    "/user/profile/avatar": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Change user avatar",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "avatar"
+                ],
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "description": "Avatar (JPEG, JPG, PNG, GIF, WebP are allowed)",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/user/password": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Change user password",
+        "requestBody": {
+          "description": "Password request",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "changePasswordRequest"
+      }
+    },
+    "/user/search": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Search for user by login (max 10)",
+        "requestBody": {
+          "description": "User data",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/FindUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "findUserRequest"
+      }
+    },
+    "/charts/static": {
+      "post": {
+        "tags": [
+          "Charts"
+        ],
+        "requestBody": {
+          "description": "chart size",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/StaticChartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaticChartResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (wrong body parameters)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "chartSize"
+      }
+    },
+    "/charts/live": {
+      "post": {
+        "tags": [
+          "Charts"
+        ],
+        "requestBody": {
+          "description": "next (cursor)",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/LiveChartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveChartResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "next"
+      }
+    },
+    "/videos/static": {
+      "get": {
+        "tags": [
+          "Videos"
+        ],
+        "description": "Get static video stream",
+        "parameters": [
+          {
+            "name": "Range",
+            "in": "header",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "206": {
+            "description": "Partial (with data stream)",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request (wrong range header)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/videos/static/info": {
+      "get": {
+        "tags": [
+          "Videos"
+        ],
+        "description": "Get static full video info (size)",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "headers": {
+              "file-size": {
+                "description": "header with the size of the video file (in bytes)",
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/videos/live": {
+      "get": {
+        "tags": [
+          "Videos"
+        ],
+        "description": "Get live video stream (part of the video will depend on the \"start\" bytes of the range",
+        "parameters": [
+          {
+            "name": "Range",
+            "in": "header",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "206": {
+            "description": "Partial (with data stream)",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request (wrong range header)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/videos/live/info": {
+      "post": {
+        "tags": [
+          "Videos"
+        ],
+        "description": "Get live full video info (size) --- Increases with each request",
+        "requestBody": {
+          "description": "iteration (cursor)",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/LiveVideoInfoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "headers": {
+              "file-size": {
+                "description": "header with the size of the video file (in bytes)",
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request (wrong body / iteration)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "iteration"
+      }
+    },
+    "/resources": {
+      "post": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Upload resource(file) to server",
+        "description": "JPEG, JPG, PNG, GIF, WebP are allowed",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "resource"
+                ],
+                "type": "object",
+                "properties": {
+                  "resource": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/resources/{path}": {
+      "get": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Serving static files",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "description": "Path to the file",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/stickers": {
+      "get": {
+        "tags": [
+          "Stickers"
+        ],
+        "summary": "Get sticker packs",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of items to skip before starting to collect the result set",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The numbers of items to return",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Sticker's title to filter by",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StickerPacksResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stickers"
+        ],
+        "summary": "Create sticker pack",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "resource",
+                  "title"
+                ],
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Sticker pack title"
+                  },
+                  "resource": {
+                    "type": "string",
+                    "description": "Sticker image (can be multiple images, just attach multiple files). JPEG, JPG, PNG, GIF, WebP are allowed",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/stickers/{id}/": {
+      "get": {
+        "tags": [
+          "Stickers"
+        ],
+        "summary": "Get stickers from pack",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Numeric sticker pack id",
+            "required": true,
+            "schema": {}
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of items to skip before starting to collect the result set",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The numbers of items to return",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StickersResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stickers"
+        ],
+        "summary": "Add more stickers (images) to the pack",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Numeric sticker pack id",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "resource"
+                ],
+                "type": "object",
+                "properties": {
+                  "resource": {
+                    "type": "string",
+                    "description": "Sticker image (can be multiple images, just attach multiple files). JPEG, JPG, PNG, GIF, WebP are allowed",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/stickers/favorite": {
+      "get": {
+        "tags": [
+          "Stickers"
+        ],
+        "summary": "Get user's favorite sticker packs",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of items to skip before starting to collect the result set",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The numbers of items to return",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Sticker pack title to filter by",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StickerPacksResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/stickers/{id}/favorite": {
+      "post": {
+        "tags": [
+          "Stickers"
+        ],
+        "summary": "Add pack to favorites",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Numeric sticker pack id",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Stickers"
+        ],
+        "summary": "Remove pack from favorites",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Numeric sticker pack id",
+            "required": true,
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserResponse": {
+        "required": [
+          "avatar",
+          "display_name",
+          "email",
+          "first_name",
+          "id",
+          "login",
+          "phone",
+          "second_name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "User id"
+          },
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "second_name": {
+            "type": "string",
+            "description": "Second name"
+          },
+          "display_name": {
+            "type": "string",
+            "description": "Display name"
+          },
+          "login": {
+            "type": "string",
+            "description": "User login - unique"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email - unique",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User phone"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "Avatar"
+          }
+        },
+        "example": {
+          "id": 123,
+          "first_name": "Petya",
+          "second_name": "Pupkin",
+          "display_name": "Petya Pupkin",
+          "phone": "+79001001100",
+          "login": "userLogin",
+          "avatar": "/path/to/avatar.jpg",
+          "email": "string@ya.ru"
+        }
+      },
+      "SignUpRequest": {
+        "required": [
+          "email",
+          "first_name",
+          "login",
+          "password",
+          "phone",
+          "second_name"
+        ],
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "second_name": {
+            "type": "string",
+            "description": "Second name"
+          },
+          "login": {
+            "type": "string",
+            "description": "User login - unique"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email /^\\S+@\\S+$/"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone /^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$/"
+          }
+        }
+      },
+      "SignInRequest": {
+        "required": [
+          "login",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string",
+            "description": "User login"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password"
+          }
+        }
+      },
+      "SignUpResponse": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Created User ID"
+          }
+        }
+      },
+      "CreateChatRequest": {
+        "required": [
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Chat title"
+          }
+        }
+      },
+      "CreateChatResponse": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Created Chat ID"
+          }
+        }
+      },
+      "UsersRequest": {
+        "required": [
+          "chatId",
+          "users"
+        ],
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "chatId": {
+            "type": "integer",
+            "description": "Chat id"
+          }
+        }
+      },
+      "ChatsResponse": {
+        "required": [
+          "avatar",
+          "id",
+          "last_message",
+          "title",
+          "unread_count"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Chat id"
+          },
+          "title": {
+            "type": "string",
+            "description": "Chat title"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "Chat avatar"
+          },
+          "unread_count": {
+            "type": "integer",
+            "description": "Number of unread messages in chat for current user"
+          },
+          "last_message": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/UserResponse"
+              },
+              "time": {
+                "type": "string",
+                "description": "Message timestamp",
+                "format": "timestamp"
+              },
+              "content": {
+                "type": "string",
+                "description": "Message content"
+              }
+            }
+          }
+        },
+        "example": {
+          "id": 123,
+          "title": "my-chat",
+          "avatar": "/123/avatar1.jpg",
+          "unread_count": 15,
+          "created_by": 12345,
+          "last_message": {
+            "user": {
+              "first_name": "Petya",
+              "second_name": "Pupkin",
+              "avatar": "/path/to/avatar.jpg",
+              "email": "my@email.com",
+              "login": "userLogin",
+              "phone": "8(911)-222-33-22"
+            },
+            "time": "2020-01-02T14:22:22.000Z",
+            "content": "this is message content"
+          }
+        }
+      },
+      "ChatDeleteRequest": {
+        "required": [
+          "chatId"
+        ],
+        "type": "object",
+        "properties": {
+          "chatId": {
+            "type": "integer",
+            "description": "Chat id"
+          }
+        }
+      },
+      "ChatDeleteResponse": {
+        "required": [
+          "result",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "User id"
+          },
+          "result": {
+            "$ref": "#/components/schemas/ChatsResponse"
+          }
+        },
+        "example": {
+          "userId": 12,
+          "result": {
+            "id": 123,
+            "title": "deleted-chat",
+            "avatar": "/123/avatar1.jpg",
+            "created_by": 12345
+          }
+        }
+      },
+      "ChatArchiveRequest": {
+        "required": [
+          "chatId"
+        ],
+        "type": "object",
+        "properties": {
+          "chatId": {
+            "type": "integer",
+            "description": "Chat id"
+          }
+        }
+      },
+      "ChatArchiveResponse": {
+        "required": [
+          "result",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "User id"
+          },
+          "result": {
+            "$ref": "#/components/schemas/ChatsResponse"
+          }
+        }
+      },
+      "ChatsMessagesTokenResponse": {
+        "required": [
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token for web socket server"
+          }
+        }
+      },
+      "UnreadCountResponse": {
+        "required": [
+          "unread_count"
+        ],
+        "type": "object",
+        "properties": {
+          "unread_count": {
+            "type": "integer",
+            "description": "New messages count"
+          }
+        },
+        "example": {
+          "unread_count": 12
+        }
+      },
+      "LeaderboardNewLeaderRequest": {
+        "required": [
+          "data",
+          "ratingFieldName"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {},
+            "description": "Leaderboard data object, any type"
+          },
+          "ratingFieldName": {
+            "type": "string",
+            "description": "Which field is used to sort (if new value of the field more than old, data is stored)"
+          },
+          "teamName": {
+            "type": "string",
+            "description": "Your team name. Used to make unique leaderboard for each project."
+          }
+        }
+      },
+      "LeaderboardRequest": {
+        "required": [
+          "cursor",
+          "limit",
+          "ratingFieldName"
+        ],
+        "type": "object",
+        "properties": {
+          "ratingFieldName": {
+            "type": "string",
+            "description": "Which field is used to sort"
+          },
+          "cursor": {
+            "type": "integer",
+            "description": "Used to paginate between pages. If limit is 10, then for the 1st page - cursor=0, for the 2nd page - cursor=10."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum amount of leaders to return"
+          }
+        }
+      },
+      "OauthSignInRequest": {
+        "required": [
+          "code",
+          "redirect_uri"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "User code from Yandex"
+          },
+          "redirect_uri": {
+            "type": "string",
+            "description": "Redirect uri that you are using for oauth"
+          }
+        }
+      },
+      "ServiceId": {
+        "required": [
+          "service_id"
+        ],
+        "type": "object",
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "description": "Service id"
+          }
+        }
+      },
+      "HttpErrorBody": {
+        "required": [
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      },
+      "UserUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "second_name": {
+            "type": "string",
+            "description": "Second name"
+          },
+          "display_name": {
+            "type": "string",
+            "description": "Display Name"
+          },
+          "login": {
+            "type": "string",
+            "description": "User login - unique"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone"
+          }
+        }
+      },
+      "UserRequest": {
+        "required": [
+          "display_name",
+          "email",
+          "first_name",
+          "login",
+          "phone",
+          "second_name"
+        ],
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "second_name": {
+            "type": "string",
+            "description": "Second name"
+          },
+          "display_name": {
+            "type": "string",
+            "description": "Display Name"
+          },
+          "login": {
+            "type": "string",
+            "description": "User login - unique"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone"
+          }
+        }
+      },
+      "FindUserRequest": {
+        "required": [
+          "login"
+        ],
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string",
+            "description": "User login (beginning of login)"
+          }
+        }
+      },
+      "ChangePasswordRequest": {
+        "required": [
+          "newPassword",
+          "oldPassword"
+        ],
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string",
+            "description": "Old password"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "New password"
+          }
+        }
+      },
+      "Resource": {
+        "required": [
+          "content_size",
+          "content_type",
+          "filename",
+          "id",
+          "path",
+          "upload_date",
+          "user_id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Message id"
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "User id"
+          },
+          "path": {
+            "type": "string",
+            "description": "Server relative file path"
+          },
+          "filename": {
+            "type": "string",
+            "description": "Initial file name"
+          },
+          "content_type": {
+            "type": "string",
+            "description": "File content type (e.g \"image/jpeg\" for .jpg images)"
+          },
+          "content_size": {
+            "type": "integer",
+            "description": "File size in bytes"
+          },
+          "upload_date": {
+            "type": "string",
+            "description": "Resource uploading time",
+            "format": "date-time"
+          }
+        },
+        "example": {
+          "id": 123,
+          "user_id": 231,
+          "path": "/32543654dsf/434534r3rsddfs_my-file.jpg",
+          "filename": "my-file.jpg",
+          "content_type": "image/jpeg",
+          "content_size": 543672,
+          "upload_date": "2020-01-02T14:22:22.000Z"
+        }
+      },
+      "ChatMessage": {
+        "required": [
+          "chat_id",
+          "content",
+          "id",
+          "time",
+          "type",
+          "user_id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Message id"
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "User id"
+          },
+          "chat_id": {
+            "type": "integer",
+            "description": "Chat id"
+          },
+          "time": {
+            "type": "string",
+            "description": "Message sent time",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string",
+            "description": "Message type",
+            "enum": [
+              "message",
+              "file"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "description": "Message content (message text for messages and resourceId for files)"
+          },
+          "file": {
+            "$ref": "#/components/schemas/Resource"
+          }
+        },
+        "example": {
+          "id": 123,
+          "user_id": 231,
+          "chat_id": 312,
+          "time": "2020-01-02T14:22:22.000Z",
+          "type": "file",
+          "content": 132,
+          "file": {
+            "id": 132,
+            "user_id": 231,
+            "path": "/32543654dsf/434534r3rsddfs_my-file.jpg",
+            "filename": "my-file.jpg",
+            "content_type": "image/jpeg",
+            "content_size": 543672,
+            "upload_date": "2020-01-02T14:22:22.000Z"
+          }
+        }
+      },
+      "ChatUserResponse": {
+        "required": [
+          "avatar",
+          "display_name",
+          "first_name",
+          "id",
+          "login",
+          "role",
+          "second_name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "User id"
+          },
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "second_name": {
+            "type": "string",
+            "description": "Second name"
+          },
+          "display_name": {
+            "type": "string",
+            "description": "Display name"
+          },
+          "login": {
+            "type": "string",
+            "description": "User login - unique"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "Avatar"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role",
+            "enum": [
+              "admin",
+              "regular"
+            ]
+          }
+        },
+        "example": {
+          "id": 123,
+          "first_name": "petya",
+          "second_name": "petrov",
+          "display_name": "petya petrov",
+          "login": "my-login",
+          "avatar": "/path/to/my-file.jpg",
+          "role": "admin"
+        }
+      },
+      "StaticChartRequest": {
+        "required": [
+          "chartSize"
+        ],
+        "type": "object",
+        "properties": {
+          "chartSize": {
+            "type": "string",
+            "description": "Number of points in chart (10 / 100 / 1000)",
+            "enum": [
+              "small",
+              "medium",
+              "large"
+            ]
+          }
+        }
+      },
+      "LiveChartRequest": {
+        "required": [
+          "next"
+        ],
+        "type": "object",
+        "properties": {
+          "next": {
+            "type": "number",
+            "description": "Works as a cursor (initial value should be zero, all the next values are taken from the backend response)",
+            "format": "integer"
+          }
+        }
+      },
+      "ChartSchema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "string",
+              "description": "X axis (datetime)",
+              "format": "date-time"
+            },
+            "y1": {
+              "type": "number",
+              "format": "float"
+            },
+            "y2": {
+              "type": "number",
+              "format": "float"
+            }
+          }
+        }
+      },
+      "StaticChartResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ChartSchema"
+          }
+        }
+      },
+      "LiveChartResponse": {
+        "type": "object",
+        "properties": {
+          "next": {
+            "type": "integer",
+            "description": "Used as a cursor (pass this value to the next request)",
+            "example": 5
+          },
+          "data": {
+            "$ref": "#/components/schemas/ChartSchema"
+          }
+        }
+      },
+      "LiveVideoInfoRequest": {
+        "required": [
+          "iteration"
+        ],
+        "type": "object",
+        "properties": {
+          "iteration": {
+            "type": "number",
+            "description": "Works as a cursor (iterate + 1 each request)",
+            "format": "integer"
+          }
+        }
+      },
+      "VideoInfoResponse": {
+        "required": [
+          "size"
+        ],
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "number",
+            "description": "Video size in bytes",
+            "format": "integer",
+            "example": 4096
+          }
+        }
+      },
+      "Sticker": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Sticker id (send to chat with WS)",
+            "format": "integer",
+            "example": 123
+          },
+          "path": {
+            "type": "string",
+            "description": "Url for sticker resource(image)",
+            "example": "/stickers/2346-dfsg-425-sdfs/14534.gif"
+          }
+        }
+      },
+      "StickerPack": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Sticker pack title",
+            "example": "pack-title"
+          },
+          "user_id": {
+            "type": "number",
+            "description": "User id that created this pack",
+            "format": "integer",
+            "example": 123
+          },
+          "stickers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Url for sticker resource(image)",
+              "example": "/stickers/2346-dfsg-425-sdfs/14534.gif"
+            }
+          }
+        }
+      },
+      "StickerPacksResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "StickerPacks",
+            "items": {
+              "$ref": "#/components/schemas/StickerPack"
+            }
+          }
+        }
+      },
+      "StickersResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Stickers",
+            "items": {
+              "$ref": "#/components/schemas/Sticker"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version": "2.0"
+}

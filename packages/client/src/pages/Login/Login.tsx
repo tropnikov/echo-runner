@@ -13,7 +13,7 @@ const Login = () => {
 
   return (
     <>
-      <Flex vertical justify="center" align="start" style={{ flex: 1 }}>
+      <Flex vertical justify="center" align="start" flex={1}>
         <Typography.Title level={1}>Вход</Typography.Title>
         <Divider />
         <Form

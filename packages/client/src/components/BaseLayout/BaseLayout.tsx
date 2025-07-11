@@ -104,6 +104,7 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
             padding: '24px',
             maxWidth: '1440px',
             margin: '0 auto',
+            overflowY: 'auto',
           }}>
           {children}
         </div>

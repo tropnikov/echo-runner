@@ -3,6 +3,8 @@ import { createBrowserRouter } from 'react-router';
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
 import MainPage from './pages/MainPage/MainPage';
+import Login from './pages/Login/Login';
+
 
 export default createBrowserRouter([
   {
@@ -17,7 +19,7 @@ export default createBrowserRouter([
           { path: appRoutes.TOPIC, element: <div>Тема форума</div> },
         ],
       },
-      { path: appRoutes.SIGNIN, element: <div>Авторизация</div> },
+      { path: appRoutes.SIGNIN, Component: Login },
       { path: appRoutes.SIGNUP, element: <div>Регистрация</div> },
       { path: appRoutes.PROFILE, element: <div>Страница пользователя</div> },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },

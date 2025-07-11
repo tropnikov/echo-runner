@@ -20,7 +20,7 @@ function App() {
   return (
     <ConfigProvider
       theme={{
-        algorithm: theme.darkAlgorithm,
+        algorithm: theme.defaultAlgorithm,
       }}>
       <BaseLayout>
         <Outlet />

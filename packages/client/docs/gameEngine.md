@@ -66,13 +66,13 @@ classDiagram
   %% Игровой движок
   class GameEngine {
     - ctx: CanvasRenderingContext2D
-    - onDamage: () => void
-    - onScore: () => void
     - gameObjects: GameObject[]
     - animationId: number|null
     - gameSpeed: number
     - lastTime: number
     - speedTimer: number
+    - onDamage() void
+    - onScore() void
     + initGameObject(gameObject: GameObject) this
     + init() this
     + start() void
@@ -103,7 +103,7 @@ classDiagram
     <<interface>>
     minDistanceX: number
     maxDistanceX: number
-    callback: (x: number) => void
+    callback(x: number) => void
   }
 
   class ObjectEffectType {

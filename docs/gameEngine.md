@@ -103,7 +103,7 @@ classDiagram
     <<interface>>
     minDistanceX: number
     maxDistanceX: number
-    callback(x: number) => void
+    callback(x: number) void
   }
 
   class ObjectEffectType {

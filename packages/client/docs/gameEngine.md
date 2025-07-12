@@ -18,18 +18,19 @@ classDiagram
   %% Абстрактный базовый класс
   class GameObject {
     <<abstract>>
+    + effectType: ObjectEffectType
     - ctx: CanvasRenderingContext2D
     - _collisions: Collision[]
     # nextSpawnX: number
     # collisions: Collision[]
-    + reset(): GameObject
-    # createCollisions(params: GenerateCollisionsParams): void
-    # updateCollisions(params: GenerateCollisionsParams): void
-    # addCollision(collision: Collision): void
-    - shouldSpawnNewObject(...): boolean
-    # toCanvasCoords(collision: Collision): Collision
-    + update(delta: number, gameSpeed: number): void*
-    + render(): void*
+    + reset() GameObject
+    # createCollisions(params: GenerateCollisionsParams) void
+    # updateCollisions(params: GenerateCollisionsParams) void
+    # addCollision(collision: Collision) void
+    - shouldSpawnNewObject(...) boolean
+    # toCanvasCoords(collision: Collision) Collision
+    + update(delta: number, gameSpeed: number) void
+    + render() void
   }
 
   %% Игрок
@@ -40,28 +41,26 @@ classDiagram
     - jumpPower: number
     - isJumping: boolean
     + collision: Collision
-    + jump(): void
-    + update(delta: number): void
-    + render(): void
-    + effectType: ObjectEffectType
+    + jump() void
+    + update(delta: number) void
+    + render() void
+
   }
 
   %% Монета
   class Coin {
     - collisionSize: number
-    + effectType: ObjectEffectType
-    - addCoinCollision(x: number): void
-    + update(delta: number, gameSpeed: number): void
-    + render(): void
+    - addCoinCollision(x: number) void
+    + update(delta: number, gameSpeed: number) void
+    + render() void
   }
 
   %% Препятствие
   class Obstacle {
     - collisionSize: number
-    + effectType: ObjectEffectType
-    - addObstacleCollision(x: number): void
-    + update(delta: number, gameSpeed: number): void
-    + render(): void
+    - addObstacleCollision(x: number) void
+    + update(delta: number, gameSpeed: number) void
+    + render() void
   }
 
   %% Игровой движок
@@ -74,20 +73,20 @@ classDiagram
     - gameSpeed: number
     - lastTime: number
     - speedTimer: number
-    + initGameObject(gameObject: GameObject): this
-    + init(): this
-    + start(): void
-    + stop(): void
-    + pause(): void
-    + resume(): void
-    + clearAndRenderEmpty(): this
-    + removeAllSceneObjects(): this
-    - loop(): void
-    - updateGameSpeed(delta: number): void
-    - clearScene(): void
-    - checkCollisions(): void
-    - isColliding(a: Collision, b: Collision): boolean
-    - renderBackground(): void
+    + initGameObject(gameObject: GameObject) this
+    + init() this
+    + start() void
+    + stop() void
+    + pause() void
+    + resume() void
+    + clearAndRenderEmpty() this
+    + removeAllSceneObjects() this
+    - loop() void
+    - updateGameSpeed(delta: number) void
+    - clearScene() void
+    - checkCollisions() void
+    - isColliding(a: Collision, b: Collision) boolean
+    - renderBackground() void
   }
 
   %% Типы и конфиг

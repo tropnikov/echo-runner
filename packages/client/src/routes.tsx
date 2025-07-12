@@ -2,9 +2,8 @@ import { createBrowserRouter } from 'react-router';
 
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
-
 import Login from './pages/Login/Login';
-import Registration from './pages/registration';
+import Registration from './pages/Registration';
 
 export default createBrowserRouter([
   {

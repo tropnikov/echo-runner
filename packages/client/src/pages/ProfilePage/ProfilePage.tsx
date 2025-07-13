@@ -1,9 +1,11 @@
+import { FC } from 'react';
+
 import { Divider, Flex, Typography } from 'antd';
 
 import AvatarForm from '@/components/ProfilePage/AvatarForm';
 import PasswordForm from '@/components/ProfilePage/PasswordForm';
 
-const ProfilePage: React.FC = () => {
+const ProfilePage: FC = () => {
   return (
     <>
       <Flex vertical justify="center" align="start" flex={1}>

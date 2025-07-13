@@ -1,3 +1,5 @@
+import { FC } from 'react';
+
 import type { FormProps } from 'antd';
 import { Button, Form, Input, message } from 'antd';
 
@@ -8,7 +10,7 @@ type FieldType = {
   newPassword: string;
 };
 
-const PasswordForm: React.FC = () => {
+const PasswordForm: FC = () => {
   const [putUserPassword, { isLoading }] = usePutUserPasswordMutation();
   const [form] = Form.useForm();
 

@@ -1,3 +1,5 @@
+import { FC } from 'react';
+
 import { Avatar, Button, Flex, message, Typography, Upload } from 'antd';
 import type { UploadProps } from 'antd';
 import { UploadOutlined, UserOutlined } from '@ant-design/icons';
@@ -20,7 +22,7 @@ const validateAvatarFile = (file: File): boolean => {
   return true;
 };
 
-const AvatarForm: React.FC = () => {
+const AvatarForm: FC = () => {
   const { data: userData, isLoading } = useGetAuthUserQuery();
   const [putUserProfileAvatar, { isLoading: isUpdating }] = usePutUserProfileAvatarMutation();
 

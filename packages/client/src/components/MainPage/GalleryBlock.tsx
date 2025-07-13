@@ -12,7 +12,7 @@ const GalleryBlock = () => {
   const description = 'Посмотри на наш впечатляющий игровой процесс';
 
   return (
-    <SectionBlock className="gallery-card">
+    <SectionBlock>
       <SectionHeader title={title} description={description} />
       <Row gutter={[16, 16]} justify="center">
         {galleryImages.map((image, index) => {

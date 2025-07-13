@@ -12,7 +12,7 @@ const ReviewBlock = () => {
   const title = 'Отзывы игроков';
   const description = 'Узнай, что говорят наши игроки';
   return (
-    <SectionBlock className="reviews-block">
+    <SectionBlock>
       <SectionHeader title={title} description={description} />
       <Row gutter={[32, 32]} align="stretch" className={styles.reviewBlockRow}>
         {userReviews.map((review) => (

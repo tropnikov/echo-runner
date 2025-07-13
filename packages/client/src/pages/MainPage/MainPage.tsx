@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 
 import { Space } from 'antd';
 
@@ -7,7 +7,7 @@ import GalleryBlock from '@/components/MainPage/GalleryBlock';
 import HeroBlock from '@/components/MainPage/HeroBlock';
 import ReviewBlock from '@/components/MainPage/ReviewBlock';
 
-const MainPage: React.FC = () => {
+const MainPage: FC = () => {
   return (
     <Space direction={'vertical'} size={'large'} style={{ width: '100%' }}>
       <HeroBlock />

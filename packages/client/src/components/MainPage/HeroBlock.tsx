@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { Button, Col, Row } from 'antd';
 import { PlayCircleFilled } from '@ant-design/icons';
@@ -21,22 +21,20 @@ const HeroBlock = () => {
   };
 
   return (
-    <div className="hero-header">
-      <Row gutter={16} align="middle">
-        <Col xs={{ span: 24, order: 2 }} md={{ span: 12, order: 1 }}>
-          <h1 style={{ fontSize: '80px' }}>{title}</h1>
-          <p className={styles.heroHeaderDescription}>{description}</p>
-          <Button type="primary" size="large" icon={<PlayCircleFilled />} onClick={handleStartClick}>
-            Начать играть
-          </Button>
-        </Col>
-        <Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 2 }}>
-          <div className={styles.heroHeaderCoverWrapper}>
-            <img src={cover} alt="Обложка HeroBlock" className={styles.heroHeaderCoverImage} />
-          </div>
-        </Col>
-      </Row>
-    </div>
+    <Row gutter={16} align="middle">
+      <Col xs={{ span: 24, order: 2 }} md={{ span: 12, order: 1 }}>
+        <h1 style={{ fontSize: '80px' }}>{title}</h1>
+        <p className={styles.heroHeaderDescription}>{description}</p>
+        <Button type="primary" size="large" icon={<PlayCircleFilled />} onClick={handleStartClick}>
+          Начать играть
+        </Button>
+      </Col>
+      <Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 2 }}>
+        <div className={styles.heroHeaderCoverWrapper}>
+          <img src={cover} alt="Обложка HeroBlock" className={styles.heroHeaderCoverImage} />
+        </div>
+      </Col>
+    </Row>
   );
 };
 

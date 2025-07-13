@@ -1,3 +1,5 @@
+import { FC } from 'react';
+
 import { Avatar, Card, Rate } from 'antd';
 
 import styles from './ReviewCard.module.css';
@@ -15,7 +17,7 @@ interface ReviewCardProps {
   review: UserReview;
 }
 
-const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
+const ReviewCard: FC<ReviewCardProps> = ({ review }) => {
   return (
     <Card className={styles.reviewCard}>
       <Card.Meta avatar={<Avatar src={review.avatar} size={'large'} />} title={review.name} description={review.date} />

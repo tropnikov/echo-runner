@@ -1,10 +1,10 @@
-import React, { ReactElement } from 'react';
+import { cloneElement, FC, ReactElement } from 'react';
 
 import styles from './FeatureCard.module.css';
 
 export interface FeatureInfo {
   text: string;
-  icon: ReactElement<any, any>;
+  icon: ReactElement;
   description: string;
 }
 
@@ -12,9 +12,9 @@ interface FeatureCardProps {
   feature: FeatureInfo;
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => (
+const FeatureCard: FC<FeatureCardProps> = ({ feature }) => (
   <div>
-    <div className={styles.featureCardIcon}>{React.cloneElement(feature.icon)}</div>
+    <div className={styles.featureCardIcon}>{cloneElement(feature.icon)}</div>
     <div>
       <h3>{feature.text}</h3>
       <p>{feature.description}</p>

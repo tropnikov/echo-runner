@@ -1,3 +1,5 @@
+import { FC } from 'react';
+
 import { Col, Row } from 'antd';
 
 import styles from './SectionHeader.module.css';
@@ -7,7 +9,7 @@ interface SectionHeaderProps {
   description: string;
 }
 
-const SectionHeader: React.FC<SectionHeaderProps> = ({ title, description }) => (
+const SectionHeader: FC<SectionHeaderProps> = ({ title, description }) => (
   <Row justify="center">
     <Col className={styles.sectionHeaderCol}>
       <h1>{title}</h1>

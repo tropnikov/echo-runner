@@ -13,7 +13,7 @@ const FeatureBlock = () => {
   const description = 'Узнай, что делает наш раннер уникальным';
 
   return (
-    <SectionBlock className="feature-block">
+    <SectionBlock>
       <SectionHeader title={title} description={description} />
       <Row gutter={[16, 16]} justify="center" align="stretch">
         {features.map((feature, index) => (

@@ -1,10 +1,8 @@
 import { useNavigate } from 'react-router';
 
-import { Button, Typography } from 'antd';
+import { Button } from 'antd';
 
 import styles from './ErrorPage.module.css';
-
-const { Title, Paragraph } = Typography;
 
 export default function ErrorPage({
   title,

@@ -1,5 +1,13 @@
+import { useNavigate } from 'react-router';
+
 import type { FormProps } from 'antd';
-import { Button, Divider, Flex, Form, Input, Typography } from 'antd';
+import { Button, Card, Flex, Form, Input, Typography } from 'antd';
+
+import { usePostAuthSigninMutation } from '@/api/generated';
+import { appRoutes } from '@/constants/appRoutes';
+import { useNotification } from '@/hooks/useNotification';
+
+import styles from './Login.module.css';
 
 type FieldType = {
   login: string;
@@ -7,15 +15,33 @@ type FieldType = {
 };
 
 const Login = () => {
+  const navigate = useNavigate();
+  const notification = useNotification();
+
+  const [auth, { isLoading }] = usePostAuthSigninMutation();
+
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    console.log(values);
+    auth({
+      signInRequest: values,
+    })
+      .unwrap()
+      .then(() => {
+        notification.success({
+          message: 'Вход выполнен успешно',
+        });
+        navigate(`/${appRoutes.GAME}`);
+      })
+      .catch((error) => {
+        console.log(error);
+        notification.error({
+          message: error.data?.reason ?? 'Произошла ошибка',
+        });
+      });
   };
 
   return (
-    <>
-      <Flex vertical justify="center" align="start" flex={1}>
-        <Typography.Title level={1}>Вход</Typography.Title>
-        <Divider />
+    <Flex vertical justify="center" align="center" flex={1} className={styles.wrapper}>
+      <Card title={<Typography.Title level={1}>Вход</Typography.Title>} className={styles.card}>
         <Form
           name="basic"
           style={{ maxWidth: 400, width: '100%', flex: 1, alignSelf: 'center', marginTop: 16 }}
@@ -32,13 +58,13 @@ const Login = () => {
           </Form.Item>
 
           <Form.Item label={null}>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={isLoading}>
               Войти
             </Button>
           </Form.Item>
         </Form>
-      </Flex>
-    </>
+      </Card>
+    </Flex>
   );
 };
 

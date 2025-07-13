@@ -1,5 +1,7 @@
 import { createBrowserRouter } from 'react-router';
 
+import NotFound from '@/pages/NotFound/NotFound';
+
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
 import Login from './pages/Login/Login';
@@ -23,7 +25,7 @@ export default createBrowserRouter([
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
       { path: appRoutes.GAME, element: <div>Игра</div> },
       { path: appRoutes.ERROR, element: <div>Ошибка 500</div> },
-      { path: appRoutes.NOT_FOUND, element: <div>Страница не найдена</div> },
+      { path: appRoutes.NOT_FOUND, element: <NotFound /> },
     ],
   },
 ]);

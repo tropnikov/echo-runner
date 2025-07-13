@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router';
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
 import Login from './pages/Login/Login';
-import ProfilePage from './pages/ProfilePage';
+import ProfilePage from './pages/ProfilePage/ProfilePage';
 
 export default createBrowserRouter([
   {

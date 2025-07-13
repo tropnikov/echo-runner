@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router';
 
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
+import Game from './pages/Game/Game';
 import Login from './pages/Login/Login';
 import MainPage from './pages/MainPage/MainPage';
 
@@ -22,7 +23,10 @@ export default createBrowserRouter([
       { path: appRoutes.SIGNUP, element: <div>Регистрация</div> },
       { path: appRoutes.PROFILE, element: <div>Страница пользователя</div> },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
-      { path: appRoutes.GAME, element: <div>Игра</div> },
+      {
+        path: appRoutes.GAME,
+        Component: Game,
+      },
       { path: appRoutes.ERROR, element: <div>Ошибка 500</div> },
       { path: appRoutes.NOT_FOUND, element: <div>Страница не найдена</div> },
     ],

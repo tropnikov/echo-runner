@@ -1,9 +1,14 @@
+import { useEffect, useMemo } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 
 import { Button, Layout, Menu, Space, theme } from 'antd/lib';
-import { LoginOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
+import { LoginOutlined, LogoutOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 
-import { appRoutes } from '@/constants/appRoutes';
+import { useGetAuthUserQuery } from '@/api/generated';
+import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
+import { useAuth } from '@/hooks/useAuth';
+import { setIsAuthorised, setUser } from '@/redux/slices/auth';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import styles from './BaseLayout.module.css';
 
@@ -12,11 +17,6 @@ const { Header, Content, Footer } = Layout;
 const { useToken } = theme;
 
 const menuItems = [
-  {
-    key: appRoutes.MAIN,
-    path: appRoutes.MAIN,
-    label: <NavLink to={appRoutes.MAIN}>Главная</NavLink>,
-  },
   {
     key: appRoutes.GAME,
     path: appRoutes.GAME,
@@ -41,18 +41,44 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+  const { logout } = useAuth();
+  const { data: userData, isError: isUserDataError } = useGetAuthUserQuery();
 
-  const handleAuthClick = (action: string) => {
-    navigate(action);
-  };
-
-  const getCurrentKey = () => {
+  const currentSelectedKey = useMemo(() => {
     const pathname = location.pathname;
     const currentPath = pathname === '/' ? '/' : pathname.replace(/^\//, '');
 
     const routeKey = Object.values(appRoutes).find((route) => route === currentPath);
 
     return routeKey ? [routeKey] : [];
+  }, [location.pathname]);
+
+  const currentMenuItems = useMemo(() => {
+    return menuItems.filter((item) => {
+      const isProtected = protectedRoutes.includes(item.path);
+      return user ? isProtected : !isProtected;
+    });
+  }, [user]);
+
+  useEffect(() => {
+    if (userData) {
+      dispatch(setUser(userData));
+    } else if (isUserDataError) {
+      dispatch(setIsAuthorised(false));
+      handleLogout();
+    }
+  }, [dispatch, userData, isUserDataError]);
+
+  const handleAuthClick = (action: string) => {
+    navigate(`/${action}`);
+  };
+
+  const handleLogout = () => {
+    logout().then(() => {
+      navigate(appRoutes.MAIN);
+    });
   };
 
   return (
@@ -60,37 +86,49 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
       <Header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerContentLeft}>
-            <div className={styles.headerLogo}>Echo Runner</div>
+            <div className={styles.headerLogo}>
+              <NavLink to={appRoutes.MAIN} style={{ color: 'white' }}>
+                Echo Runner
+              </NavLink>
+            </div>
             <Menu
               theme="dark"
               mode="horizontal"
-              selectedKeys={getCurrentKey()}
-              items={menuItems}
+              selectedKeys={currentSelectedKey}
+              items={currentMenuItems}
               style={{ flex: 1, minWidth: 0, border: 'none' }}
             />
           </div>
 
           <Space className={styles.headerContentRight}>
-            {/* когда авторизован показывать профиль, когда нет – показывать кнопки входа и регистрации */}
-            <Button
-              type="text"
-              icon={<UserOutlined />}
-              style={{ color: 'white' }}
-              onClick={() => handleAuthClick(appRoutes.PROFILE)}>
-              Профиль
-            </Button>
-
-            {/* когда авторизован показывать профиль, когда нет – показывать кнопки входа и регистрации */}
-            <Button
-              type="text"
-              icon={<LoginOutlined />}
-              style={{ color: 'white' }}
-              onClick={() => handleAuthClick(appRoutes.SIGNIN)}>
-              Вход
-            </Button>
-            <Button type="primary" icon={<UserAddOutlined />} onClick={() => handleAuthClick(appRoutes.SIGNUP)}>
-              Регистрация
-            </Button>
+            {user ? (
+              <>
+                <Button
+                  variant="filled"
+                  type="text"
+                  icon={<UserOutlined />}
+                  style={{ color: 'white' }}
+                  onClick={() => handleAuthClick(appRoutes.PROFILE)}>
+                  {user.first_name}
+                </Button>
+                <Button variant="solid" color="danger" icon={<LogoutOutlined />} onClick={handleLogout}>
+                  Выход
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  type="text"
+                  icon={<LoginOutlined />}
+                  style={{ color: 'white' }}
+                  onClick={() => handleAuthClick(appRoutes.SIGNIN)}>
+                  Вход
+                </Button>
+                <Button type="primary" icon={<UserAddOutlined />} onClick={() => handleAuthClick(appRoutes.SIGNUP)}>
+                  Регистрация
+                </Button>
+              </>
+            )}
           </Space>
         </div>
       </Header>

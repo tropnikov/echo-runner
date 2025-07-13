@@ -1,11 +1,13 @@
-import { useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 
 import type { FormProps } from 'antd';
 import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 
-import { usePostAuthSigninMutation } from '@/api/generated';
+import { useLazyGetAuthUserQuery, usePostAuthSigninMutation } from '@/api/generated';
 import { appRoutes } from '@/constants/appRoutes';
 import { useNotification } from '@/hooks/useNotification';
+import { setUser } from '@/redux/slices/auth';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import styles from './Login.module.css';
 
@@ -17,8 +19,11 @@ type FieldType = {
 const Login = () => {
   const navigate = useNavigate();
   const notification = useNotification();
+  const dispatch = useAppDispatch();
+  const { isAuthorised } = useAppSelector((state) => state.auth);
 
   const [auth, { isLoading }] = usePostAuthSigninMutation();
+  const [getAuthUser] = useLazyGetAuthUserQuery();
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     auth({
@@ -31,6 +36,13 @@ const Login = () => {
         });
         navigate(`/${appRoutes.GAME}`);
       })
+      .then(() => {
+        getAuthUser()
+          .unwrap()
+          .then((userData) => {
+            dispatch(setUser(userData));
+          });
+      })
       .catch((error) => {
         console.log(error);
         notification.error({
@@ -38,6 +50,10 @@ const Login = () => {
         });
       });
   };
+
+  if (isAuthorised) {
+    return <Navigate to={`/${appRoutes.GAME}`} replace />;
+  }
 
   return (
     <Flex vertical justify="center" align="center" flex={1} className={styles.wrapper}>

@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { createBrowserRouter } from 'react-router';
 
 import NotFound from '@/pages/NotFound/NotFound';

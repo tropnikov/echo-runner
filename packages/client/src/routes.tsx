@@ -25,9 +25,9 @@ export default createBrowserRouter([
       { path: appRoutes.SIGNUP, element: <div>Регистрация</div> },
       { path: appRoutes.PROFILE, element: <div>Страница пользователя</div> },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
-      { path: appRoutes.GAME, element: <Game /> },
-      { path: appRoutes.ERROR, element: <ServerError /> },
-      { path: appRoutes.NOT_FOUND, element: <NotFound /> },
+      { path: appRoutes.GAME, Component: Game },
+      { path: appRoutes.ERROR, Component: ServerError },
+      { path: appRoutes.NOT_FOUND, Component: NotFound },
     ],
   },
 ]);

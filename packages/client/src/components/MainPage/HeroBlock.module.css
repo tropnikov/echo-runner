@@ -1,0 +1,23 @@
+.heroHeaderCoverWrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.heroHeaderCoverImage {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+.heroHeaderDescription {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #555;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}

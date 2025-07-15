@@ -1,6 +1,6 @@
-import React from 'react';
+import { FC } from 'react';
 
-import { Button, Card, Form, Input } from 'antd';
+import { Button, Card, Form, Input, Typography } from 'antd';
 
 import styles from './registration.module.css';
 
@@ -14,7 +14,7 @@ type FormData = {
   confirm?: string;
 };
 
-const Registration: React.FC = () => {
+const Registration: FC = () => {
   const [form] = Form.useForm<FormData>();
 
   const handleFinish = (values: FormData) => {
@@ -27,7 +27,8 @@ const Registration: React.FC = () => {
 
   return (
     <div className={styles.wrapper}>
-      <Card title="Регистрация" className={styles.card}>
+      <Card className={styles.card}>
+        <Typography.Title level={1}>Регистрация</Typography.Title>
         <Form form={form} layout="vertical" onFinish={handleFinish} onFinishFailed={handleFinishFailed}>
           <Form.Item name="first_name" label="Имя" rules={[{ required: true, message: 'Введите имя' }]}>
             <Input />

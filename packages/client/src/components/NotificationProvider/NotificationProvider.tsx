@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode } from 'react';
+import { createContext, FC, ReactNode } from 'react';
 
 import { notification } from 'antd';
 
@@ -6,7 +6,7 @@ import { INotificationContext, NotificationConfig } from '@/types/Notification';
 
 const NotificationContext = createContext<INotificationContext | undefined>(undefined);
 
-const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [api, contextHolder] = notification.useNotification();
 
   const defaultConfig: Partial<NotificationConfig> = {

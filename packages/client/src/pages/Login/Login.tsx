@@ -60,7 +60,7 @@ const Login = () => {
       <Card title={<Typography.Title level={1}>Вход</Typography.Title>} className={styles.card}>
         <Form
           name="basic"
-          style={{ maxWidth: 400, width: '100%', flex: 1, alignSelf: 'center', marginTop: 16 }}
+          className={styles.cardForm}
           initialValues={{ remember: true }}
           onFinish={onFinish}
           autoComplete="off"

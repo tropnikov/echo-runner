@@ -9,3 +9,11 @@
 .card {
   width: 400px;
 }
+
+.cardForm {
+  max-width: 400px;
+  width: 100%;
+  flex: 1;
+  align-self: center;
+  margin-top: 16px;
+}

@@ -67,7 +67,10 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
       dispatch(setUser(userData));
     } else if (isUserDataError) {
       dispatch(setIsAuthorised(false));
-      handleLogout();
+      const currentPath = location.pathname.replace(/^\//, '');
+      if (protectedRoutes.includes(currentPath)) {
+        navigate(appRoutes.MAIN);
+      }
     }
   }, [dispatch, userData, isUserDataError]);
 

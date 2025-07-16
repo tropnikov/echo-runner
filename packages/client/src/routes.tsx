@@ -2,6 +2,8 @@ import { createBrowserRouter } from 'react-router';
 
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
+import Topic from './pages/Forum/Topic';
+import TopicList from './pages/Forum/TopicList';
 import Login from './pages/Login/Login';
 import Registration from './pages/Registration/Registration';
 import MainPage from './pages/MainPage/MainPage';
@@ -15,8 +17,8 @@ export default createBrowserRouter([
       {
         path: appRoutes.TOPICS,
         children: [
-          { index: true, element: <div>Форум</div> },
-          { path: appRoutes.TOPIC, element: <div>Тема форума</div> },
+          { index: true, Component: TopicList },
+          { path: appRoutes.TOPIC, Component: Topic },
         ],
       },
       { path: appRoutes.SIGNIN, Component: Login },

@@ -1,11 +1,10 @@
 import { createBrowserRouter } from 'react-router';
 
-import NotFound from '@/pages/NotFound/NotFound';
-import ServerError from '@/pages/ServerError/ServerError';
-
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
 import Login from './pages/Login/Login';
+import NotFound from './pages/NotFound/NotFound';
+import ServerError from './pages/ServerError/ServerError';
 
 export default createBrowserRouter([
   {

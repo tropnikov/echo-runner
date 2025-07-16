@@ -4,13 +4,14 @@ import App from './App';
 import { appRoutes } from './constants/appRoutes';
 import Login from './pages/Login/Login';
 import Registration from './pages/Registration/Registration';
+import MainPage from './pages/MainPage/MainPage';
 
 export default createBrowserRouter([
   {
     path: appRoutes.MAIN,
     Component: App,
     children: [
-      { index: true, element: <div>Главная страница</div> },
+      { index: true, Component: MainPage },
       {
         path: appRoutes.TOPICS,
         children: [

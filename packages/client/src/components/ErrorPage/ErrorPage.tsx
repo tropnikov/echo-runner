@@ -2,17 +2,11 @@ import { useNavigate } from 'react-router';
 
 import { Button } from 'antd';
 
+import { ErrorPageProps } from './types';
+
 import styles from './ErrorPage.module.css';
 
-export default function ErrorPage({
-  title,
-  text,
-  withBackButton = false,
-}: {
-  title: string;
-  text: string;
-  withBackButton?: boolean;
-}) {
+function ErrorPage({ title, text, withBackButton = false }: ErrorPageProps) {
   const navigate = useNavigate();
 
   return (
@@ -27,3 +21,5 @@ export default function ErrorPage({
     </div>
   );
 }
+
+export default ErrorPage;

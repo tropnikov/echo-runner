@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 
 import { Button, Flex, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
@@ -6,7 +7,7 @@ import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
 import TopicModal from '../../components/Forum/TopicModal';
 
-const { Text, Title, Link } = Typography;
+const { Text, Title } = Typography;
 
 interface DataType {
   key: string;
@@ -33,7 +34,7 @@ const columns: TableProps<DataType>['columns'] = [
     dataIndex: 'topic',
     render: (topic) => (
       <Flex vertical>
-        <Link href={`topics/${topic.id}`}>
+        <Link to={`${topic.id}`}>
           <Title level={4}>{topic.title}</Title>
         </Link>
 
@@ -107,7 +108,7 @@ function TopicList() {
   };
 
   return (
-    <Flex vertical style={{ margin: '100px' }}>
+    <Flex vertical>
       <Title level={2}>Форум игры</Title>
       <Table<DataType>
         columns={columns}

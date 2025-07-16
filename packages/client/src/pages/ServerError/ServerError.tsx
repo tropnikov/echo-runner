@@ -1,5 +1,7 @@
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
 
-export default function ServerError() {
+function ServerError() {
   return <ErrorPage title="500" text="Ведутся технические работы" />;
 }
+
+export default ServerError;

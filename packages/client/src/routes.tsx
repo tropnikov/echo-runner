@@ -4,6 +4,7 @@ import App from './App';
 import { appRoutes } from './constants/appRoutes';
 import Game from './pages/Game/Game';
 import Login from './pages/Login/Login';
+import Registration from './pages/Registration/Registration';
 import MainPage from './pages/MainPage/MainPage';
 
 export default createBrowserRouter([
@@ -20,7 +21,7 @@ export default createBrowserRouter([
         ],
       },
       { path: appRoutes.SIGNIN, Component: Login },
-      { path: appRoutes.SIGNUP, element: <div>Регистрация</div> },
+      { path: appRoutes.SIGNUP, Component: Registration },
       { path: appRoutes.PROFILE, element: <div>Страница пользователя</div> },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
       {

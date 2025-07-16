@@ -1,8 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 
 import Game from '@/pages/Game/Game';
-import NotFound from '@/pages/NotFound/NotFound';
-import ServerError from '@/pages/ServerError/ServerError';
 
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
@@ -26,8 +24,8 @@ export default createBrowserRouter([
       { path: appRoutes.PROFILE, element: <div>Страница пользователя</div> },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
       { path: appRoutes.GAME, Component: Game },
-      { path: appRoutes.ERROR, Component: ServerError },
-      { path: appRoutes.NOT_FOUND, Component: NotFound },
+      { path: appRoutes.ERROR, element: <div>Ошибка 500</div> },
+      { path: appRoutes.NOT_FOUND, element: <div>Страница не найдена</div> },
     ],
   },
 ]);

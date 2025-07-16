@@ -1,14 +1,15 @@
 import PlayButton from '@/components/PlayButton/PlayButton';
+import { PlayButtonIcon } from '@/types/layout';
 
 import styles from './StartGameView.module.css';
 
-export default function StartGameView({
+function StartGameView({
   text,
   ButtonIcon,
   onButtonClick,
 }: {
   text: string;
-  ButtonIcon: React.ComponentType<{ style?: React.CSSProperties }>;
+  ButtonIcon: PlayButtonIcon;
   onButtonClick: () => void;
 }) {
   return (
@@ -18,3 +19,5 @@ export default function StartGameView({
     </div>
   );
 }
+
+export default StartGameView;

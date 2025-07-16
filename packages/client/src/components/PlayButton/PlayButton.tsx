@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-export default function PlayButton({
-  onClick,
-  StartIcon,
-}: {
-  onClick: () => void;
-  StartIcon: React.ComponentType<{ style?: React.CSSProperties }>;
-}) {
+import { PlayButtonIcon } from '@/types/layout';
+
+function PlayButton({ onClick, StartIcon }: { onClick: () => void; StartIcon: PlayButtonIcon }) {
   const [isCounting, setIsCounting] = useState(false);
   const [count, setCount] = useState(3);
 
@@ -71,3 +67,5 @@ export default function PlayButton({
     />
   );
 }
+
+export default PlayButton;

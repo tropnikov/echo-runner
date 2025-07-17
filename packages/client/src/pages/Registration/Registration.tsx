@@ -21,7 +21,7 @@ const Registration: FC = () => {
     console.log('Данные регистрации:', values);
   };
 
-  const handleFinishFailed = (errorInfo: any) => {
+  const handleFinishFailed = (errorInfo: unknown) => {
     console.error('Ошибка валидации:', errorInfo);
   };
 

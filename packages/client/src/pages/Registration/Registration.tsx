@@ -2,6 +2,8 @@ import { FC } from 'react';
 
 import { Button, Card, Form, Input, Typography } from 'antd';
 
+import { rules } from '../../helpers/validators';
+
 import styles from './registration.module.css';
 
 type FormData = {
@@ -30,23 +32,23 @@ const Registration: FC = () => {
       <Card className={styles.card}>
         <Typography.Title level={1}>Регистрация</Typography.Title>
         <Form form={form} layout="vertical" onFinish={handleFinish} onFinishFailed={handleFinishFailed}>
-          <Form.Item name="first_name" label="Имя" rules={[{ required: true, message: 'Введите имя' }]}>
+          <Form.Item name="first_name" label="Имя" rules={rules.first_name}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="second_name" label="Фамилия" rules={[{ required: true, message: 'Введите фамилию' }]}>
+          <Form.Item name="second_name" label="Фамилия" rules={rules.second_name}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="login" label="Логин" rules={[{ required: true, message: 'Введите логин' }]}>
+          <Form.Item name="login" label="Логин" rules={rules.login}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email', message: 'Введите email' }]}>
+          <Form.Item name="email" label="Email" rules={rules.email}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="password" label="Пароль" rules={[{ required: true, message: 'Введите пароль' }]}>
+          <Form.Item name="password" label="Пароль" rules={rules.password}>
             <Input.Password />
           </Form.Item>
 
@@ -54,7 +56,6 @@ const Registration: FC = () => {
             name="confirm"
             label="Подтвердите пароль"
             dependencies={['password']}
-            hasFeedback
             rules={[
               { required: true, message: 'Подтвердите пароль' },
               ({ getFieldValue }) => ({
@@ -69,13 +70,7 @@ const Registration: FC = () => {
             <Input.Password />
           </Form.Item>
 
-          <Form.Item
-            name="phone"
-            label="Телефон"
-            rules={[
-              { required: true, message: 'Введите телефон' },
-              { pattern: /^\+?\d{11,15}$/, message: 'Введите номер в формате +79123456789' },
-            ]}>
+          <Form.Item name="phone" label="Телефон" rules={rules.phone}>
             <Input />
           </Form.Item>
 

@@ -1,6 +1,8 @@
 import type { FormProps } from 'antd';
 import { Button, Divider, Flex, Form, Input, Typography } from 'antd';
 
+import { rules } from '../../helpers/validators';
+
 type FieldType = {
   login: string;
   password: string;
@@ -23,11 +25,11 @@ const Login = () => {
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical">
-          <Form.Item<FieldType> label="Логин" name="login" rules={[{ required: true, message: 'Введите логин' }]}>
+          <Form.Item<FieldType> label="Логин" name="login" rules={rules.login}>
             <Input />
           </Form.Item>
 
-          <Form.Item<FieldType> label="Пароль" name="password" rules={[{ required: true, message: 'Введите пароль' }]}>
+          <Form.Item<FieldType> label="Пароль" name="password" rules={rules.password}>
             <Input.Password />
           </Form.Item>
 

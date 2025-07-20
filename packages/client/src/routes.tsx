@@ -8,7 +8,9 @@ import Topic from './pages/Forum/Topic';
 import TopicList from './pages/Forum/TopicList';
 import Login from './pages/Login/Login';
 import MainPage from './pages/MainPage/MainPage';
+import NotFound from './pages/NotFound/NotFound';
 import Registration from './pages/Registration/Registration';
+import ServerError from './pages/ServerError/ServerError';
 
 export default createBrowserRouter([
   {
@@ -28,8 +30,8 @@ export default createBrowserRouter([
       { path: appRoutes.PROFILE, element: <div>Страница пользователя</div> },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
       { path: appRoutes.GAME, Component: Game },
-      { path: appRoutes.ERROR, element: <div>Ошибка 500</div> },
-      { path: appRoutes.NOT_FOUND, element: <div>Страница не найдена</div> },
+      { path: appRoutes.ERROR, Component: ServerError },
+      { path: appRoutes.NOT_FOUND, Component: NotFound },
     ],
   },
 ]);

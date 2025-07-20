@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import { CaretRightOutlined, PauseCircleOutlined, PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons';
+import { PauseCircleOutlined, PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 
 import StartGameView from '@/components/StartGameView/StartGameView';
 
@@ -20,7 +20,7 @@ function GameView({
 }: GameViewProps) {
   return (
     <>
-      {!isStarted && <StartGameView text="Игра не начата" ButtonIcon={CaretRightOutlined} onButtonClick={onStart} />}
+      {!isStarted && <StartGameView text="Игра не начата" ButtonIcon={PlayCircleOutlined} onButtonClick={onStart} />}
       {damage >= maxDamage && (
         <StartGameView
           text={`Игра окончена, вы набрали очков: ${score}`}

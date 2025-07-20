@@ -5,6 +5,8 @@ import { LoadingOutlined } from '@ant-design/icons';
 
 import { PlayButtonIcon } from '@/types/layout';
 
+import styles from './PlayButton.module.css';
+
 function PlayButton({ onClick, StartIcon }: { onClick: () => void; StartIcon: PlayButtonIcon }) {
   const [isCounting, setIsCounting] = useState(false);
   const [count, setCount] = useState(3);
@@ -30,40 +32,17 @@ function PlayButton({ onClick, StartIcon }: { onClick: () => void; StartIcon: Pl
       size="large"
       icon={
         isCounting ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <LoadingOutlined
-              style={{
-                fontSize: 64,
-                position: 'absolute',
-              }}
-            />
-            <span
-              style={{
-                fontSize: 32,
-                fontWeight: 'bold',
-              }}>
-              {count}
-            </span>
+          <div className={styles.loadContainer}>
+            <LoadingOutlined style={{ fontSize: 64, position: 'absolute' }} />
+            <span className={styles.countTimer}>{count}</span>
           </div>
         ) : (
-          <StartIcon
-            style={{
-              fontSize: 24,
-            }}
-          />
+          <StartIcon style={{ fontSize: 32 }} />
         )
       }
       onClick={() => setIsCounting(true)}
       disabled={isCounting}
-      style={{
-        width: 64,
-        height: 64,
-      }}
+      style={{ width: 64, height: 64 }}
     />
   );
 }

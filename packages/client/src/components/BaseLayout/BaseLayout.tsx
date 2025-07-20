@@ -4,9 +4,12 @@ import { NavLink, useLocation, useNavigate } from 'react-router';
 import { Button, Layout, Menu, Space, theme } from 'antd/lib';
 import { LoginOutlined, LogoutOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 
+import { useAuth } from '@/components/AuthProvider/AuthProvider';
+import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
+import { isErrorWithReason } from '@/types/errors';
+
 import { useGetAuthUserQuery } from '@/api/generated';
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
-import { useAuth } from '@/hooks/useAuth';
 import { setIsAuthorised, setUser } from '@/redux/slices/auth';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -42,6 +45,7 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const notification = useNotification();
   const { user } = useAppSelector((state) => state.auth);
   const { logout } = useAuth();
   const { data: userData, isError: isUserDataError } = useGetAuthUserQuery();
@@ -72,16 +76,22 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
         navigate(appRoutes.MAIN);
       }
     }
-  }, [dispatch, userData, isUserDataError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, userData, isUserDataError, navigate]);
 
   const handleAuthClick = (action: string) => {
     navigate(`/${action}`);
   };
 
-  const handleLogout = () => {
-    logout().then(() => {
+  const handleLogout = async () => {
+    try {
+      await logout();
       navigate(appRoutes.MAIN);
-    });
+    } catch (error) {
+      notification.error({
+        message: isErrorWithReason(error) ? error.data.reason : 'Произошла ошибка при выходе',
+      });
+    }
   };
 
   return (

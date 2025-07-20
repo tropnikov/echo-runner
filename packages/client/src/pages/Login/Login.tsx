@@ -3,9 +3,10 @@ import { Navigate, useNavigate } from 'react-router';
 import type { FormProps } from 'antd';
 import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 
+import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
+
 import { useLazyGetAuthUserQuery, usePostAuthSigninMutation } from '@/api/generated';
 import { appRoutes } from '@/constants/appRoutes';
-import { useNotification } from '@/hooks/useNotification';
 import { setUser } from '@/redux/slices/auth';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -31,20 +32,20 @@ const Login = () => {
     })
       .unwrap()
       .then(() => {
+        return getAuthUser().unwrap();
+      })
+      .then((userData) => {
+        dispatch(setUser(userData));
+
         notification.success({
           message: 'Вход выполнен успешно',
         });
+
         navigate(`/${appRoutes.GAME}`);
       })
-      .then(() => {
-        getAuthUser()
-          .unwrap()
-          .then((userData) => {
-            dispatch(setUser(userData));
-          });
-      })
       .catch((error) => {
-        console.log(error);
+        console.log('Login failed:', error);
+
         notification.error({
           message: error.data?.reason ?? 'Произошла ошибка',
         });

@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode } from 'react';
+import { createContext, FC, ReactNode, useContext } from 'react';
 
 import { notification } from 'antd';
 
@@ -18,9 +18,9 @@ const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const showNotification = (type: NotificationType, config: NotificationConfig) => {
     api[type]({
+      ...defaultConfig,
       message: config.message,
       description: config.description,
-      ...defaultConfig,
     });
   };
 
@@ -44,5 +44,14 @@ const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
+const useNotification = (): INotificationContext => {
+  const context = useContext(NotificationContext);
+
+  if (!context) {
+    throw new Error('useNotification must be used within a NotificationProvider');
+  }
+  return context;
+};
+
+export { NotificationContext, useNotification };
 export default NotificationProvider;
-export { NotificationContext };

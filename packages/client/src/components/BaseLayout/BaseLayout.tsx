@@ -99,8 +99,7 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
         <div
           style={{
             background: colorBgContainer,
-            minHeight: '100%',
-            height: 'calc(100vh - 129.5px)',
+            minHeight: 'calc(100vh - 129.5px)',
             padding: '24px',
             maxWidth: '1440px',
             margin: '0 auto',

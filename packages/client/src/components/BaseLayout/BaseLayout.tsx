@@ -4,14 +4,13 @@ import { NavLink, useLocation, useNavigate } from 'react-router';
 import { Button, Layout, Menu, Space, theme } from 'antd/lib';
 import { LoginOutlined, LogoutOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 
+import { useGetAuthUserQuery } from '@/api/generated';
 import { useAuth } from '@/components/AuthProvider/AuthProvider';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
-import { isErrorWithReason } from '@/types/errors';
-
-import { useGetAuthUserQuery } from '@/api/generated';
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
 import { setIsAuthorised, setUser } from '@/redux/slices/auth';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { isErrorWithReason } from '@/types/errors';
 
 import styles from './BaseLayout.module.css';
 
@@ -154,6 +153,8 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
             padding: '24px',
             maxWidth: '1440px',
             margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
           }}>
           {children}
         </div>

@@ -1,4 +1,5 @@
-import { config } from './config';
+import CoinImage from '../assets/coin.png';
+import { config } from './config/gameConfig';
 import { GameObject } from './GameObject';
 import { ObjectEffectType } from './types';
 
@@ -10,10 +11,15 @@ import { ObjectEffectType } from './types';
 export class Coin extends GameObject {
   private collisionSize: number = config.coins.collisionSize;
 
+  private coinImage: HTMLImageElement;
+
   effectType = ObjectEffectType.Score;
 
   constructor(ctx: CanvasRenderingContext2D) {
     super(ctx);
+
+    this.coinImage = new Image();
+    this.coinImage.src = CoinImage;
   }
 
   private addCoinCollision(x: number) {
@@ -45,8 +51,15 @@ export class Coin extends GameObject {
     this._collisions.forEach((collision) => {
       const invertCollision = this.toCanvasCoords(collision);
 
-      this.ctx.fillStyle = 'gold';
-      this.ctx.fillRect(invertCollision.x, invertCollision.y, invertCollision.width, invertCollision.height);
+      if (this.coinImage.complete) {
+        this.ctx.drawImage(
+          this.coinImage,
+          invertCollision.x,
+          invertCollision.y,
+          invertCollision.width,
+          invertCollision.height,
+        );
+      }
     });
   }
 }

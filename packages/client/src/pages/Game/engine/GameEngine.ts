@@ -1,5 +1,6 @@
-import { config } from './config';
+import { config } from './config/gameConfig';
 import { GameObject } from './GameObject';
+import { ParallaxBackground } from './ParallaxBackground';
 import { Player } from './Player';
 import { Collision, ObjectEffectType } from './types';
 
@@ -16,6 +17,8 @@ export class GameEngine {
   private onScore: () => void;
 
   private gameObjects: GameObject[] = [];
+
+  private parallaxBackground: ParallaxBackground | null = null;
 
   private animationId: number | null = null;
 
@@ -40,6 +43,14 @@ export class GameEngine {
   }
 
   /**
+   * Инициализирует параллакс-фон.
+   */
+  initParallaxBackground(backgroundImage: CanvasImageSource, speedMultiplier = 0.5) {
+    this.parallaxBackground = new ParallaxBackground(this.ctx, backgroundImage, speedMultiplier);
+    return this;
+  }
+
+  /**
    * Основной цикл игрового движка.
    */
   private loop() {
@@ -54,7 +65,8 @@ export class GameEngine {
       this.updateGameSpeed(deltaTime);
       this.clearScene();
 
-      this.renderBackground();
+      this.renderSceneBackground(deltaTime);
+
       this.gameObjects.forEach((obj) => obj.update(deltaTime, this.gameSpeed));
       this.checkCollisions();
       this.gameObjects.forEach((obj) => obj.render());
@@ -147,6 +159,10 @@ export class GameEngine {
    */
   removeAllSceneObjects() {
     this.gameObjects = [];
+    // Сбрасываем позицию параллакс-фона
+    if (this.parallaxBackground) {
+      // ParallaxBackground автоматически сбросится при следующем update
+    }
     return this;
   }
 
@@ -187,6 +203,18 @@ export class GameEngine {
 
         break;
       }
+    }
+  }
+
+  /**
+   * Рендерит фон сцены (параллакс или обычный).
+   */
+  private renderSceneBackground(deltaTime: number) {
+    if (this.parallaxBackground) {
+      this.parallaxBackground.update(deltaTime, this.gameSpeed);
+      this.parallaxBackground.render();
+    } else {
+      this.renderBackground();
     }
   }
 

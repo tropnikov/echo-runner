@@ -29,10 +29,7 @@ export default createBrowserRouter([
       { path: appRoutes.SIGNUP, Component: Registration },
       { path: appRoutes.PROFILE, Component: ProfilePage },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
-      {
-        path: appRoutes.GAME,
-        Component: Game,
-      },
+      { path: appRoutes.GAME, Component: Game },
       { path: appRoutes.ERROR, Component: ServerError },
       { path: appRoutes.NOT_FOUND, Component: NotFound },
     ],

@@ -1,7 +1,5 @@
 import { createBrowserRouter } from 'react-router';
 
-import Game from '@/pages/Game/Game';
-
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
 import Topic from './pages/Forum/Topic';

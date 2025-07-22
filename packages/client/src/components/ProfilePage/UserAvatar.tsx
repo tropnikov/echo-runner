@@ -5,6 +5,8 @@ import { UserOutlined } from '@ant-design/icons';
 
 import { baseUrl } from '@/constants/apiEndpoint';
 
+import styles from './UserAvatar.module.css';
+
 interface UserAvatarProps {
   avatarUrl: string | null | undefined;
   size?: number;
@@ -31,7 +33,7 @@ export const UserAvatar: FC<UserAvatarProps> = ({ avatarUrl, size = 100 }) => {
           />
         }
         icon={<UserOutlined />}
-        style={{ display: avatarLoading ? 'none' : 'block' }}
+        className={avatarLoading ? styles.hidden : ''}
       />
     </>
   );

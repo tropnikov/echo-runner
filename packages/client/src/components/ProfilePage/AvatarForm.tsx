@@ -1,73 +1,77 @@
 import { FC } from 'react';
 
-import { Avatar, Button, Flex, message, Typography, Upload } from 'antd';
+import { Button, Flex, Typography, Upload } from 'antd';
 import type { UploadProps } from 'antd';
-import { UploadOutlined, UserOutlined } from '@ant-design/icons';
+import { UploadOutlined } from '@ant-design/icons';
 
-import { useGetAuthUserQuery, usePutUserProfileAvatarMutation } from '@/api/generated';
+import type { UploadRequestOption } from 'rc-upload/lib/interface';
 
-const validateAvatarFile = (file: File): boolean => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('Можно загружать только JPG/PNG файлы!');
-    return false;
-  }
+import { usePutUserProfileAvatarMutation } from '@/api/generated';
+import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
+import { setUser } from '@/redux/slices/auth';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Изображение должно быть меньше 2MB!');
-    return false;
-  }
-
-  return true;
-};
+import { UserAvatar } from './UserAvatar';
 
 const AvatarForm: FC = () => {
-  const { data: userData, isLoading } = useGetAuthUserQuery();
-  const [putUserProfileAvatar, { isLoading: isUpdating }] = usePutUserProfileAvatarMutation();
+  const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
+  const notification = useNotification();
+  const [putUserProfileAvatar, { isLoading }] = usePutUserProfileAvatarMutation();
 
-  const handleAvatarChange: UploadProps['onChange'] = async (info) => {
-    if (info.file.status === 'uploading') {
-      return;
+  const validateAvatarFile = (file: File): boolean => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      notification.error({ message: 'Можно загружать только JPG/PNG файлы!' });
+      return false;
     }
 
-    if (info.file.status === 'done') {
-      try {
-        const formData = new FormData();
-        formData.append('avatar', info.file.originFileObj as Blob);
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      notification.error({ message: 'Изображение должно быть меньше 2MB!' });
+      return false;
+    }
 
-        await putUserProfileAvatar({
-          body: formData as unknown as { avatar: Blob },
-        }).unwrap();
-        message.success('Аватар успешно обновлен');
-      } catch (error) {
-        message.error('Ошибка при обновлении аватара');
-        console.error('Avatar update error:', error);
-      }
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} ошибка загрузки файла`);
+    return true;
+  };
+
+  const customRequestAvatarUpload = async (options: UploadRequestOption) => {
+    const { file, onSuccess, onError } = options;
+    if (!(file instanceof Blob)) {
+      notification.error({ message: 'Ошибка: файл не является изображением.' });
+      if (onError) onError(new Error('Файл не является изображением.'));
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const response = await putUserProfileAvatar({
+        body: formData as unknown as { avatar: Blob },
+      }).unwrap();
+
+      dispatch(setUser(response));
+      notification.success({ message: 'Аватар успешно обновлен' });
+      if (onSuccess) onSuccess('ok');
+    } catch (error) {
+      notification.error({ message: 'Ошибка при обновлении аватара' });
+      if (onError) onError(error as Error);
     }
   };
 
   const uploadProps: UploadProps = {
     name: 'avatar',
-    onChange: handleAvatarChange,
     beforeUpload: validateAvatarFile,
     showUploadList: false,
-    customRequest: ({ onSuccess }) => {
-      // Отключаем автоматическую загрузку, используем только нашу логику
-      if (onSuccess) {
-        onSuccess('ok');
-      }
-    },
+    customRequest: customRequestAvatarUpload,
   };
 
   return (
     <Flex vertical align="center" style={{ marginBottom: 24, width: '100%' }}>
       <Flex vertical align="center" gap="middle" style={{ marginBottom: 16 }}>
-        <Avatar size={100} src={userData?.avatar} icon={<UserOutlined />} />
+        <UserAvatar avatarUrl={user?.avatar} />
         <Upload {...uploadProps}>
-          <Button icon={<UploadOutlined />} loading={isUpdating} disabled={isLoading}>
+          <Button icon={<UploadOutlined />} loading={isLoading} disabled={isLoading}>
             Обновить аватар
           </Button>
         </Upload>

@@ -4,11 +4,12 @@ import App from './App';
 import { appRoutes } from './constants/appRoutes';
 import Topic from './pages/Forum/Topic';
 import TopicList from './pages/Forum/TopicList';
+import Game from './pages/Game/Game';
 import Login from './pages/Login/Login';
-import NotFound from './pages/NotFound/NotFound';
-import ServerError from './pages/ServerError/ServerError';
-import Registration from './pages/Registration/Registration';
 import MainPage from './pages/MainPage/MainPage';
+import NotFound from './pages/NotFound/NotFound';
+import Registration from './pages/Registration/Registration';
+import ServerError from './pages/ServerError/ServerError';
 
 export default createBrowserRouter([
   {
@@ -27,7 +28,10 @@ export default createBrowserRouter([
       { path: appRoutes.SIGNUP, Component: Registration },
       { path: appRoutes.PROFILE, element: <div>Страница пользователя</div> },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
-      { path: appRoutes.GAME, element: <div>Игра</div> },
+      {
+        path: appRoutes.GAME,
+        Component: Game,
+      },
       { path: appRoutes.ERROR, Component: ServerError },
       { path: appRoutes.NOT_FOUND, Component: NotFound },
     ],

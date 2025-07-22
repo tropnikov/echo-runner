@@ -2,9 +2,15 @@ import { createBrowserRouter } from 'react-router';
 
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
+import Topic from './pages/Forum/Topic';
+import TopicList from './pages/Forum/TopicList';
+import Game from './pages/Game/Game';
 import Login from './pages/Login/Login';
-import ProfilePage from './pages/ProfilePage/ProfilePage';
 import MainPage from './pages/MainPage/MainPage';
+import NotFound from './pages/NotFound/NotFound';
+import ProfilePage from './pages/ProfilePage/ProfilePage';
+import Registration from './pages/Registration/Registration';
+import ServerError from './pages/ServerError/ServerError';
 
 export default createBrowserRouter([
   {
@@ -15,17 +21,20 @@ export default createBrowserRouter([
       {
         path: appRoutes.TOPICS,
         children: [
-          { index: true, element: <div>Форум</div> },
-          { path: appRoutes.TOPIC, element: <div>Тема форума</div> },
+          { index: true, Component: TopicList },
+          { path: appRoutes.TOPIC, Component: Topic },
         ],
       },
       { path: appRoutes.SIGNIN, Component: Login },
-      { path: appRoutes.SIGNUP, element: <div>Регистрация</div> },
+      { path: appRoutes.SIGNUP, Component: Registration },
       { path: appRoutes.PROFILE, Component: ProfilePage },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
-      { path: appRoutes.GAME, element: <div>Игра</div> },
-      { path: appRoutes.ERROR, element: <div>Ошибка 500</div> },
-      { path: appRoutes.NOT_FOUND, element: <div>Страница не найдена</div> },
+      {
+        path: appRoutes.GAME,
+        Component: Game,
+      },
+      { path: appRoutes.ERROR, Component: ServerError },
+      { path: appRoutes.NOT_FOUND, Component: NotFound },
     ],
   },
 ]);

@@ -1,9 +1,10 @@
 import { FC } from 'react';
 
 import type { FormProps } from 'antd';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 
 import { usePutUserPasswordMutation } from '@/api/generated';
+import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 
 type FieldType = {
   oldPassword: string;
@@ -13,6 +14,7 @@ type FieldType = {
 const PasswordForm: FC = () => {
   const [putUserPassword, { isLoading }] = usePutUserPasswordMutation();
   const [form] = Form.useForm();
+  const notification = useNotification();
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
@@ -23,10 +25,10 @@ const PasswordForm: FC = () => {
         },
       }).unwrap();
 
-      message.success('Пароль успешно изменен');
+      notification.success({ message: 'Пароль успешно изменен' });
       form.resetFields();
     } catch (error) {
-      message.error('Ошибка при изменении пароля. Проверьте правильность старого пароля.');
+      notification.error({ message: 'Ошибка при изменении пароля. Проверьте правильность старого пароля.' });
       console.error('Password change error:', error);
     }
   };

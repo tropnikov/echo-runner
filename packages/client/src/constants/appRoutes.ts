@@ -10,3 +10,5 @@ export const appRoutes = {
   ERROR: 'error',
   NOT_FOUND: '*',
 };
+
+export const protectedRoutes = [appRoutes.TOPICS, appRoutes.PROFILE, appRoutes.LEADERBOARD, appRoutes.GAME];

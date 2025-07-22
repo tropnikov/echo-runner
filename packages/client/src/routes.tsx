@@ -8,6 +8,7 @@ import Game from './pages/Game/Game';
 import Login from './pages/Login/Login';
 import MainPage from './pages/MainPage/MainPage';
 import NotFound from './pages/NotFound/NotFound';
+import ProfilePage from './pages/ProfilePage/ProfilePage';
 import Registration from './pages/Registration/Registration';
 import ServerError from './pages/ServerError/ServerError';
 
@@ -26,7 +27,7 @@ export default createBrowserRouter([
       },
       { path: appRoutes.SIGNIN, Component: Login },
       { path: appRoutes.SIGNUP, Component: Registration },
-      { path: appRoutes.PROFILE, element: <div>Страница пользователя</div> },
+      { path: appRoutes.PROFILE, Component: ProfilePage },
       { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
       {
         path: appRoutes.GAME,

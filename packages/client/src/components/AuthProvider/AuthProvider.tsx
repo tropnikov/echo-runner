@@ -1,10 +1,9 @@
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
 
-import { IAuthContext } from '@/types/Auth';
-
 import { usePostAuthLogoutMutation } from '@/api/generated';
 import { resetUser } from '@/redux/slices/auth';
 import { useAppDispatch } from '@/redux/store';
+import { IAuthContext } from '@/types/Auth';
 
 interface IProps {
   children: ReactNode;

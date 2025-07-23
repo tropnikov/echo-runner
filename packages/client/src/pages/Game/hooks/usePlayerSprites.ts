@@ -16,7 +16,7 @@ function createFallbackCanvas(): HTMLCanvasElement {
 /**
  * Хук для загрузки спрайтов игрока
  */
-export function useSprites<T extends PlayerSpriteStates>(spriteConfig?: T) {
+export function usePlayerSprites<T extends PlayerSpriteStates>(spriteConfig?: T) {
   const [sprite, setSprite] = useState<CanvasImageSource | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +69,7 @@ export function useSprites<T extends PlayerSpriteStates>(spriteConfig?: T) {
     };
 
     loadSpriteSheets();
-  }, [spriteConfig?.running, spriteConfig?.jumping]);
+  }, [spriteConfig, spriteConfig?.running, spriteConfig?.jumping]);
 
   return {
     sprite,

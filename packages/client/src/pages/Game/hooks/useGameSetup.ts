@@ -7,7 +7,7 @@ import { Obstacle } from '../engine/Obstacle';
 import { Player } from '../engine/Player';
 import { initParallaxBackground } from '../helpers/initParallaxBackground';
 import { GameSetupParams } from '../types';
-import { useSprites } from './useSprites';
+import { usePlayerSprites } from './usePlayerSprites';
 
 export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: GameSetupParams) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -16,7 +16,16 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
   const playerRef = useRef<Player | null>(null);
   const coinRef = useRef<Coin | null>(null);
 
-  const { sprite, isLoading: isSpritesLoading, error: spritesError } = useSprites(playerSprites);
+  const { sprite, isLoading: isSpritesLoading, error: spritesError } = usePlayerSprites(playerSprites);
+
+  const resizeCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+
+    if (!canvas) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }, []);
 
   const initGame = useCallback(
     (ctx: CanvasRenderingContext2D) => {
@@ -47,17 +56,8 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
           .init();
       }
     },
-    [handleOnDamage, handleOnScore, playerSprites, sprite],
+    [handleOnDamage, handleOnScore, sprite, resizeCanvas],
   );
-
-  const resizeCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-
-    if (!canvas) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }, []);
 
   const resetScene = useCallback(() => {
     if (!engineRef.current || !playerRef.current || !obstacleRef.current || !coinRef.current) {

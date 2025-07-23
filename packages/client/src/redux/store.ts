@@ -4,9 +4,12 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 
 import { api } from '@/api/generated';
 
+import authReducer from './slices/auth';
+
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) => {
     const middleware = getDefaultMiddleware();

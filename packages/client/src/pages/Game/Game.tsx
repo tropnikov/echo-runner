@@ -30,9 +30,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     });
   }, [maxDamage]);
 
-  const handleStart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.blur();
-
+  const handleStart = () => {
     setIsStarted(true);
 
     const ctx = getCanvasContext(canvasRef);
@@ -48,9 +46,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     pauseGame();
   };
 
-  const handleRestart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.blur();
-
+  const handleRestart = () => {
     setScore(0);
     setDamage(0);
 

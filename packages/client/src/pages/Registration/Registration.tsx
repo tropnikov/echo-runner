@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { Button, Card, Form, Input, Typography } from 'antd';
 
-import { rules } from '../../helpers/validators';
+import { rules } from '@/helpers/validators';
 
 import styles from './registration.module.css';
 

@@ -6,10 +6,9 @@ import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 import { useLazyGetAuthUserQuery, usePostAuthSigninMutation } from '@/api/generated';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes } from '@/constants/appRoutes';
+import { rules } from '@/helpers/validators';
 import { setUser } from '@/redux/slices/auth';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-
-import { rules } from '../../helpers/validators';
 
 import styles from './Login.module.css';
 

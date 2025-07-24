@@ -63,7 +63,7 @@ const Login = () => {
           name="basic"
           className={styles.cardForm}
           initialValues={{ remember: true }}
-          validateTrigger={['onChange', 'onBlur']}
+          validateTrigger="onBlur"
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical">

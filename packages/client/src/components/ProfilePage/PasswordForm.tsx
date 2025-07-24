@@ -40,7 +40,7 @@ const PasswordForm: FC = () => {
         form={form}
         name="change-password"
         style={{ maxWidth: 400, width: '100%', flex: 1, alignSelf: 'center', marginTop: 16 }}
-        validateTrigger={['onChange', 'onBlur']}
+        validateTrigger="onBlur"
         onFinish={onFinish}
         autoComplete="off"
         layout="vertical">

@@ -34,7 +34,7 @@ const Registration: FC = () => {
         <Form
           form={form}
           layout="vertical"
-          validateTrigger={['onChange', 'onBlur']}
+          validateTrigger="onBlur"
           onFinish={handleFinish}
           onFinishFailed={handleFinishFailed}>
           <Form.Item name="first_name" label="Имя" rules={rules.first_name}>

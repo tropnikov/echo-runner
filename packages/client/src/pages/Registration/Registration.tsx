@@ -31,7 +31,12 @@ const Registration: FC = () => {
     <div className={styles.wrapper}>
       <Card className={styles.card}>
         <Typography.Title level={1}>Регистрация</Typography.Title>
-        <Form form={form} layout="vertical" onFinish={handleFinish} onFinishFailed={handleFinishFailed}>
+        <Form
+          form={form}
+          layout="vertical"
+          validateTrigger={['onChange', 'onBlur']}
+          onFinish={handleFinish}
+          onFinishFailed={handleFinishFailed}>
           <Form.Item name="first_name" label="Имя" rules={rules.first_name}>
             <Input />
           </Form.Item>

@@ -9,9 +9,9 @@ import { appRoutes } from '@/constants/appRoutes';
 import { setUser } from '@/redux/slices/auth';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import styles from './Login.module.css';
-
 import { rules } from '../../helpers/validators';
+
+import styles from './Login.module.css';
 
 type FieldType = {
   login: string;
@@ -64,6 +64,7 @@ const Login = () => {
           name="basic"
           className={styles.cardForm}
           initialValues={{ remember: true }}
+          validateTrigger={['onChange', 'onBlur']}
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical">

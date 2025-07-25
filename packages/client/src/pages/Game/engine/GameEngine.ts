@@ -197,4 +197,12 @@ export class GameEngine {
     this.ctx.fillStyle = 'lightblue';
     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
   }
+
+  /**
+   * Только для тестов!
+   * Не используйте в боевом коде.
+   */
+  public __getGameObjectsForTest() {
+    return this.gameObjects;
+  }
 }

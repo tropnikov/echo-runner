@@ -1,15 +1,13 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 
 import { Button, Layout, Menu, Space, theme } from 'antd/lib';
 import { LoginOutlined, LogoutOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 
-import { useGetAuthUserQuery } from '@/api/generated';
 import { useAuth } from '@/components/AuthProvider/AuthProvider';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
-import { setIsAuthorised, setUser } from '@/redux/slices/auth';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppSelector } from '@/redux/store';
 import { isErrorWithReason } from '@/types/errors';
 
 import styles from './BaseLayout.module.css';
@@ -43,11 +41,9 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useAppDispatch();
   const notification = useNotification();
   const { user } = useAppSelector((state) => state.auth);
-  const { logout } = useAuth();
-  const { data: userData, isError: isUserDataError } = useGetAuthUserQuery();
+  const { logout, isAuthorized, isLoading } = useAuth();
 
   const currentSelectedKey = useMemo(() => {
     const pathname = location.pathname;
@@ -61,22 +57,9 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
   const currentMenuItems = useMemo(() => {
     return menuItems.filter((item) => {
       const isProtected = protectedRoutes.includes(item.path);
-      return user ? isProtected : !isProtected;
+      return isAuthorized ? isProtected : !isProtected;
     });
-  }, [user]);
-
-  useEffect(() => {
-    if (userData) {
-      dispatch(setUser(userData));
-    } else if (isUserDataError) {
-      dispatch(setIsAuthorised(false));
-      const currentPath = location.pathname.replace(/^\//, '');
-      if (protectedRoutes.includes(currentPath)) {
-        navigate(appRoutes.MAIN);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, userData, isUserDataError, navigate]);
+  }, [isAuthorized]);
 
   const handleAuthClick = (action: string) => {
     navigate(`/${action}`);
@@ -113,7 +96,9 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <Space className={styles.headerContentRight}>
-            {user ? (
+            {isLoading ? (
+              <div>Loading...</div> // Или другой индикатор загрузки
+            ) : isAuthorized ? (
               <>
                 <Button
                   variant="filled"
@@ -121,7 +106,7 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
                   icon={<UserOutlined />}
                   style={{ color: 'white' }}
                   onClick={() => handleAuthClick(appRoutes.PROFILE)}>
-                  {user.first_name}
+                  {user?.first_name}
                 </Button>
                 <Button variant="solid" color="danger" icon={<LogoutOutlined />} onClick={handleLogout}>
                   Выход

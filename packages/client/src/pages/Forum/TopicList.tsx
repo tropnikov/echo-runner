@@ -5,6 +5,8 @@ import { Button, Flex, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
+import { withAuth } from '@/components/AuthProvider/withAuth.hoc';
+
 import TopicModal from '../../components/Forum/TopicModal';
 
 const { Text, Title } = Typography;
@@ -130,4 +132,4 @@ function TopicList() {
   );
 }
 
-export default TopicList;
+export default withAuth(TopicList);

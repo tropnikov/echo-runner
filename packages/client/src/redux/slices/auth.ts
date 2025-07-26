@@ -14,12 +14,12 @@ export interface IUser {
 
 export interface AuthState {
   user: IUser | null;
-  isAuthorised: null | boolean;
+  isAuthorized: null | boolean;
 }
 
 const initialState: AuthState = {
   user: null,
-  isAuthorised: null,
+  isAuthorized: null,
 };
 
 const authSlice = createSlice({
@@ -28,17 +28,17 @@ const authSlice = createSlice({
   reducers: {
     resetUser: (state) => {
       state.user = null;
-      state.isAuthorised = false;
+      state.isAuthorized = false;
     },
     setUser: (state, { payload }) => {
       state.user = payload;
-      state.isAuthorised = true;
+      state.isAuthorized = true;
     },
-    setIsAuthorised: (state, { payload }) => {
-      state.isAuthorised = payload;
+    setIsAuthorized: (state, { payload }) => {
+      state.isAuthorized = payload;
     },
   },
 });
 
-export const { setUser, resetUser, setIsAuthorised } = authSlice.actions;
+export const { setUser, resetUser, setIsAuthorized } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { mergeSpritesVertically } from '../helpers/mergeSpritesVertically';
 import { loadSprites } from '../helpers/spriteLoader';
 import { PlayerSpriteStates } from '../types';
 
@@ -36,27 +37,7 @@ export function usePlayerSprites<T extends PlayerSpriteStates>(spriteConfig?: T)
         const [runningSprite, jumpingSprite] = await loadSprites([spriteConfig.running, spriteConfig.jumping]);
 
         // Создаем комбинированный спрайт-лист
-        const runningWidth = runningSprite.width;
-        const runningHeight = runningSprite.height;
-        const jumpingWidth = jumpingSprite.width;
-        const jumpingHeight = jumpingSprite.height;
-
-        const combinedWidth = Math.max(runningWidth, jumpingWidth);
-        const combinedHeight = runningHeight + jumpingHeight;
-        const canvas = document.createElement('canvas');
-        canvas.width = combinedWidth;
-        canvas.height = combinedHeight;
-        const ctx = canvas.getContext('2d');
-
-        if (!ctx) {
-          throw new Error('Не удается получить 2D контекст');
-        }
-
-        // Размещаем спрайт бега сверху
-        ctx.drawImage(runningSprite, 0, 0);
-
-        // Размещаем спрайт прыжка снизу
-        ctx.drawImage(jumpingSprite, 0, runningHeight);
+        const canvas = mergeSpritesVertically([runningSprite, jumpingSprite]);
 
         setSprite(canvas);
       } catch (err) {
@@ -69,7 +50,7 @@ export function usePlayerSprites<T extends PlayerSpriteStates>(spriteConfig?: T)
     };
 
     loadSpriteSheets();
-  }, [spriteConfig, spriteConfig?.running, spriteConfig?.jumping]);
+  }, [spriteConfig]);
 
   return {
     sprite,

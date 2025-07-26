@@ -23,10 +23,12 @@ export class ParallaxBackground extends GameObject {
   constructor(ctx: CanvasRenderingContext2D, backgroundImage: CanvasImageSource, speedMultiplier = 0.5) {
     super(ctx);
 
+    const image = backgroundImage as HTMLImageElement;
+
     this.speedMultiplier = speedMultiplier;
-    this.backgroundImage = backgroundImage;
-    this.backgroundWidth = (backgroundImage as HTMLImageElement).width;
-    this.backgroundHeight = (backgroundImage as HTMLImageElement).height;
+    this.backgroundImage = image;
+    this.backgroundWidth = image.width;
+    this.backgroundHeight = image.height;
     this.offsetX = 0;
 
     this.ctx.imageSmoothingEnabled = false;

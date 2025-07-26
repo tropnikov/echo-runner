@@ -8,12 +8,22 @@ import { AnimationConfig } from './types';
  */
 export class SpriteAnimator<T extends string = string> {
   private defaultSpriteSheet: CanvasImageSource;
+
   private animations: Map<T, AnimationConfig>;
+
   private currentState: T | null;
+
   private currentFrameIndex: number;
+
+  /**
+   * Таймер для отслеживания времени между кадрами
+   */
   private frameTimer: number;
+
   private isPlaying: boolean;
+
   private _onAnimationComplete?: (state: T) => void;
+
   private onStateChange?: (oldState: T | null, newState: T) => void;
 
   constructor(defaultSpriteSheet: CanvasImageSource, defaultState?: T) {
@@ -90,10 +100,14 @@ export class SpriteAnimator<T extends string = string> {
       return;
     }
 
+    // Масштабируем deltaTime в зависимости от скорости игры и FPS
     const deltaTimeScaled = gameSpeed * delta * config.fps;
     this.frameTimer += deltaTimeScaled;
+
+    // Вычисляем длительность кадра на основе FPS и частоты кадров анимации
     const frameDuration = config.fps / animation.frameRate;
 
+    // Проверяем, нужно ли перейти к следующему кадру
     if (this.frameTimer >= frameDuration) {
       this.frameTimer = 0;
       this.currentFrameIndex++;

@@ -1,3 +1,4 @@
+import { generateFrames } from '../../helpers/generateFrames';
 import { AnimationConfig } from '../types';
 
 /**
@@ -13,34 +14,20 @@ export enum PlayerAnimationState {
  */
 export const playerAnimations: Record<PlayerAnimationState, AnimationConfig> = {
   [PlayerAnimationState.RUNNING]: {
-    frames: [
-      { x: 0, y: 0, width: 204, height: 258 },
-      { x: 204, y: 0, width: 204, height: 258 },
-      { x: 408, y: 0, width: 204, height: 258 },
-      { x: 612, y: 0, width: 204, height: 258 },
-      { x: 816, y: 0, width: 204, height: 258 },
-      { x: 1020, y: 0, width: 204, height: 258 },
-      { x: 1224, y: 0, width: 204, height: 258 },
-      { x: 1428, y: 0, width: 204, height: 258 },
-      { x: 1632, y: 0, width: 204, height: 258 },
-      { x: 1836, y: 0, width: 204, height: 258 },
-    ],
+    frames: generateFrames({
+      width: 204,
+      height: 258,
+      frames: 10,
+    }),
     frameRate: 6,
     loop: true,
   },
   [PlayerAnimationState.JUMPING]: {
-    frames: [
-      { x: 0, y: 258, width: 204, height: 273 },
-      { x: 204, y: 258, width: 204, height: 273 },
-      { x: 408, y: 258, width: 204, height: 273 },
-      { x: 612, y: 258, width: 204, height: 273 },
-      { x: 816, y: 258, width: 204, height: 273 },
-      { x: 1020, y: 258, width: 204, height: 273 },
-      { x: 1224, y: 258, width: 204, height: 273 },
-      { x: 1428, y: 258, width: 204, height: 273 },
-      { x: 1632, y: 258, width: 204, height: 273 },
-      { x: 1836, y: 258, width: 204, height: 273 },
-    ],
+    frames: generateFrames({
+      width: 204,
+      height: 273,
+      frames: 10,
+    }),
     frameRate: 8,
     loop: false,
   },

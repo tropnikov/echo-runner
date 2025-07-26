@@ -4,7 +4,7 @@ import { Navigate, useLocation } from 'react-router';
 import { Spin } from 'antd';
 
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
-import { useAuthCheck } from '@/hooks/useAuthCheck.hook';
+import { useAuthCheck } from '@/hooks/useAuthCheck';
 
 export function withAuth<T extends object>(WrappedComponent: React.ComponentType<T>): FC<T> {
   return (props: T) => {

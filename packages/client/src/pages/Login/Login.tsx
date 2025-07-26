@@ -6,8 +6,8 @@ import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes } from '@/constants/appRoutes';
-import { useAuthCheck } from '@/hooks/useAuthCheck.hook';
-import { useLogin } from '@/hooks/useLogin.hook';
+import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { useLogin } from '@/hooks/useLogin';
 import { isErrorWithReason } from '@/types/errors';
 
 import styles from './Login.module.css';

@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router';
 
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
-import { withAuth } from './hocs/withAuth.hoc';
+import { withAuth } from './hocs/withAuth';
 import Topic from './pages/Forum/Topic';
 import TopicList from './pages/Forum/TopicList';
 import Game from './pages/Game/Game';

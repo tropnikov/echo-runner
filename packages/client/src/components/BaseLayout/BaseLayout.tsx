@@ -6,8 +6,8 @@ import { LoginOutlined, LogoutOutlined, UserAddOutlined, UserOutlined } from '@a
 
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
-import { useAuthCheck } from '@/hooks/useAuthCheck.hook';
-import { useLogout } from '@/hooks/useLogout.hook';
+import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { useLogout } from '@/hooks/useLogout';
 import { useAppSelector } from '@/redux/store';
 import { isErrorWithReason } from '@/types/errors';
 

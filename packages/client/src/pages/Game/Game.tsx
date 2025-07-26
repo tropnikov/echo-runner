@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 
-import { withAuth } from '@/components/AuthProvider/withAuth.hoc';
 import GameView from '@/components/GameView/GameView';
 
 import { getCanvasContext } from './helpers/getCanvasContext';
@@ -96,4 +95,4 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   );
 }
 
-export default withAuth<{ maxDamage?: number }>(Game);
+export default Game;

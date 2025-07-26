@@ -2,7 +2,6 @@ import { FC } from 'react';
 
 import { Divider, Flex, Typography } from 'antd';
 
-import { withAuth } from '@/components/AuthProvider/withAuth.hoc';
 import AvatarForm from '@/components/ProfilePage/AvatarForm';
 import PasswordForm from '@/components/ProfilePage/PasswordForm';
 
@@ -20,4 +19,4 @@ const ProfilePage: FC = () => {
   );
 };
 
-export default withAuth(ProfilePage);
+export default ProfilePage;

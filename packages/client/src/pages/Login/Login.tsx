@@ -4,9 +4,10 @@ import { Navigate, useNavigate } from 'react-router';
 import type { FormProps } from 'antd';
 import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 
-import { useAuth } from '@/components/AuthProvider/AuthProvider';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes } from '@/constants/appRoutes';
+import { useAuthCheck } from '@/hooks/useAuthCheck.hook';
+import { useLogin } from '@/hooks/useLogin.hook';
 import { isErrorWithReason } from '@/types/errors';
 
 import styles from './Login.module.css';
@@ -19,7 +20,8 @@ type FieldType = {
 const Login = () => {
   const navigate = useNavigate();
   const notification = useNotification();
-  const { isAuthorized, login } = useAuth();
+  const { login } = useLogin();
+  const { isAuthorized } = useAuthCheck();
   const [isLoading, setIsLoading] = useState(false);
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {

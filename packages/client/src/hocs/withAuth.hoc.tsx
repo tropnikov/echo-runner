@@ -4,11 +4,11 @@ import { Navigate, useLocation } from 'react-router';
 import { Spin } from 'antd';
 
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
-import { useAuth } from '@/hooks/useAuth.hook';
+import { useAuthCheck } from '@/hooks/useAuthCheck.hook';
 
 export function withAuth<T extends object>(WrappedComponent: React.ComponentType<T>): FC<T> {
   return (props: T) => {
-    const { isLoading, isAuthorized } = useAuth();
+    const { isLoading, isAuthorized } = useAuthCheck();
     const location = useLocation();
 
     if (isLoading) {

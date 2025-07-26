@@ -4,9 +4,10 @@ import { NavLink, useLocation, useNavigate } from 'react-router';
 import { Button, Layout, Menu, Space, theme } from 'antd/lib';
 import { LoginOutlined, LogoutOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 
-import { useAuth } from '@/components/AuthProvider/AuthProvider';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
+import { useAuthCheck } from '@/hooks/useAuthCheck.hook';
+import { useLogout } from '@/hooks/useLogout.hook';
 import { useAppSelector } from '@/redux/store';
 import { isErrorWithReason } from '@/types/errors';
 
@@ -43,7 +44,8 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const notification = useNotification();
   const { user } = useAppSelector((state) => state.auth);
-  const { logout, isAuthorized, isLoading } = useAuth();
+  const { isAuthorized, isLoading } = useAuthCheck();
+  const { logout } = useLogout();
 
   const currentSelectedKey = useMemo(() => {
     const pathname = location.pathname;

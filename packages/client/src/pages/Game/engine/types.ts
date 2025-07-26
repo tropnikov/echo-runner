@@ -6,6 +6,20 @@ export type Collision = {
   handled?: boolean;
 };
 
+export type SpriteFrame = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export type AnimationConfig = {
+  spriteSheet?: CanvasImageSource;
+  frames: SpriteFrame[];
+  frameRate: number;
+  loop: boolean;
+};
+
 export type GenerateCollisionsParams = {
   minDistanceX: number;
   maxDistanceX: number;

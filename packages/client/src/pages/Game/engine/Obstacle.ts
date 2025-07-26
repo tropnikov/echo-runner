@@ -1,4 +1,5 @@
-import { config } from './config';
+import BoxImage from '../assets/box.png';
+import { config } from './config/gameConfig';
 import { GameObject } from './GameObject';
 import { ObjectEffectType } from './types';
 
@@ -10,10 +11,15 @@ import { ObjectEffectType } from './types';
 export class Obstacle extends GameObject {
   private collisionSize: number = config.obstacles.collisionSize;
 
+  private boxImage: HTMLImageElement;
+
   effectType = ObjectEffectType.Damage;
 
   constructor(ctx: CanvasRenderingContext2D) {
     super(ctx);
+
+    this.boxImage = new Image();
+    this.boxImage.src = BoxImage;
   }
 
   private addObstacleCollision(x: number) {
@@ -43,8 +49,15 @@ export class Obstacle extends GameObject {
     this._collisions.forEach((collision) => {
       const invertCollision = this.toCanvasCoords(collision);
 
-      this.ctx.fillStyle = 'green';
-      this.ctx.fillRect(invertCollision.x, invertCollision.y, invertCollision.width, invertCollision.height);
+      if (this.boxImage.complete) {
+        this.ctx.drawImage(
+          this.boxImage,
+          invertCollision.x,
+          invertCollision.y,
+          invertCollision.width,
+          invertCollision.height,
+        );
+      }
     });
   }
 }

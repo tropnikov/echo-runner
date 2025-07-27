@@ -9,6 +9,7 @@ jest.mock('@/components/GameView/GameView', () => ({
   default: (props: GameViewProps) => {
     return (
       <div>
+        {!props.isStarted && <div>Игра не начата</div>}
         <div data-testid="score">{props.score}</div>
         <div data-testid="damage">{props.damage}</div>
         <button data-testid="start" onClick={props.onStart}>
@@ -33,9 +34,12 @@ describe('Game', () => {
     expect(screen.getByTestId('damage').textContent).toBe('0');
   });
 
-  test('нажимая старт, вызывается onStart', () => {
+  test('игра начинается после клика по Start', () => {
     render(<Game />);
+    expect(screen.getByText('Игра не начата')).toBeInTheDocument();
     fireEvent.click(screen.getByTestId('start'));
+    // "Игра не начата" должен исчезнуть
+    expect(screen.queryByText('Игра не начата')).not.toBeInTheDocument();
   });
 
   test('рестарт сбрасывает score и damage в 0', () => {

@@ -158,9 +158,9 @@ export class GameEngine {
   }
 
   /**
-   * Проверяет столкновения.
+   * Проверяет столкновения. Protected - для тестов
    */
-  private checkCollisions() {
+  protected checkCollisions() {
     const player = this.gameObjects.find((p) => p instanceof Player) as Player;
 
     if (!player) return;
@@ -202,7 +202,7 @@ export class GameEngine {
    * Только для тестов!
    * Не используйте в боевом коде.
    */
-  public __getGameObjectsForTest() {
+  protected __getGameObjectsForTest() {
     return this.gameObjects;
   }
 }

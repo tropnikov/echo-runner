@@ -3,6 +3,16 @@ import { GameObject } from './GameObject';
 import { Player } from './Player';
 import { Collision, ObjectEffectType } from './types';
 
+// Наследник для тестов: дает доступ к protected-методам!
+class TestableGameEngine extends GameEngine {
+  public getGameObjectsForTest() {
+    return this.__getGameObjectsForTest();
+  }
+  public runCheckCollisions() {
+    return this.checkCollisions();
+  }
+}
+
 class TestObject extends GameObject {
   effectType = ObjectEffectType.Score;
   update = jest.fn();
@@ -20,7 +30,7 @@ class TestCoin extends GameObject {
 }
 
 describe('GameEngine', () => {
-  let engine: GameEngine;
+  let engine: TestableGameEngine;
   let ctx: Partial<CanvasRenderingContext2D>;
   let onScore: jest.Mock;
   let onDamage: jest.Mock;
@@ -34,13 +44,13 @@ describe('GameEngine', () => {
     };
     onScore = jest.fn();
     onDamage = jest.fn();
-    engine = new GameEngine({ ctx: ctx as CanvasRenderingContext2D, onScore, onDamage });
+    engine = new TestableGameEngine({ ctx: ctx as CanvasRenderingContext2D, onScore, onDamage });
   });
 
   test('initGameObject добавляет объект', () => {
     const obj = new TestObject(ctx as CanvasRenderingContext2D);
     engine.initGameObject(obj);
-    expect(engine.__getGameObjectsForTest()).toContain(obj);
+    expect(engine.getGameObjectsForTest()).toContain(obj);
   });
 
   test('start запускает игровой цикл, если он не был включен', () => {
@@ -55,7 +65,7 @@ describe('GameEngine', () => {
     const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 
     engine.start();
-    engine.start(); // вторая попытка
+    engine.start();
 
     expect(rafSpy).toHaveBeenCalledTimes(1);
     expect(consoleWarnSpy).toHaveBeenCalled();
@@ -71,31 +81,32 @@ describe('GameEngine', () => {
     engine.initGameObject(obj1);
     engine.initGameObject(obj2);
 
-    expect(engine.__getGameObjectsForTest()).toHaveLength(2);
+    expect(engine.getGameObjectsForTest()).toHaveLength(2);
 
     engine.removeAllSceneObjects();
 
-    expect(engine.__getGameObjectsForTest()).toHaveLength(0);
+    expect(engine.getGameObjectsForTest()).toHaveLength(0);
   });
 
   test('корректно вызывает onScore при столкновении с объектом типа Score', () => {
+    const collision: Collision = { x: 10, y: 10, width: 10, height: 10 };
     const player = new Player(ctx as CanvasRenderingContext2D);
+    // 👇 только для теста! В рантайме так никто не будет делать
+    (player as unknown as { _collision: Collision })._collision = collision;
 
-    player['_collision'] = { x: 10, y: 10, width: 10, height: 10 };
-
-    const coin = new TestCoin(ctx as CanvasRenderingContext2D, { x: 10, y: 10, width: 10, height: 10 });
+    const coin = new TestCoin(ctx as CanvasRenderingContext2D, collision);
 
     engine.initGameObject(player).initGameObject(coin);
 
-    engine['checkCollisions']();
+    engine.runCheckCollisions();
 
     expect(onScore).toHaveBeenCalled();
   });
 
   test('корректно вызывает onDamage при столкновении с объектом типа Damage', () => {
+    const collision: Collision = { x: 10, y: 10, width: 10, height: 10 };
     const player = new Player(ctx as CanvasRenderingContext2D);
-
-    player['_collision'] = { x: 20, y: 20, width: 10, height: 10 };
+    (player as unknown as { _collision: Collision })._collision = collision;
 
     class TestObstacle extends GameObject {
       effectType = ObjectEffectType.Damage;
@@ -107,11 +118,11 @@ describe('GameEngine', () => {
       }
     }
 
-    const obstacle = new TestObstacle(ctx as CanvasRenderingContext2D, { x: 20, y: 20, width: 10, height: 10 });
+    const obstacle = new TestObstacle(ctx as CanvasRenderingContext2D, collision);
 
     engine.initGameObject(player).initGameObject(obstacle);
 
-    engine['checkCollisions']();
+    engine.runCheckCollisions();
 
     expect(onDamage).toHaveBeenCalled();
   });

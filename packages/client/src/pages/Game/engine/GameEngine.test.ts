@@ -91,7 +91,7 @@ describe('GameEngine', () => {
   test('корректно вызывает onScore при столкновении с объектом типа Score', () => {
     const collision: Collision = { x: 10, y: 10, width: 10, height: 10 };
     const player = new Player(ctx as CanvasRenderingContext2D);
-    // 👇 только для теста! В рантайме так никто не будет делать
+    // только для теста
     (player as unknown as { _collision: Collision })._collision = collision;
 
     const coin = new TestCoin(ctx as CanvasRenderingContext2D, collision);

@@ -90,7 +90,9 @@ describe('GameEngine', () => {
 
   test('корректно вызывает onScore при столкновении с объектом типа Score', () => {
     const collision: Collision = { x: 10, y: 10, width: 10, height: 10 };
-    const player = new Player(ctx as CanvasRenderingContext2D);
+    const dummySprite = document.createElement('canvas');
+    const player = new Player(ctx as CanvasRenderingContext2D, dummySprite);
+
     // только для теста
     (player as unknown as { _collision: Collision })._collision = collision;
 
@@ -105,7 +107,9 @@ describe('GameEngine', () => {
 
   test('корректно вызывает onDamage при столкновении с объектом типа Damage', () => {
     const collision: Collision = { x: 10, y: 10, width: 10, height: 10 };
-    const player = new Player(ctx as CanvasRenderingContext2D);
+    const dummySprite = document.createElement('canvas');
+    const player = new Player(ctx as CanvasRenderingContext2D, dummySprite);
+
     (player as unknown as { _collision: Collision })._collision = collision;
 
     class TestObstacle extends GameObject {

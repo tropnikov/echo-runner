@@ -37,7 +37,7 @@ export function useFullscreen() {
     } else if (element.webkitRequestFullscreen) {
       element.webkitRequestFullscreen().then(enableFullscreenState);
     }
-  }, [isSupported]);
+  }, [isSupported, enableFullscreenState]);
 
   const exitFullscreen = useCallback(() => {
     if (!isSupported) return;
@@ -51,7 +51,7 @@ export function useFullscreen() {
     } else if (fullscreenDocument.webkitExitFullscreen) {
       fullscreenDocument.webkitExitFullscreen().then(disableFullscreenState);
     }
-  }, [isSupported]);
+  }, [isSupported, enableFullscreenState, fullscreenDocument]);
 
   const toggleFullscreen = useCallback(() => {
     isFullscreen ? exitFullscreen() : enterFullscreen();
@@ -81,7 +81,13 @@ export function useFullscreen() {
       document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
       document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
     };
-  }, [isSupported]);
+  }, [
+    isSupported,
+    fullscreenDocument.fullscreenElement,
+    fullscreenDocument.webkitFullscreenElement,
+    fullscreenDocument.mozFullScreenElement,
+    fullscreenDocument.msFullscreenElement,
+  ]);
 
   return { elementRef, isFullscreen, enterFullscreen, exitFullscreen, toggleFullscreen };
 }

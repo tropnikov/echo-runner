@@ -6,6 +6,7 @@ import { FullscreenHMLElement } from '@/types/FullscreenHTMLElement';
 export function useFullscreen() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const elementRef = useRef<HTMLElement>(null);
+
   const fullscreenDocument = document as DocumentWithFullscreen;
 
   const isSupported = Boolean(
@@ -42,6 +43,8 @@ export function useFullscreen() {
   const exitFullscreen = useCallback(() => {
     if (!isSupported) return;
 
+    const fullscreenDocument = document as DocumentWithFullscreen;
+
     if (fullscreenDocument.exitFullscreen) {
       fullscreenDocument.exitFullscreen().then(disableFullscreenState);
     } else if (fullscreenDocument.msExitFullscreen) {
@@ -51,14 +54,7 @@ export function useFullscreen() {
     } else if (fullscreenDocument.webkitExitFullscreen) {
       fullscreenDocument.webkitExitFullscreen().then(disableFullscreenState);
     }
-  }, [
-    isSupported,
-    disableFullscreenState,
-    fullscreenDocument.exitFullscreen,
-    fullscreenDocument.msExitFullscreen,
-    fullscreenDocument.mozCancelFullScreen,
-    fullscreenDocument.webkitExitFullscreen,
-  ]);
+  }, [isSupported, disableFullscreenState]);
 
   const toggleFullscreen = useCallback(() => {
     isFullscreen ? exitFullscreen() : enterFullscreen();
@@ -66,6 +62,8 @@ export function useFullscreen() {
 
   useEffect(() => {
     if (!isSupported) return;
+
+    const fullscreenDocument = document as DocumentWithFullscreen;
 
     const handleFullscreenChange = () => {
       setIsFullscreen(
@@ -88,13 +86,7 @@ export function useFullscreen() {
       document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
       document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
     };
-  }, [
-    isSupported,
-    fullscreenDocument.fullscreenElement,
-    fullscreenDocument.webkitFullscreenElement,
-    fullscreenDocument.mozFullScreenElement,
-    fullscreenDocument.msFullscreenElement,
-  ]);
+  }, [isSupported]);
 
   return { elementRef, isFullscreen, enterFullscreen, exitFullscreen, toggleFullscreen };
 }

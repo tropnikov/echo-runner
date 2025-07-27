@@ -76,23 +76,13 @@ function GameView({
           <canvas ref={canvasRef} className={styles.canvas} />
         </div>
       </div>
-      {isFullscreen ? (
-        <Button
-          type="primary"
-          shape="circle"
-          icon={<FullscreenExitOutlined />}
-          className={styles.fullScreenButton}
-          onClick={handleFullscreenButtonClick}
-        />
-      ) : (
-        <Button
-          type="primary"
-          shape="circle"
-          icon={<FullscreenOutlined />}
-          className={styles.fullScreenButton}
-          onClick={handleFullscreenButtonClick}
-        />
-      )}
+      <Button
+        type="primary"
+        shape="circle"
+        icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+        className={styles.fullScreenButton}
+        onClick={handleFullscreenButtonClick}
+      />
     </section>
   );
 }

@@ -9,7 +9,7 @@ export function useFullscreen() {
   const fullscreenDocument = document as DocumentWithFullscreen;
 
   const isSupported = Boolean(
-    document.fullscreenEnabled ||
+    fullscreenDocument.fullscreenEnabled ||
       fullscreenDocument.webkitFullscreenEnabled ||
       fullscreenDocument.mozFullScreenEnabled ||
       fullscreenDocument.msFullscreenEnabled,
@@ -42,8 +42,8 @@ export function useFullscreen() {
   const exitFullscreen = useCallback(() => {
     if (!isSupported) return;
 
-    if (document.exitFullscreen) {
-      document.exitFullscreen().then(disableFullscreenState);
+    if (fullscreenDocument.exitFullscreen) {
+      fullscreenDocument.exitFullscreen().then(disableFullscreenState);
     } else if (fullscreenDocument.msExitFullscreen) {
       fullscreenDocument.msExitFullscreen().then(disableFullscreenState);
     } else if (fullscreenDocument.mozCancelFullScreen) {
@@ -63,7 +63,7 @@ export function useFullscreen() {
     const handleFullscreenChange = () => {
       setIsFullscreen(
         Boolean(
-          document.fullscreenElement ||
+          fullscreenDocument.fullscreenElement ||
             fullscreenDocument.webkitFullscreenElement ||
             fullscreenDocument.mozFullScreenElement ||
             fullscreenDocument.msFullscreenElement,

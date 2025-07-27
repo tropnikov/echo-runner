@@ -4,6 +4,20 @@
   height: 100%;
 }
 
+.gameViewContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: auto;
+}
+
+.fullScreenButton {
+  position: absolute;
+  right: 40px;
+  top: 40px;
+}
+
 .gameContainer {
   position: relative;
 }
@@ -17,6 +31,7 @@
   justify-content: center;
   font-size: 24px;
   gap: 10px;
+  position: absolute;
 }
 
 .menu {

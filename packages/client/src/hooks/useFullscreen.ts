@@ -51,7 +51,14 @@ export function useFullscreen() {
     } else if (fullscreenDocument.webkitExitFullscreen) {
       fullscreenDocument.webkitExitFullscreen().then(disableFullscreenState);
     }
-  }, [isSupported, disableFullscreenState, fullscreenDocument]);
+  }, [
+    isSupported,
+    disableFullscreenState,
+    fullscreenDocument.exitFullscreen,
+    fullscreenDocument.msExitFullscreen,
+    fullscreenDocument.mozCancelFullScreen,
+    fullscreenDocument.webkitExitFullscreen,
+  ]);
 
   const toggleFullscreen = useCallback(() => {
     isFullscreen ? exitFullscreen() : enterFullscreen();

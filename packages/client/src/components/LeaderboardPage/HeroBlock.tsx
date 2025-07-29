@@ -11,7 +11,7 @@ const HeroBlock: FC = () => {
   const navigate = useNavigate();
 
   const handleStartClick = () => {
-    navigate(`/${appRoutes.SIGNIN}`);
+    navigate(`/${appRoutes.GAME}`);
   };
 
   return (

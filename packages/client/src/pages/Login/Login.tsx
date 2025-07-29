@@ -1,14 +1,15 @@
+import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router';
 
 import type { FormProps } from 'antd';
 import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 
-import { useLazyGetAuthUserQuery, usePostAuthSigninMutation } from '@/api/generated';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes } from '@/constants/appRoutes';
 import { rules } from '@/helpers/validators';
-import { setUser } from '@/redux/slices/auth';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { useLogin } from '@/hooks/useLogin';
+import { isErrorWithReason } from '@/types/errors';
 
 import styles from './Login.module.css';
 
@@ -20,39 +21,29 @@ type FieldType = {
 const Login = () => {
   const navigate = useNavigate();
   const notification = useNotification();
-  const dispatch = useAppDispatch();
-  const { isAuthorised } = useAppSelector((state) => state.auth);
-
-  const [auth, { isLoading }] = usePostAuthSigninMutation();
-  const [getAuthUser] = useLazyGetAuthUserQuery();
+  const { login } = useLogin();
+  const { isAuthorized } = useAuthCheck();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    auth({
-      signInRequest: values,
-    })
-      .unwrap()
-      .then(() => {
-        return getAuthUser().unwrap();
-      })
-      .then((userData) => {
-        dispatch(setUser(userData));
-
-        notification.success({
-          message: 'Вход выполнен успешно',
-        });
-
-        navigate(`/${appRoutes.GAME}`);
-      })
-      .catch((error) => {
-        console.log('Login failed:', error);
-
-        notification.error({
-          message: error.data?.reason ?? 'Произошла ошибка',
-        });
+    setIsLoading(true);
+    try {
+      await login(values);
+      notification.success({
+        message: 'Вход выполнен успешно',
       });
+      navigate(`/${appRoutes.GAME}`);
+    } catch (error: unknown) {
+      console.log('Login failed:', error);
+      notification.error({
+        message: isErrorWithReason(error) ? error.data.reason : 'Произошла ошибка при выходе',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  if (isAuthorised) {
+  if (isAuthorized) {
     return <Navigate to={`/${appRoutes.GAME}`} replace />;
   }
 

@@ -6,6 +6,7 @@ import { withAuth } from './hocs/withAuth';
 import Topic from './pages/Forum/Topic';
 import TopicList from './pages/Forum/TopicList';
 import Game from './pages/Game/Game';
+import LeaderboardPage from './pages/LeaderboardPage/LeaderboardPage';
 import Login from './pages/Login/Login';
 import MainPage from './pages/MainPage/MainPage';
 import NotFound from './pages/NotFound/NotFound';
@@ -29,7 +30,7 @@ export default createBrowserRouter([
       { path: appRoutes.SIGNIN, Component: Login },
       { path: appRoutes.SIGNUP, Component: Registration },
       { path: appRoutes.PROFILE, Component: withAuth(ProfilePage) },
-      { path: appRoutes.LEADERBOARD, element: <div>Лидерборд</div> },
+      { path: appRoutes.LEADERBOARD, Component: withAuth(LeaderboardPage) },
       { path: appRoutes.GAME, Component: withAuth(Game) },
       { path: appRoutes.ERROR, Component: ServerError },
       { path: appRoutes.NOT_FOUND, Component: NotFound },

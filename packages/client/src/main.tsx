@@ -11,6 +11,10 @@ import router from './routes';
 
 import './index.css';
 
+import startServiceWorker from './helpers/sw';
+
+startServiceWorker();
+
 const root = document.getElementById('root');
 
 ReactDOM.createRoot(root as HTMLElement).render(

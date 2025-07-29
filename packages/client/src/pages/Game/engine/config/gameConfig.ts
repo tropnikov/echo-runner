@@ -1,4 +1,4 @@
-import { GameConfig } from './types';
+import { GameConfig } from '../types';
 
 export const config: GameConfig = {
   /**
@@ -9,11 +9,11 @@ export const config: GameConfig = {
   /**
    * Начальная скорость движения объектов.
    */
-  initialSpeed: 3,
+  initialSpeed: 5,
 
   levelDuration: 5,
 
-  levelSpeedIncrement: 0.2,
+  levelSpeedIncrement: 0.5,
 
   /**
    * Настройки игрока.
@@ -26,11 +26,11 @@ export const config: GameConfig = {
       /**
        * Ширина коллизии.
        */
-      width: 75,
+      width: 204,
       /**
        * Высота коллизии.
        */
-      height: 100,
+      height: 258,
     },
     /**
      * Смещение игрока.
@@ -39,7 +39,7 @@ export const config: GameConfig = {
       /**
        * Смещение по X.
        */
-      x: 50,
+      x: 150,
       /**
        * Смещение по Y.
        */
@@ -52,7 +52,7 @@ export const config: GameConfig = {
     /**
      * Сила прыжка.
      */
-    jumpPower: 30,
+    jumpPower: 40,
   },
 
   /**
@@ -62,15 +62,15 @@ export const config: GameConfig = {
     /**
      * Размер коллизии.
      */
-    collisionSize: 50,
+    collisionSize: 100,
     /**
      * Минимальное расстояние между препятствиями.
      */
-    minDistanceX: 300,
+    minDistanceX: 900,
     /**
      * Максимальное расстояние между препятствиями.
      */
-    maxDistanceX: 800,
+    maxDistanceX: 1600,
 
     /**
      * Смещение по Y.
@@ -85,22 +85,22 @@ export const config: GameConfig = {
     /**
      * Размер коллизии.
      */
-    collisionSize: 25,
+    collisionSize: 40,
     /**
      * Минимальное расстояние между монетами.
      */
-    minDistanceX: 100,
+    minDistanceX: 300,
     /**
      * Максимальное расстояние между монетами.
      */
-    maxDistanceX: 500,
+    maxDistanceX: 900,
     /**
      * Минимальное расстояние между монетами по Y.
      */
-    minDistanceY: 200,
+    minDistanceY: 300,
     /**
      * Максимальное расстояние между монетами по Y.
      */
-    maxDistanceY: 300,
+    maxDistanceY: 500,
   },
 };

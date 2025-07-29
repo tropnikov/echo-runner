@@ -6,6 +6,7 @@ import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes } from '@/constants/appRoutes';
+import { rules } from '@/helpers/validators';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { useLogin } from '@/hooks/useLogin';
 import { isErrorWithReason } from '@/types/errors';
@@ -53,14 +54,15 @@ const Login = () => {
           name="basic"
           className={styles.cardForm}
           initialValues={{ remember: true }}
+          validateTrigger="onBlur"
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical">
-          <Form.Item<FieldType> label="Логин" name="login" rules={[{ required: true, message: 'Введите логин' }]}>
+          <Form.Item<FieldType> label="Логин" name="login" rules={rules.login}>
             <Input />
           </Form.Item>
 
-          <Form.Item<FieldType> label="Пароль" name="password" rules={[{ required: true, message: 'Введите пароль' }]}>
+          <Form.Item<FieldType> label="Пароль" name="password" rules={rules.password}>
             <Input.Password />
           </Form.Item>
 

@@ -5,6 +5,7 @@ import { Button, Form, Input } from 'antd';
 
 import { usePutUserPasswordMutation } from '@/api/generated';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
+import { rules } from '@/helpers/validators';
 
 type FieldType = {
   oldPassword: string;
@@ -39,6 +40,7 @@ const PasswordForm: FC = () => {
         form={form}
         name="change-password"
         style={{ maxWidth: 400, width: '100%', flex: 1, alignSelf: 'center', marginTop: 16 }}
+        validateTrigger="onBlur"
         onFinish={onFinish}
         autoComplete="off"
         layout="vertical">
@@ -49,13 +51,7 @@ const PasswordForm: FC = () => {
           <Input.Password />
         </Form.Item>
 
-        <Form.Item<FieldType>
-          label="Новый пароль"
-          name="newPassword"
-          rules={[
-            { required: true, message: 'Введите новый пароль' },
-            { min: 6, message: 'Пароль должен содержать минимум 6 символов' },
-          ]}>
+        <Form.Item<FieldType> label="Новый пароль" name="newPassword" rules={rules.password}>
           <Input.Password />
         </Form.Item>
 

@@ -174,9 +174,9 @@ export class GameEngine {
   }
 
   /**
-   * Проверяет столкновения. Protected - для тестов
+   * Проверяет столкновения.
    */
-  protected checkCollisions() {
+  private checkCollisions() {
     const player = this.gameObjects.find((p) => p instanceof Player) as Player;
 
     if (!player) return;
@@ -224,13 +224,5 @@ export class GameEngine {
   private renderBackground() {
     this.ctx.fillStyle = 'lightblue';
     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-  }
-
-  /**
-   * Только для тестов!
-   * Не используйте в боевом коде.
-   */
-  protected __getGameObjectsForTest() {
-    return this.gameObjects;
   }
 }

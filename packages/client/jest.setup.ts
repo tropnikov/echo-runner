@@ -1,5 +1,7 @@
 import { TextDecoder, TextEncoder } from 'util';
 
+import '@testing-library/jest-dom';
+
 // Polyfill for TextEncoder
 if (typeof global.TextEncoder === 'undefined') {
   global.TextEncoder = TextEncoder;

@@ -1,22 +1,31 @@
 import { useCallback, useEffect, useRef } from 'react';
 
+import BackgroundImage from '../assets/bg.png';
 import { Coin } from '../engine/Coin';
 import { GameEngine } from '../engine/GameEngine';
 import { Obstacle } from '../engine/Obstacle';
 import { Player } from '../engine/Player';
+import { initParallaxBackground } from '../helpers/initParallaxBackground';
+import { GameSetupParams } from '../types';
+import { usePlayerSprites } from './usePlayerSprites';
 
-export function useGameSetup({
-  handleOnScore,
-  handleOnDamage,
-}: {
-  handleOnScore: () => void;
-  handleOnDamage: () => void;
-}) {
+export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: GameSetupParams) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
   const obstacleRef = useRef<Obstacle | null>(null);
   const playerRef = useRef<Player | null>(null);
   const coinRef = useRef<Coin | null>(null);
+
+  const { sprite, isLoading: isSpritesLoading, error: spritesError } = usePlayerSprites(playerSprites);
+
+  const resizeCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+
+    if (!canvas) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }, []);
 
   const initGame = useCallback(
     (ctx: CanvasRenderingContext2D) => {
@@ -27,30 +36,28 @@ export function useGameSetup({
           onScore: handleOnScore,
         });
 
+        initParallaxBackground(engineRef.current, BackgroundImage, 0.5);
         resizeCanvas();
       }
 
-      if (!playerRef.current) playerRef.current = new Player(ctx);
+      if (!playerRef.current && sprite) {
+        playerRef.current = new Player(ctx, sprite);
+      }
+
       if (!obstacleRef.current) obstacleRef.current = new Obstacle(ctx);
       if (!coinRef.current) coinRef.current = new Coin(ctx);
 
-      engineRef.current
-        .initGameObject(playerRef.current)
-        .initGameObject(obstacleRef.current)
-        .initGameObject(coinRef.current)
-        .init();
+      // Инициализируем только если все объекты созданы
+      if (playerRef.current && obstacleRef.current && coinRef.current) {
+        engineRef.current
+          .initGameObject(playerRef.current)
+          .initGameObject(obstacleRef.current)
+          .initGameObject(coinRef.current)
+          .init();
+      }
     },
-    [handleOnDamage, handleOnScore],
+    [handleOnDamage, handleOnScore, sprite, resizeCanvas],
   );
-
-  const resizeCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-
-    if (!canvas) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }, []);
 
   const resetScene = useCallback(() => {
     if (!engineRef.current || !playerRef.current || !obstacleRef.current || !coinRef.current) {
@@ -82,5 +89,7 @@ export function useGameSetup({
     coinRef,
     initGame,
     resetScene,
+    isSpritesLoading,
+    spritesError,
   };
 }

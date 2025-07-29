@@ -2,6 +2,8 @@ import { useCallback, useState } from 'react';
 
 import GameView from '@/components/GameView/GameView';
 
+import PlayerJump from './assets/player/jump.png';
+import PlayerRun from './assets/player/run.png';
 import { getCanvasContext } from './helpers/getCanvasContext';
 import { useGameSetup } from './hooks/useGameSetup';
 import { useKeyboardControls } from './hooks/useKeyboardControls';
@@ -28,9 +30,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     });
   }, [maxDamage]);
 
-  const handleStart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.blur();
-
+  const handleStart = () => {
     setIsStarted(true);
 
     const ctx = getCanvasContext(canvasRef);
@@ -46,9 +46,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     pauseGame();
   };
 
-  const handleRestart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.blur();
-
+  const handleRestart = () => {
     setScore(0);
     setDamage(0);
 
@@ -82,6 +80,10 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   const { canvasRef, engineRef, playerRef, initGame, resetScene } = useGameSetup({
     handleOnScore,
     handleOnDamage,
+    playerSprites: {
+      running: PlayerRun,
+      jumping: PlayerJump,
+    },
   });
 
   return (

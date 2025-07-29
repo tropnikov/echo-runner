@@ -5,7 +5,7 @@ export type GameViewProps = {
   maxDamage: number;
   isPaused: boolean;
   isStarted: boolean;
-  onStart: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onRestart: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onStart: () => void;
+  onRestart: () => void;
   onPause: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };

@@ -1,7 +1,6 @@
-// hooks/useLogin.ts
 import { useCallback } from 'react';
 
-import { useGetAuthUserQuery, usePostAuthSigninMutation } from '@/api/generated';
+import { SignInRequest, useGetAuthUserQuery, usePostAuthSigninMutation } from '@/api/generated';
 import { setUser } from '@/redux/slices/auth';
 import { useAppDispatch } from '@/redux/store';
 
@@ -11,7 +10,7 @@ export const useLogin = () => {
   const dispatch = useAppDispatch();
 
   const login = useCallback(
-    async (values: { login: string; password: string }) => {
+    async (values: SignInRequest) => {
       await loginMutation({ signInRequest: values }).unwrap();
       const { data } = await refetch();
       if (data) {

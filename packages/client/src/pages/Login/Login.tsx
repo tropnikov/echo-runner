@@ -4,6 +4,7 @@ import { Navigate, useNavigate } from 'react-router';
 import type { FormProps } from 'antd';
 import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 
+import { SignInRequest } from '@/api/generated';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes } from '@/constants/appRoutes';
 import { rules } from '@/helpers/validators';
@@ -13,11 +14,6 @@ import { isErrorWithReason } from '@/types/errors';
 
 import styles from './Login.module.css';
 
-type FieldType = {
-  login: string;
-  password: string;
-};
-
 const Login = () => {
   const navigate = useNavigate();
   const notification = useNotification();
@@ -25,7 +21,7 @@ const Login = () => {
   const { isAuthorized } = useAuthCheck();
   const [isLoading, setIsLoading] = useState(false);
 
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+  const onFinish: FormProps<SignInRequest>['onFinish'] = async (values) => {
     setIsLoading(true);
     try {
       await login(values);
@@ -58,11 +54,11 @@ const Login = () => {
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical">
-          <Form.Item<FieldType> label="Логин" name="login" rules={rules.login}>
+          <Form.Item<SignInRequest> label="Логин" name="login" rules={rules.login}>
             <Input />
           </Form.Item>
 
-          <Form.Item<FieldType> label="Пароль" name="password" rules={rules.password}>
+          <Form.Item<SignInRequest> label="Пароль" name="password" rules={rules.password}>
             <Input.Password />
           </Form.Item>
 

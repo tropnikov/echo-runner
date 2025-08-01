@@ -11,7 +11,7 @@ export function withAuth<T extends object>(WrappedComponent: React.ComponentType
     const { isLoading, isAuthorized } = useAuthCheck();
     const location = useLocation();
 
-    if (isLoading) {
+    if (isLoading || isAuthorized === null) {
       return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: 'auto' }}>
           <Spin size="large" />

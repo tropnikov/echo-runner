@@ -6,19 +6,19 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 export const useAuthCheck = () => {
   const dispatch = useAppDispatch();
-  const { data, isError, isLoading } = useGetAuthUserQuery();
+  const { data, isError, isLoading, isSuccess } = useGetAuthUserQuery();
   const isAuthorized = useAppSelector((state) => state.auth.isAuthorized);
 
   useEffect(() => {
-    if (data && isAuthorized === null) {
+    if (isSuccess && data && isAuthorized === null) {
       dispatch(setUser(data));
-    } else if (isError && isAuthorized === null) {
+    } else if (!isLoading && isError && isAuthorized === null) {
       dispatch(resetUser());
     }
-  }, [data, isError, isAuthorized, dispatch]);
+  }, [data, isError, isLoading, isSuccess, isAuthorized, dispatch]);
 
   return {
     isAuthorized,
-    isLoading,
+    isLoading: isAuthorized === null || isLoading,
   };
 };

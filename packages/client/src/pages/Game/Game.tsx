@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import GameView from '@/components/GameView/GameView';
 
@@ -77,13 +77,18 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     onPause: pauseGame,
   });
 
+  const playerSprites = useMemo(
+    () => ({
+      running: PlayerRun,
+      jumping: PlayerJump,
+    }),
+    [],
+  );
+
   const { canvasRef, engineRef, playerRef, initGame, resetScene } = useGameSetup({
     handleOnScore,
     handleOnDamage,
-    playerSprites: {
-      running: PlayerRun,
-      jumping: PlayerJump,
-    },
+    playerSprites,
   });
 
   return (

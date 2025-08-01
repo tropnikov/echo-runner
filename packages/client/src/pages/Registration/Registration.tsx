@@ -1,59 +1,76 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router';
 
-import { Button, Card, Form, Input, Typography } from 'antd';
+import { Button, Card, Flex, Form, FormProps, Input, Typography } from 'antd';
 
-import { rules } from '@/helpers/validators';
+import { SignUpRequest } from '@/api/generated';
+import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
+import { appRoutes } from '@/constants/appRoutes';
+import { getConfirmPasswordRule, rules } from '@/helpers/validators';
+import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { useRegister } from '@/hooks/useRegister';
+import { isErrorWithReason } from '@/types/errors';
 
 import styles from './registration.module.css';
 
-type FormData = {
-  first_name: string;
-  second_name: string;
-  login: string;
-  email: string;
-  password: string;
-  phone: string;
-  confirm?: string;
-};
-
 const Registration: FC = () => {
-  const [form] = Form.useForm<FormData>();
+  const [form] = Form.useForm();
 
-  const handleFinish = (values: FormData) => {
-    console.log('Данные регистрации:', values);
+  const navigate = useNavigate();
+  const notification = useNotification();
+  const { register } = useRegister();
+  const { isAuthorized } = useAuthCheck();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onFinish: FormProps<SignUpRequest>['onFinish'] = async (values: SignUpRequest) => {
+    setIsLoading(true);
+    try {
+      await register(values);
+      notification.success({
+        message: 'Регистрация прошла успешно',
+      });
+      navigate(`/${appRoutes.GAME}`);
+    } catch (error) {
+      console.log('Register failed:', error);
+      notification.error({
+        message: isErrorWithReason(error) ? error.data.reason : 'Произошла ошибка при регистрации',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleFinishFailed = (errorInfo: unknown) => {
-    console.error('Ошибка валидации:', errorInfo);
-  };
+  if (isAuthorized) {
+    return <Navigate to={`/${appRoutes.GAME}`} replace />;
+  }
 
   return (
-    <div className={styles.wrapper}>
-      <Card className={styles.card}>
-        <Typography.Title level={1}>Регистрация</Typography.Title>
+    <Flex vertical justify="center" align="center" flex={1} className={styles.wrapper}>
+      <Card title={<Typography.Title level={1}>Регистрация</Typography.Title>} className={styles.card}>
         <Form
-          form={form}
-          layout="vertical"
+          name="basic"
+          className={styles.cardForm}
           validateTrigger="onBlur"
-          onFinish={handleFinish}
-          onFinishFailed={handleFinishFailed}>
-          <Form.Item name="first_name" label="Имя" rules={rules.first_name}>
+          onFinish={onFinish}
+          layout="vertical"
+          form={form}>
+          <Form.Item<SignUpRequest> name="first_name" label="Имя" rules={rules.first_name}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="second_name" label="Фамилия" rules={rules.second_name}>
+          <Form.Item<SignUpRequest> name="second_name" label="Фамилия" rules={rules.second_name}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="login" label="Логин" rules={rules.login}>
+          <Form.Item<SignUpRequest> name="login" label="Логин" rules={rules.login}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="email" label="Email" rules={rules.email}>
+          <Form.Item<SignUpRequest> name="email" label="Email" rules={rules.email}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="password" label="Пароль" rules={rules.password}>
+          <Form.Item<SignUpRequest> name="password" label="Пароль" rules={rules.password}>
             <Input.Password />
           </Form.Item>
 
@@ -61,32 +78,22 @@ const Registration: FC = () => {
             name="confirm"
             label="Подтвердите пароль"
             dependencies={['password']}
-            rules={[
-              { required: true, message: 'Подтвердите пароль' },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Пароли не совпадают'));
-                },
-              }),
-            ]}>
+            rules={getConfirmPasswordRule(form)}>
             <Input.Password />
           </Form.Item>
 
-          <Form.Item name="phone" label="Телефон" rules={rules.phone}>
+          <Form.Item<SignUpRequest> name="phone" label="Телефон" rules={rules.phone}>
             <Input />
           </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block>
+          <Form.Item label={null}>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
               Зарегистрироваться
             </Button>
           </Form.Item>
         </Form>
       </Card>
-    </div>
+    </Flex>
   );
 };
 

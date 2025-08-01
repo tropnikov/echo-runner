@@ -1,3 +1,19 @@
+import { FormInstance } from 'antd';
+
+import { RuleObject } from 'rc-field-form/lib/interface';
+
+export const getConfirmPasswordRule = (form: FormInstance): RuleObject[] => [
+  { required: true, message: 'Подтвердите пароль' },
+  {
+    validator(_, value) {
+      if (!value || form.getFieldValue('password') === value) {
+        return Promise.resolve();
+      }
+      return Promise.reject(new Error('Пароли не совпадают'));
+    },
+  },
+];
+
 export const rules = {
   first_name: [
     { required: true, message: 'Введите имя' },

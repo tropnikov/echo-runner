@@ -41,7 +41,6 @@ const Registration: FC = () => {
   };
 
   if (isAuthorized) {
-    console.log('isAuthorized', isAuthorized);
     return <Navigate to={`/${appRoutes.GAME}`} replace />;
   }
 

@@ -29,7 +29,7 @@ const Registration: FC = () => {
       notification.success({
         message: 'Регистрация прошла успешно',
       });
-      navigate(`/${appRoutes.SIGNIN}`);
+      navigate(`/${appRoutes.GAME}`);
     } catch (error) {
       console.log('Register failed:', error);
       notification.error({

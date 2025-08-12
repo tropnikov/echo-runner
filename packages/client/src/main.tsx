@@ -15,9 +15,8 @@ import startServiceWorker from './helpers/sw';
 
 startServiceWorker();
 
-const root = document.getElementById('root');
-
-ReactDOM.createRoot(root as HTMLElement).render(
+ReactDOM.hydrateRoot(
+  document.getElementById('root') as HTMLElement,
   <React.StrictMode>
     <Provider store={store}>
       <NotificationProvider>

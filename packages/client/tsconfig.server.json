@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "composite": true,
-    "target": "es2019",
+    "target": "es2022",
     "module": "commonjs",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "lib": ["es2019", "DOM"]
+    "lib": ["es2022", "DOM"],
+    "skipLibCheck": true
   },
   "include": ["server/index.ts"]
 }

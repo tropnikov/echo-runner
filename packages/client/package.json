@@ -1,7 +1,6 @@
 {
   "name": "client",
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "tsc --project tsconfig.server.json && cross-env NODE_ENV=development node server/index.js",
     "build": "tsc && yarn build:sw && vite build",
@@ -19,10 +18,9 @@
   "dependencies": {
     "@ant-design/icons": "5.x",
     "@reduxjs/toolkit": "^2.8.2",
-    "@types/webworker": "^0.0.19",
     "antd": "^5.26.4",
     "dotenv": "^16.0.2",
-    "express": "^5.1.0",
+    "express": "^4.19.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.2.0",

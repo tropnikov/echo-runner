@@ -3,6 +3,7 @@
     "composite": true,
     "target": "es2019",
     "module": "commonjs",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "lib": ["es2019", "DOM"]

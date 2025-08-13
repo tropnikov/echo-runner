@@ -1,4 +1,4 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, useEffect } from 'react';
 
 import { Button, theme } from 'antd';
 import {
@@ -11,6 +11,8 @@ import {
 
 import StartGameView from '@/components/StartGameView/StartGameView';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { teamName, useLeaderboard } from '@/hooks/useLeaderboard';
+import { useAppSelector } from '@/redux/store';
 
 import { GameViewProps } from './types';
 
@@ -34,6 +36,15 @@ function GameView({
   const {
     token: { colorBgContainer },
   } = useToken();
+
+  const user = useAppSelector((state) => state.auth.user);
+
+  const { sendNewRating } = useLeaderboard();
+  useEffect(() => {
+    if (damage < maxDamage) return;
+
+    sendNewRating({ data: { score, login: user?.login, user_id: user?.id }, ratingFieldName: 'score', teamName });
+  }, [damage, maxDamage]);
 
   function handleFullscreenButtonClick(e: MouseEvent<HTMLButtonElement>) {
     if (e.currentTarget && e.currentTarget instanceof HTMLButtonElement) {

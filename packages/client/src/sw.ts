@@ -1,7 +1,6 @@
 const CACHE_NAME = 'echo-runner-cache-v1';
 const API_CACHE_NAME = 'echo-runner-api-cache-v2';
-const API_ENDPOINTS = ['/auth/user'];
-const AUTH_API_BASE = 'https://ya-praktikum.tech/api/v2/auth';
+const API_ENDPOINTS = ['/auth/user', '/leaderboard/Echo-runner'];
 
 const URLS = ['/index.html', '/', '/topics', '/signin', '/signup', '/profile', '/leaderboard', '/game', '/error'];
 

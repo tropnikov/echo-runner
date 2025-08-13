@@ -11,7 +11,7 @@ import { RenderResult } from './types';
 dotenv.config();
 
 const port = process.env.PORT || 3000;
-const clientPath = path.join(__dirname, '../');
+const clientPath = path.join(__dirname, '../../');
 
 async function createServer() {
   const app = express();

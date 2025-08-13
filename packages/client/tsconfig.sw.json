@@ -5,7 +5,6 @@
     "noEmitOnError": false,
     "outDir": "public",
     "rootDir": "src",
-    "types": ["@types/webworker"],
     "noEmit": false,
     "isolatedModules": false
   },

@@ -8,5 +8,7 @@ import router from './routes';
 global.fetch = jest.fn(() => Promise.resolve({ json: () => Promise.resolve('hey') }));
 
 test('Example test', async () => {
-  render(<RouterProvider router={router} />);
+  if (router) {
+    render(<RouterProvider router={router} />);
+  }
 });

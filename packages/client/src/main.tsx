@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouterProvider } from 'react-router';
+import { createBrowserRouter, RouterProvider } from 'react-router';
 
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
@@ -7,13 +7,15 @@ import { Provider } from 'react-redux';
 import NotificationProvider from '@/components/NotificationProvider/NotificationProvider';
 import { store } from '@/redux/store';
 
-import router from './routes';
+import { routes } from './routes';
 
 import './index.css';
 
 import startServiceWorker from './helpers/sw';
 
 startServiceWorker();
+
+const router = createBrowserRouter(routes);
 
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,

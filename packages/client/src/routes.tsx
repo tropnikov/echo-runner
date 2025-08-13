@@ -14,7 +14,7 @@ import ProfilePage from './pages/ProfilePage/ProfilePage';
 import Registration from './pages/Registration/Registration';
 import ServerError from './pages/ServerError/ServerError';
 
-export default createBrowserRouter([
+export const routes = [
   {
     path: appRoutes.MAIN,
     Component: App,
@@ -36,4 +36,13 @@ export default createBrowserRouter([
       { path: appRoutes.NOT_FOUND, Component: NotFound },
     ],
   },
-]);
+];
+
+const createRouter = () => {
+  if (typeof window !== 'undefined') {
+    return createBrowserRouter(routes);
+  }
+  return null;
+};
+
+export default createRouter();

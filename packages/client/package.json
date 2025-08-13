@@ -16,6 +16,7 @@
     "generate-api": "rtk-query-codegen-openapi src/api/generated/apiConfig.cjs"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.24.0",
     "@ant-design/icons": "5.x",
     "@reduxjs/toolkit": "^2.8.2",
     "antd": "^5.26.4",

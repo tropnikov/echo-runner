@@ -20,17 +20,32 @@ async function createServer() {
         },
         root: clientPath,
         appType: 'custom',
+        css: {
+            devSourcemap: true,
+        },
     });
     app.use(viteServer.middlewares);
     app.get('*', async (req, res, next) => {
         const url = req.originalUrl;
         try {
             let template = await promises_1.default.readFile(path_1.default.resolve(clientPath, 'index.html'), 'utf-8');
+            const { render } = await viteServer.ssrLoadModule(path_1.default.join(clientPath, 'src/entry-server.tsx'));
             template = await viteServer.transformIndexHtml(url, template);
-            const { render } = (await viteServer.ssrLoadModule(path_1.default.join(clientPath, 'src/entry-server.tsx')));
-            const { html: appHtml, helmet, initialState } = await render(req);
+            const { antStyles, html: appHtml, helmet, initialState } = await render(req);
+            let indexCss = '';
+            try {
+                const cssPath = path_1.default.resolve(clientPath, 'src/index.css');
+                indexCss = await promises_1.default.readFile(cssPath, 'utf-8');
+            }
+            catch (error) {
+                console.warn('Could not read CSS file:', error);
+            }
+            const allStyles = [indexCss ? `<style data-vite-dev-id="index.css">${indexCss}</style>` : '', antStyles ?? '']
+                .filter(Boolean)
+                .join('');
             const html = template
                 .replace(`<!--ssr-helmet-->`, `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`)
+                .replace(`<!--ssr-styles-->`, allStyles)
                 .replace(`<!--ssr-outlet-->`, appHtml)
                 .replace(`<!--ssr-initial-state-->`, `<script>window.APP_INITIAL_STATE = ${(0, serialize_javascript_1.default)(initialState, {
                 isJSON: true,

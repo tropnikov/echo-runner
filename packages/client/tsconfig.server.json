@@ -9,5 +9,5 @@
     "lib": ["es2022", "DOM"],
     "skipLibCheck": true
   },
-  "include": ["server/index.ts"]
+  "include": ["server/**/*"]
 }

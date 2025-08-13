@@ -2,10 +2,11 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import dotenv from 'dotenv';
-import express, { Request as ExpressRequest } from 'express';
-import { HelmetData } from 'react-helmet';
+import express from 'express';
 import serialize from 'serialize-javascript';
 import { createServer as createViteServer } from 'vite';
+
+import { RenderResult } from './types';
 
 dotenv.config();
 
@@ -21,6 +22,9 @@ async function createServer() {
     },
     root: clientPath,
     appType: 'custom',
+    css: {
+      devSourcemap: true,
+    },
   });
 
   app.use(viteServer.middlewares);
@@ -30,15 +34,27 @@ async function createServer() {
 
     try {
       let template = await fs.readFile(path.resolve(clientPath, 'index.html'), 'utf-8');
+      const { render } = await viteServer.ssrLoadModule(path.join(clientPath, 'src/entry-server.tsx'));
+
       template = await viteServer.transformIndexHtml(url, template);
 
-      const { render } = (await viteServer.ssrLoadModule(path.join(clientPath, 'src/entry-server.tsx'))) as {
-        render: (req: ExpressRequest) => Promise<{ html: string; helmet: HelmetData; initialState: unknown }>;
-      };
-      const { html: appHtml, helmet, initialState } = await render(req);
+      const { antStyles, html: appHtml, helmet, initialState }: RenderResult = await render(req);
+      let indexCss = '';
+
+      try {
+        const cssPath = path.resolve(clientPath, 'src/index.css');
+        indexCss = await fs.readFile(cssPath, 'utf-8');
+      } catch (error) {
+        console.warn('Could not read CSS file:', error);
+      }
+
+      const allStyles = [indexCss ? `<style data-vite-dev-id="index.css">${indexCss}</style>` : '', antStyles ?? '']
+        .filter(Boolean)
+        .join('');
 
       const html = template
         .replace(`<!--ssr-helmet-->`, `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`)
+        .replace(`<!--ssr-styles-->`, allStyles)
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(
           `<!--ssr-initial-state-->`,

@@ -10,7 +10,7 @@ const express_1 = __importDefault(require("express"));
 const serialize_javascript_1 = __importDefault(require("serialize-javascript"));
 const vite_1 = require("vite");
 dotenv_1.default.config();
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 3000;
 const clientPath = path_1.default.join(__dirname, '../');
 async function createServer() {
     const app = (0, express_1.default)();

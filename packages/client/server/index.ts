@@ -9,7 +9,7 @@ import { createServer as createViteServer } from 'vite';
 
 dotenv.config();
 
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 3000;
 const clientPath = path.join(__dirname, '../');
 
 async function createServer() {

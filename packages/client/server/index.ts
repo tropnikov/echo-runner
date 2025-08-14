@@ -7,6 +7,7 @@ import serialize from 'serialize-javascript';
 import { createServer as createViteServer } from 'vite';
 
 import { RenderResult } from './types';
+import { clearCSSModulesCache, extractCSSModules } from './utils/cssModulesExtractor';
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ async function createServer() {
 
       const { antStyles, html: appHtml, helmet, initialState }: RenderResult = await render(req);
       let indexCss = '';
+      let cssModules = '';
 
       try {
         const cssPath = path.resolve(clientPath, 'src/index.css');
@@ -48,7 +50,17 @@ async function createServer() {
         console.warn('Could not read CSS file:', error);
       }
 
-      const allStyles = [indexCss ? `<style data-vite-dev-id="index.css">${indexCss}</style>` : '', antStyles ?? '']
+      try {
+        cssModules = await extractCSSModules(clientPath);
+      } catch (error) {
+        console.warn('Could not extract CSS modules:', error);
+      }
+
+      const allStyles = [
+        indexCss ? `<style data-vite-dev-id="index.css">${indexCss}</style>` : '',
+        cssModules ? `<style data-css-modules="true">${cssModules}</style>` : '',
+        antStyles ?? '',
+      ]
         .filter(Boolean)
         .join('');
 
@@ -71,6 +83,19 @@ async function createServer() {
 
   app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
+  });
+
+  // Cleanup при завершении процесса
+  process.on('SIGINT', async () => {
+    console.log('Shutting down server...');
+    await clearCSSModulesCache();
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', async () => {
+    console.log('Shutting down server...');
+    await clearCSSModulesCache();
+    process.exit(0);
   });
 }
 

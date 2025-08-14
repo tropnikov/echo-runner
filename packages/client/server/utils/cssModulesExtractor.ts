@@ -2,47 +2,25 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { glob } from 'glob';
-import { createServer as createViteServer, ViteDevServer } from 'vite';
+import { ViteDevServer } from 'vite';
 
 // Кэш для CSS модулей
 let cssModulesCache: string | null = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 минут в production
 
-let globalViteServer: ViteDevServer | null = null;
-
-/**
- * Создает или переиспользует Vite сервер для обработки CSS модулей
- */
-async function getViteServer(rootPath: string): Promise<ViteDevServer> {
-  if (globalViteServer) {
-    return globalViteServer;
-  }
-
-  globalViteServer = await createViteServer({
-    root: rootPath,
-    server: { middlewareMode: true },
-    appType: 'custom',
-    optimizeDeps: { disabled: true },
-    ssr: {
-      noExternal: true,
-    },
-  });
-
-  return globalViteServer;
-}
-
 /**
  * Извлекает и обрабатывает CSS модули для SSR с использованием Vite
  */
-export async function extractCSSModules(rootPath: string): Promise<string> {
+export async function extractCSSModules(rootPath: string, viteServer: ViteDevServer): Promise<string> {
   const now = Date.now();
+
   if (cssModulesCache && now - cacheTimestamp < CACHE_DURATION && process.env.NODE_ENV === 'production') {
     return cssModulesCache;
   }
 
   try {
-    return await extractCSSModulesViaVite(rootPath);
+    return await extractCSSModulesViaVite(rootPath, viteServer);
   } catch (error) {
     return cssModulesCache ?? '';
   }
@@ -51,13 +29,12 @@ export async function extractCSSModules(rootPath: string): Promise<string> {
 /**
  * Извлекает CSS модули используя Vite
  */
-async function extractCSSModulesViaVite(rootPath: string): Promise<string> {
+async function extractCSSModulesViaVite(rootPath: string, viteServer: ViteDevServer): Promise<string> {
   const cssModulePattern = path.join(rootPath, 'src/**/*.module.css');
   const cssModuleFiles = await glob(cssModulePattern.replace(/\\/g, '/'));
 
   if (cssModuleFiles.length === 0) return;
 
-  const viteServer = await getViteServer(rootPath);
   const processedCSS: string[] = [];
 
   for (const filePath of cssModuleFiles) {
@@ -111,9 +88,4 @@ async function extractCSSModulesViaVite(rootPath: string): Promise<string> {
 export async function clearCSSModulesCache(): Promise<void> {
   cssModulesCache = null;
   cacheTimestamp = 0;
-
-  if (globalViteServer) {
-    await globalViteServer.close();
-    globalViteServer = null;
-  }
 }

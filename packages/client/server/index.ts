@@ -51,7 +51,7 @@ async function createServer() {
       }
 
       try {
-        cssModules = await extractCSSModules(clientPath);
+        cssModules = await extractCSSModules(clientPath, viteServer);
       } catch (error) {
         console.warn('Could not extract CSS modules:', error);
       }

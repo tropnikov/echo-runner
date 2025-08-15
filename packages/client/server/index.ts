@@ -7,7 +7,7 @@ import serialize from 'serialize-javascript';
 import { createServer as createViteServer, ViteDevServer } from 'vite';
 
 import { RenderResult } from './types';
-import { clearCSSModulesCache, extractCSSModules } from './utils/cssModulesExtractor';
+import { extractCSSModules } from './utils/cssModulesExtractor';
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ const isDev = process.env.NODE_ENV === 'development';
 async function createServer() {
   const app = express();
   let viteServer: ViteDevServer | undefined;
-  console.log('isDev: ', isDev);
+
   if (isDev) {
     viteServer = await createViteServer({
       server: {
@@ -45,7 +45,6 @@ async function createServer() {
       let template: string;
 
       if (viteServer) {
-        console.log('Dev bundle');
         template = await fs.readFile(path.resolve(clientPath, 'index.html'), 'utf-8');
         template = await viteServer.transformIndexHtml(url, template);
         render = (await viteServer.ssrLoadModule(path.join(clientPath, 'src/entry-server.tsx'))).render;
@@ -93,19 +92,6 @@ async function createServer() {
 
   app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
-  });
-
-  // Cleanup при завершении процесса
-  process.on('SIGINT', async () => {
-    console.log('Shutting down server...');
-    await clearCSSModulesCache();
-    process.exit(0);
-  });
-
-  process.on('SIGTERM', async () => {
-    console.log('Shutting down server...');
-    await clearCSSModulesCache();
-    process.exit(0);
   });
 }
 

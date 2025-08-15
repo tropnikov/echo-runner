@@ -1,4 +1,3 @@
-import fs from 'fs/promises';
 import path from 'path';
 
 import { glob } from 'glob';
@@ -11,6 +10,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 минут в production
 
 /**
  * Извлекает и обрабатывает CSS модули для SSR с использованием Vite
+ * ВАЖНО: viteServer обязателен для получения правильных хешированных имен классов
  */
 export async function extractCSSModules(rootPath: string, viteServer: ViteDevServer): Promise<string> {
   const now = Date.now();
@@ -33,49 +33,40 @@ async function extractCSSModulesViaVite(rootPath: string, viteServer: ViteDevSer
   const cssModulePattern = path.join(rootPath, 'src/**/*.module.css');
   const cssModuleFiles = await glob(cssModulePattern.replace(/\\/g, '/'));
 
-  if (cssModuleFiles.length === 0) return;
+  if (cssModuleFiles.length === 0) return '';
 
   const processedCSS: string[] = [];
 
   for (const filePath of cssModuleFiles) {
+    const relativePath = '/' + path.relative(rootPath, filePath).replace(/\\/g, '/');
+
     try {
-      const relativePath = '/' + path.relative(rootPath, filePath).replace(/\\/g, '/');
       const transformResult = await viteServer.transformRequest(relativePath);
 
-      if (transformResult?.code) {
-        let cssContent = '';
-        const cssRegex = /\.textContent\s*=\s*"([^"]+)"/g;
+      if (!transformResult?.code) continue;
 
-        let match: RegExpExecArray | null;
+      let cssContent = '';
+      const viteMatch = transformResult.code.match(/__vite__css\s*=\s*["'`]([^"'`]+)["'`]/);
 
-        while ((match = cssRegex.exec(transformResult.code)) !== null) {
-          cssContent += match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
-        }
+      if (viteMatch) {
+        cssContent = viteMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+      }
 
-        if (!cssContent && transformResult.code.includes('createHotContext')) {
-          const styleMatch = transformResult.code.match(/(?:__vite__css|textContent\s*=\s*")[^"]*"([^"]+)"/);
-
-          if (styleMatch) {
-            cssContent = styleMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
-          }
-        }
-
-        if (!cssContent) {
-          const rawCSS = await fs.readFile(filePath, 'utf-8');
-          cssContent = rawCSS;
-        }
-
-        if (cssContent) {
-          processedCSS.push(`/* ${relativePath} */\n${cssContent}`);
-        }
+      if (cssContent?.trim()) {
+        processedCSS.push(`/* ${relativePath} */\n${cssContent}`);
+      } else {
+        console.warn(`Could not extract CSS content from ${relativePath}. Transform result:`, {
+          codeSnippet: transformResult.code.substring(0, 200) + '...',
+          hasCode: !!transformResult.code,
+          codeLength: transformResult.code.length,
+        });
       }
     } catch (error) {
-      console.warn(`Could not process CSS module ${filePath}:`, error);
+      console.error(`Failed to process CSS module ${filePath}:`, error);
     }
   }
 
-  const result = processedCSS.join('');
-
+  const result = processedCSS.join('\n\n');
   cssModulesCache = result;
   cacheTimestamp = Date.now();
 
@@ -83,7 +74,7 @@ async function extractCSSModulesViaVite(rootPath: string, viteServer: ViteDevSer
 }
 
 /**
- * Очищает кэш CSS модулей и закрывает Vite сервер
+ * Очищает кеш CSS модулей
  */
 export async function clearCSSModulesCache(): Promise<void> {
   cssModulesCache = null;

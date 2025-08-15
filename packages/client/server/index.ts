@@ -2,9 +2,9 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import dotenv from 'dotenv';
-import express from 'express';
+import express, { Request } from 'express';
 import serialize from 'serialize-javascript';
-import { createServer as createViteServer } from 'vite';
+import { createServer as createViteServer, ViteDevServer } from 'vite';
 
 import { RenderResult } from './types';
 import { clearCSSModulesCache, extractCSSModules } from './utils/cssModulesExtractor';
@@ -13,56 +13,62 @@ dotenv.config();
 
 const port = process.env.PORT || 3000;
 const clientPath = path.join(__dirname, '../../');
+const isDev = process.env.NODE_ENV === 'development';
 
 async function createServer() {
   const app = express();
+  let viteServer: ViteDevServer | undefined;
+  console.log('isDev: ', isDev);
+  if (isDev) {
+    viteServer = await createViteServer({
+      server: {
+        middlewareMode: true,
+      },
+      root: clientPath,
+      appType: 'custom',
+      css: {
+        devSourcemap: true,
+      },
+    });
 
-  const viteServer = await createViteServer({
-    server: {
-      middlewareMode: true,
-    },
-    root: clientPath,
-    appType: 'custom',
-    css: {
-      devSourcemap: true,
-    },
-  });
-
-  app.use(viteServer.middlewares);
+    app.use(viteServer.middlewares);
+  } else {
+    app.use(express.static(path.join(clientPath, 'dist/client'), { index: false }));
+  }
 
   app.get('*', async (req, res, next) => {
     const url = req.originalUrl;
+    let allStyles = '';
 
     try {
-      let template = await fs.readFile(path.resolve(clientPath, 'index.html'), 'utf-8');
-      const { render } = await viteServer.ssrLoadModule(path.join(clientPath, 'src/entry-server.tsx'));
+      let render: (req: Request) => Promise<RenderResult>;
+      let template: string;
 
-      template = await viteServer.transformIndexHtml(url, template);
+      if (viteServer) {
+        console.log('Dev bundle');
+        template = await fs.readFile(path.resolve(clientPath, 'index.html'), 'utf-8');
+        template = await viteServer.transformIndexHtml(url, template);
+        render = (await viteServer.ssrLoadModule(path.join(clientPath, 'src/entry-server.tsx'))).render;
+
+        const cssPath = path.resolve(clientPath, 'src/index.css');
+        const indexCss = await fs.readFile(cssPath, 'utf-8');
+        const cssModules = await extractCSSModules(clientPath, viteServer);
+
+        allStyles = [
+          indexCss ? `<style data-css="index.css">${indexCss}</style>` : '',
+          cssModules ? `<style data-css-modules="true">${cssModules}</style>` : '',
+        ]
+          .filter(Boolean)
+          .join('\n');
+      } else {
+        template = await fs.readFile(path.join(clientPath, 'dist/client/index.html'), 'utf-8');
+        const pathToServer = path.join(clientPath, 'dist/server/entry-server.mjs');
+        render = (await import(pathToServer)).render;
+      }
 
       const { antStyles, html: appHtml, helmet, initialState }: RenderResult = await render(req);
-      let indexCss = '';
-      let cssModules = '';
 
-      try {
-        const cssPath = path.resolve(clientPath, 'src/index.css');
-        indexCss = await fs.readFile(cssPath, 'utf-8');
-      } catch (error) {
-        console.warn('Could not read CSS file:', error);
-      }
-
-      try {
-        cssModules = await extractCSSModules(clientPath, viteServer);
-      } catch (error) {
-        console.warn('Could not extract CSS modules:', error);
-      }
-
-      const allStyles = [
-        indexCss ? `<style data-vite-dev-id="index.css">${indexCss}</style>` : '',
-        cssModules ? `<style data-css-modules="true">${cssModules}</style>` : '',
-        antStyles ?? '',
-      ]
-        .filter(Boolean)
-        .join('');
+      allStyles += `\n${antStyles}`;
 
       const html = template
         .replace(`<!--ssr-helmet-->`, `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`)
@@ -76,7 +82,11 @@ async function createServer() {
         );
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
     } catch (error) {
-      viteServer.ssrFixStacktrace(error as Error);
+      if (viteServer?.ssrFixStacktrace) {
+        viteServer.ssrFixStacktrace(error as Error);
+      }
+
+      console.error('SSR Error:', error);
       next(error);
     }
   });

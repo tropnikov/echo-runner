@@ -6,8 +6,15 @@ import {
   usePostLeaderboardByTeamNameMutation,
   usePostLeaderboardMutation,
 } from '@/api/generated';
+import { teamName } from '@/constants/leaderboardStats';
 
-export const teamName = 'Echo-runner';
+interface GetAllRatingsResponse {
+  data: {
+    user_id: number;
+    login: string;
+    score: number;
+  };
+}
 
 export const useLeaderboard = () => {
   const [leaderboardMutation] = usePostLeaderboardMutation();
@@ -30,11 +37,3 @@ export const useLeaderboard = () => {
 
   return { sendNewRating, getAllRatings };
 };
-
-interface GetAllRatingsResponse {
-  data: {
-    user_id: number;
-    login: string;
-    score: number;
-  };
-}

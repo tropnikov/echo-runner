@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import { Avatar, Flex, Table, Typography } from 'antd';
+import { Avatar, Empty, Flex, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 
 import SectionHeader from '@/components/MainPage/SectionHeader';
@@ -40,6 +40,7 @@ const LeaderboardTable: FC<LeaderboardTableProps> = ({ data }) => {
       <Flex gap={20} vertical>
         <SectionHeader title="Лучшие игроки" description="Рейтинг игр" />
         <Table<LeaderboardRecord>
+          locale={{ emptyText: <Empty description="Рейтингов пока нет" /> }}
           dataSource={data}
           columns={columns}
           pagination={false}

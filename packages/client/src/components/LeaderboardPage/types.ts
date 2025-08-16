@@ -11,3 +11,7 @@ export interface LeaderboardTableProps {
 export interface HeroBlockProps {
   onUpdate: () => void;
 }
+
+export interface LoadMoreBlockProps {
+  onLoadMore: () => void;
+}

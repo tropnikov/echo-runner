@@ -15,9 +15,6 @@ const LeaderboardTablePlayer: FC<PlayerProps> = ({ player }) => {
         <Typography.Text strong style={{ fontSize: 16 }}>
           {player}
         </Typography.Text>
-        <Flex align="center" gap={8}>
-          <Typography.Text type="secondary">Уровень 1</Typography.Text>
-        </Flex>
       </Flex>
     </Flex>
   );

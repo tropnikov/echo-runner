@@ -26,6 +26,25 @@ jest.mock('@/components/GameView/GameView', () => ({
   },
 }));
 
+jest.mock('react-redux', () => ({
+  useSelector: Object.assign(jest.fn().mockReturnValue({}), {
+    withTypes: () => jest.fn(),
+  }),
+  useDispatch: Object.assign(jest.fn(), {
+    withTypes: () => jest.fn(),
+  }),
+  useStore: Object.assign(
+    jest.fn().mockReturnValue({
+      getState: () => ({}),
+      dispatch: jest.fn(),
+      subscribe: jest.fn(),
+    }),
+    {
+      withTypes: () => jest.fn(),
+    },
+  ),
+}));
+
 describe('Game', () => {
   test('рендерится с начальными значениями', () => {
     render(<Game maxDamage={5} />);

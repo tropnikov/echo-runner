@@ -8,6 +8,7 @@ import { useNotification } from '@/components/NotificationProvider/NotificationP
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { useLogout } from '@/hooks/useLogout';
+import { useOAuth } from '@/hooks/useOAuth';
 import { useAppSelector } from '@/redux/store';
 import { isErrorWithReason } from '@/types/errors';
 
@@ -46,6 +47,8 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAppSelector((state) => state.auth);
   const { isAuthorized, isLoading } = useAuthCheck();
   const { logout } = useLogout();
+
+  useOAuth();
 
   const currentSelectedKey = useMemo(() => {
     const pathname = location.pathname;

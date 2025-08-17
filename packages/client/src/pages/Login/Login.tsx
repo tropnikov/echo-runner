@@ -10,6 +10,7 @@ import { appRoutes } from '@/constants/appRoutes';
 import { rules } from '@/helpers/validators';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { useLogin } from '@/hooks/useLogin';
+import { useOAuth } from '@/hooks/useOAuth';
 import { isErrorWithReason } from '@/types/errors';
 
 import styles from './Login.module.css';
@@ -18,6 +19,7 @@ const Login = () => {
   const navigate = useNavigate();
   const notification = useNotification();
   const { login } = useLogin();
+  const { oauthInit } = useOAuth();
   const { isAuthorized } = useAuthCheck();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,11 +64,16 @@ const Login = () => {
             <Input.Password />
           </Form.Item>
 
-          <Form.Item label={null}>
-            <Button type="primary" htmlType="submit" loading={isLoading}>
-              Войти
+          <Flex gap={16}>
+            <Form.Item label={null}>
+              <Button type="primary" htmlType="submit" loading={isLoading}>
+                Войти
+              </Button>
+            </Form.Item>
+            <Button type="primary" loading={isLoading} onClick={() => oauthInit()}>
+              Яндекс ID
             </Button>
-          </Form.Item>
+          </Flex>
         </Form>
       </Card>
     </Flex>

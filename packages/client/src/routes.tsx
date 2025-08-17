@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, createMemoryRouter } from 'react-router';
 
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
@@ -38,11 +38,10 @@ export const routes = [
   },
 ];
 
-const createRouter = () => {
+export const createRouter = (initialEntries?: string[]) => {
   if (typeof window !== 'undefined') {
     return createBrowserRouter(routes);
   }
-  return null;
-};
 
-export default createRouter();
+  return createMemoryRouter(routes, { initialEntries: initialEntries || ['/'] });
+};

@@ -14,8 +14,6 @@ import NotificationProvider from './components/NotificationProvider/Notification
 import { createFetchRequest } from './entry-server.utils';
 import { routes } from './routes';
 
-import './index.css';
-
 export const render = async (req: ExpressRequest): Promise<RenderResult> => {
   const { query, dataRoutes } = createStaticHandler(routes);
   const fetchRequest = createFetchRequest(req);

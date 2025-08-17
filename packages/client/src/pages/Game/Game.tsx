@@ -31,7 +31,14 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
       if (next >= maxDamage) {
         engineRef.current?.stop();
         setIsPaused(false);
-        sendNewRating({ data: { score, login: user?.login, user_id: user?.id }, ratingFieldName: 'score', teamName });
+        setScore((prevScore) => {
+          sendNewRating({
+            data: { score: prevScore, login: user?.login, user_id: user?.id },
+            ratingFieldName: 'score',
+            teamName,
+          });
+          return prevScore;
+        });
       }
       return next;
     });

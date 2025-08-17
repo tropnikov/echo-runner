@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
     "composite": true,
-    "target": "es2020",
+    "target": "es2019",
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
@@ -19,13 +18,12 @@
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
     "importsNotUsedAsValues": "error",
-    "lib": ["es2020", "esnext.asynciterable"],
+    "lib": ["es2019", "esnext.asynciterable"],
     "types": ["node", "jest"],
     "baseUrl": ".",
     "paths": {
       "*": ["types/*"]
     },
-    "outDir": "dist",
-    "skipLibCheck": true
+    "outDir": "dist"
   }
 }

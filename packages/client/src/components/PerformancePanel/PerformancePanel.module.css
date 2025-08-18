@@ -1,0 +1,14 @@
+.panel {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  padding: 8px 10px;
+  background: rgb(0 0 0 / 60%);
+  color: #fff;
+  font-size: 12px;
+  border-radius: 8px;
+  z-index: 9999;
+  min-width: 170px;
+  font-family: monospace, sans-serif;
+  line-height: 1.4;
+}

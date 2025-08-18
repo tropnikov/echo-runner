@@ -13,7 +13,9 @@ import './index.css';
 
 import startServiceWorker from './helpers/sw';
 
-// startServiceWorker();
+if (import.meta.env.PROD) {
+  startServiceWorker();
+}
 
 const root = document.getElementById('root');
 

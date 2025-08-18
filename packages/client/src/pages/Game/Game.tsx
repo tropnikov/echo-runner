@@ -21,7 +21,6 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   const handleOnDamage = useCallback(() => {
     setDamage((prev) => {
       const next = prev + 1;
-
       if (next >= maxDamage) {
         engineRef.current?.stop();
         setIsPaused(false);
@@ -32,10 +31,8 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
 
   const handleStart = () => {
     setIsStarted(true);
-
     const ctx = getCanvasContext(canvasRef);
     if (!ctx) return;
-
     initGame(ctx);
   };
 
@@ -48,8 +45,9 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     setScore(0);
     setDamage(0);
 
-    const ctx = getCanvasContext(canvasRef);
+    engineRef.current?.stop();
 
+    const ctx = getCanvasContext(canvasRef);
     if (!ctx) return;
 
     resetScene();
@@ -60,11 +58,9 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   const pauseGame = useCallback(() => {
     setIsPaused((prev) => {
       const newState = !prev;
-
       if (engineRef.current) {
         newState ? engineRef.current.pause() : engineRef.current.resume();
       }
-
       return newState;
     });
   }, []);

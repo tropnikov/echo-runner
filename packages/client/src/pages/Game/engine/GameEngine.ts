@@ -4,8 +4,6 @@ import { ParallaxBackground } from './ParallaxBackground';
 import { Player } from './Player';
 import { Collision, ObjectEffectType } from './types';
 
-console.log('✅ Я В ЭТОМ ФАЙЛЕ: useGameSetup.ts');
-
 export type FrameHooks = { before?: () => void; after?: () => void };
 
 /**

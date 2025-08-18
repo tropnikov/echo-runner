@@ -11,7 +11,7 @@ export type Stats = {
 
 const MAX_SAMPLES = 300; // ~5 сек при 60fps
 const DROP_THRESHOLD = 1000 / 55; // считаем дропом, если кадр дольше ~18мс
-const IDLE_THRESHOLD_MS = 250; // если rAF молчит — включаем фолбэк
+// const IDLE_THRESHOLD_MS = 250; // если rAF молчит — включаем фолбэк
 
 interface PerformanceWithMemory extends Performance {
   memory?: {
@@ -20,16 +20,17 @@ interface PerformanceWithMemory extends Performance {
     jsHeapSizeLimit: number;
   };
 }
-
+/** Хук сбора перф-метрик рендера (fps, p99, long tasks, memory). */
 export function usePerformanceStats() {
+  // накопители
   const samples = useRef<number[]>([]);
-  const lastT = useRef<number | null>(null);
+
   const dropped = useRef(0);
   const longTasks = useRef(0);
 
-  // отметка последнего реального кадра (через endFrame)
+  // таймстемпы
+  const lastT = useRef<number | null>(null);
   const lastRealTick = useRef<number>(0);
-  // база для синтетических тиков
   const fallbackLast = useRef<number | null>(null);
 
   const [stats, setStats] = useState<Stats>({
@@ -49,10 +50,13 @@ export function usePerformanceStats() {
     const now = performance.now();
     const prev = lastT.current ?? now;
     const dt = now - prev;
+
+    if (dt <= 0.5 || dt > 1000) {
+      lastT.current = now;
+      return;
+    }
+
     lastT.current = now;
-
-    console.log('[PERF] Кадр:', dt.toFixed(2), 'мс'); // ← смотри сюда!
-
     lastRealTick.current = now;
 
     samples.current.push(dt);
@@ -91,44 +95,44 @@ export function usePerformanceStats() {
   }, []);
 
   // Long Task API (если доступно)
-  useEffect(() => {
-    if (typeof PerformanceObserver === 'undefined') return;
-    try {
-      const obs = new PerformanceObserver((list) => {
-        longTasks.current += list.getEntries().length;
-      });
-      obs.observe({ type: 'longtask', buffered: true });
-      return () => obs.disconnect();
-    } catch {
-      // игнор, если недоступно
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (typeof PerformanceObserver === 'undefined') return;
+  //   try {
+  //     const obs = new PerformanceObserver((list) => {
+  //       longTasks.current += list.getEntries().length;
+  //     });
+  //     obs.observe({ type: 'longtask', buffered: true });
+  //     return () => obs.disconnect();
+  //   } catch {
+  //     // игнор, если недоступно
+  //   }
+  // }, []);
 
   // Фолбэк-тикер: если реальных кадров нет > IDLE_THRESHOLD_MS — подкидываем синтетические (~60fps)
-  useEffect(() => {
-    let rafId = 0;
-    const loop = () => {
-      const now = performance.now();
-      const idle = now - lastRealTick.current;
+  //   useEffect(() => {
+  //     let rafId = 0;
+  //     const loop = () => {
+  //       const now = performance.now();
+  //       const idle = now - lastRealTick.current;
 
-      if (idle > IDLE_THRESHOLD_MS) {
-        const prev = fallbackLast.current ?? now - 1000 / 60;
-        const dt = now - prev;
-        fallbackLast.current = now;
+  //       if (idle > IDLE_THRESHOLD_MS) {
+  //         const prev = fallbackLast.current ?? now - 1000 / 60;
+  //         const dt = now - prev;
+  //         fallbackLast.current = now;
 
-        samples.current.push(dt);
-        if (dt > DROP_THRESHOLD) dropped.current += 1;
-        if (samples.current.length > MAX_SAMPLES) samples.current.shift();
-      } else {
-        fallbackLast.current = null;
-      }
+  //         samples.current.push(dt);
+  //         if (dt > DROP_THRESHOLD) dropped.current += 1;
+  //         if (samples.current.length > MAX_SAMPLES) samples.current.shift();
+  //       } else {
+  //         fallbackLast.current = null;
+  //       }
 
-      rafId = requestAnimationFrame(loop);
-    };
+  //       rafId = requestAnimationFrame(loop);
+  //     };
 
-    rafId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(rafId);
-  }, []);
+  //     rafId = requestAnimationFrame(loop);
+  //     return () => cancelAnimationFrame(rafId);
+  //   }, []);
 
   const reset = useCallback(() => {
     samples.current = [];
@@ -137,6 +141,7 @@ export function usePerformanceStats() {
     lastT.current = null;
     lastRealTick.current = 0;
     fallbackLast.current = null;
+
     setStats((s) => ({
       ...s,
       fps: 0,

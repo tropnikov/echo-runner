@@ -23,9 +23,11 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
   // актуальные ссылки, чтобы не перевешивать хуки
   const beginRef = useRef(beginFrame);
   const endRef = useRef(endFrame);
+
   useEffect(() => {
     beginRef.current = beginFrame;
   }, [beginFrame]);
+
   useEffect(() => {
     endRef.current = endFrame;
   }, [endFrame]);
@@ -35,13 +37,13 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }, []);
 
   const initGame = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      // 1) создаём движок один раз
       if (engineRef.current === null) {
         const e = new GameEngine({
           ctx,
@@ -49,7 +51,7 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
           onScore: handleOnScore,
         });
 
-        // вешаем хуки кадров (один раз), вызываем актуальные begin/end через ref
+        // хуки кадров (один раз), вызываем актуальные begin/end через ref
         e.setFrameHooks({
           before: () => {
             beginRef.current();
@@ -65,18 +67,18 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
         engineRef.current = e;
       }
 
-      // 2) локальная ссылка, без non-null
+      // локальная ссылка
       const engine = engineRef.current;
       if (!engine) return;
 
-      // 3) создаём сущности
+      // создаём сущности
       if (!playerRef.current && sprite) {
         playerRef.current = new Player(ctx, sprite);
       }
       if (!obstacleRef.current) obstacleRef.current = new Obstacle(ctx);
       if (!coinRef.current) coinRef.current = new Coin(ctx);
 
-      // 4) добавляем в сцену, когда все готовы
+      // добавляем в сцену, когда все готовы
       if (playerRef.current && obstacleRef.current && coinRef.current) {
         engine
           .initGameObject(playerRef.current)
@@ -85,10 +87,6 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
           .init()
           .start();
       }
-
-      console.log('Sprite loaded:', sprite);
-
-      engine.start();
     },
     [handleOnDamage, handleOnScore, sprite, resizeCanvas],
   );
@@ -112,7 +110,6 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
     window.addEventListener('resize', resizeCanvas);
     return () => {
       window.removeEventListener('resize', resizeCanvas);
-      // аккуратно останавливаем движок при размонтировании
       if (engineRef.current) {
         engineRef.current.stop();
       }
@@ -129,6 +126,6 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
     resetScene,
     isSpritesLoading,
     spritesError,
-    stats, // ← можно пробрасывать в StatsOverlay
+    stats,
   };
 }

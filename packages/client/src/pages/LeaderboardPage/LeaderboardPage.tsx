@@ -6,7 +6,9 @@ import HeroBlock from '@/components/LeaderboardPage/HeroBlock';
 import LeaderboardTable from '@/components/LeaderboardPage/LeaderboardTable';
 import LoadMoreBlock from '@/components/LeaderboardPage/LoadMoreBlock';
 import { LeaderboardRecord } from '@/components/LeaderboardPage/types';
-import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
+import { GetAllRatingsResponse, useLeaderboard } from '@/hooks/useLeaderboard';
+import { isErrorWithReason } from '@/types/errors';
 
 const LeaderboardPage: FC = () => {
   const limitDelta = 10;
@@ -15,9 +17,18 @@ const LeaderboardPage: FC = () => {
   const [data, setData] = useState<LeaderboardRecord[]>([]);
   const [limit, setLimit] = useState<number>(limitDelta);
   const [showLoadMore, setShowLoadMore] = useState<boolean>(true);
+  const notification = useNotification();
 
   const updateRatings = useCallback(async () => {
-    const response = await getAllRatings({ ratingFieldName: 'score', cursor: 0, limit });
+    let response: GetAllRatingsResponse[] = [];
+    try {
+      response = await getAllRatings({ ratingFieldName: 'score', cursor: 0, limit });
+    } catch (error) {
+      notification.error({
+        message: isErrorWithReason(error) ? error.data.reason : 'Произошла ошибка при получении рейтингов',
+      });
+    }
+
     setShowLoadMore(response.length == limit);
     setData(
       response.map((item) => {

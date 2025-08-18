@@ -8,7 +8,7 @@ import {
 } from '@/api/generated';
 import { teamName } from '@/constants/leaderboardStats';
 
-interface GetAllRatingsResponse {
+export interface GetAllRatingsResponse {
   data: {
     user_id: number;
     login: string;

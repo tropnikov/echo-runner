@@ -21,3 +21,5 @@ export const leaderboardStats: StatItem[] = [
     value: 123,
   },
 ];
+
+export const teamName = 'Echo-runner';

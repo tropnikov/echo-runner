@@ -7,7 +7,9 @@ import { PlayCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import SectionHeader from '@/components/MainPage/SectionHeader';
 import { appRoutes } from '@/constants/appRoutes';
 
-const HeroBlock: FC = () => {
+import { HeroBlockProps } from './types';
+
+const HeroBlock: FC<HeroBlockProps> = ({ onUpdate }) => {
   const navigate = useNavigate();
 
   const handleStartClick = () => {
@@ -22,7 +24,7 @@ const HeroBlock: FC = () => {
       />
 
       <Flex gap={10}>
-        <Button type="default" size="large" icon={<ReloadOutlined />}>
+        <Button type="default" size="large" icon={<ReloadOutlined />} onClick={onUpdate}>
           Обновить
         </Button>
         <Button type="primary" size="large" icon={<PlayCircleFilled />} onClick={handleStartClick}>

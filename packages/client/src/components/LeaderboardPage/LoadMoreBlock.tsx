@@ -2,10 +2,12 @@ import { FC } from 'react';
 
 import { Button, Flex } from 'antd';
 
-const LoadMoreBlock: FC = () => {
+import { LoadMoreBlockProps } from './types';
+
+const LoadMoreBlock: FC<LoadMoreBlockProps> = ({ onLoadMore }) => {
   return (
     <Flex align="center" justify="center">
-      <Button type="default" size="large">
+      <Button type="default" size="large" onClick={onLoadMore}>
         Загрузить больше
       </Button>
     </Flex>

@@ -13,7 +13,7 @@ import './index.css';
 
 import startServiceWorker from './helpers/sw';
 
-startServiceWorker();
+// startServiceWorker();
 
 const root = document.getElementById('root');
 

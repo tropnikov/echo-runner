@@ -34,11 +34,9 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     setIsStarted(true);
 
     const ctx = getCanvasContext(canvasRef);
-
     if (!ctx) return;
 
     initGame(ctx);
-    engineRef.current?.start();
   };
 
   const handleOnPause = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -85,7 +83,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     [],
   );
 
-  const { canvasRef, engineRef, playerRef, initGame, resetScene } = useGameSetup({
+  const { canvasRef, engineRef, playerRef, initGame, resetScene, stats } = useGameSetup({
     handleOnScore,
     handleOnDamage,
     playerSprites,
@@ -102,6 +100,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
       onStart={handleStart}
       onRestart={handleRestart}
       onPause={handleOnPause}
+      stats={stats}
     />
   );
 }

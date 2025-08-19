@@ -26,8 +26,6 @@ export class GameEngine {
 
   private gameSpeed = config.initialSpeed;
 
-  // private lastTime = 0;
-
   private lastTime: number | null = null;
 
   private speedTimer = 0;
@@ -65,8 +63,6 @@ export class GameEngine {
    * Основной цикл игрового движка.
    */
   private loop() {
-    // this.lastTime = performance.now();
-
     const sceneTimer = (now: number) => {
       if (!this.animationId) return;
       if (this.lastTime === null) this.lastTime = now;
@@ -77,8 +73,6 @@ export class GameEngine {
         const deltaTime = (now - this.lastTime) / 1000;
         this.lastTime = now;
 
-        console.log('[ENGINE] Кадр:', deltaTime.toFixed(3), 'сек');
-
         this.updateGameSpeed(deltaTime);
         this.clearScene();
 
@@ -88,7 +82,7 @@ export class GameEngine {
         this.checkCollisions();
         this.gameObjects.forEach((obj) => obj.render());
       } finally {
-        this.hooks.after?.(); // гарантированно вызовется даже если update/render упадёт
+        this.hooks.after?.();
       }
       this.animationId = requestAnimationFrame(sceneTimer);
     };
@@ -134,8 +128,6 @@ export class GameEngine {
     this.gameSpeed = config.initialSpeed;
     this.speedTimer = 0;
     this.lastTime = null;
-    // this.lastTime = performance.now();
-
     this.loop();
   }
 
@@ -152,9 +144,7 @@ export class GameEngine {
    * Приостанавливает игру.
    */
   pause() {
-    if (!this.animationId) return;
-    cancelAnimationFrame(this.animationId);
-    this.animationId = null;
+    this.stop();
   }
 
   /**
@@ -162,7 +152,6 @@ export class GameEngine {
    */
   resume() {
     if (this.animationId) return;
-    // this.lastTime = performance.now();
     this.lastTime = null;
     this.loop();
   }

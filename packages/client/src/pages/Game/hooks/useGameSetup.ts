@@ -17,13 +17,9 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
   const obstacleRef = useRef<Obstacle | null>(null);
   const playerRef = useRef<Player | null>(null);
   const coinRef = useRef<Coin | null>(null);
-
-  // флаг «движок уже запущен» — только на уровне хука
   const startedRef = useRef(false);
 
-  // перф-метрики (fps по dt между begin'ами)
   const { beginFrame, endFrame, stats, reset } = usePerformanceStats();
-
   const { sprite, isLoading: isSpritesLoading, error: spritesError } = usePlayerSprites(playerSprites);
 
   const resizeCanvas = useCallback(() => {
@@ -42,7 +38,6 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
           onScore: handleOnScore,
         });
 
-        // привязываем перф-колбэки (без ts), обновим их ещё и эффектом ниже
         e.setFrameHooks({
           before: beginFrame,
           after: endFrame,
@@ -57,12 +52,10 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
       const engine = engineRef.current;
       if (!engine) return;
 
-      // создаём сущности
       if (!playerRef.current && sprite) playerRef.current = new Player(ctx, sprite);
       if (!obstacleRef.current) obstacleRef.current = new Obstacle(ctx);
       if (!coinRef.current) coinRef.current = new Coin(ctx);
 
-      // добавляем в сцену, когда все готовы
       if (playerRef.current && obstacleRef.current && coinRef.current) {
         engine
           .initGameObject(playerRef.current)
@@ -70,7 +63,6 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
           .initGameObject(coinRef.current)
           .init();
 
-        // безопасный запуск: не даём запуститься второй раз
         if (!startedRef.current) {
           engine.start();
           startedRef.current = true;
@@ -80,19 +72,10 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
     [handleOnDamage, handleOnScore, sprite, resizeCanvas, beginFrame, endFrame],
   );
 
-  // если колбэки пересоздались, обновим их в движке
-  useEffect(() => {
-    engineRef.current?.setFrameHooks({
-      before: beginFrame,
-      after: endFrame,
-    });
-  }, [beginFrame, endFrame]);
-
   const resetScene = useCallback(() => {
     const engine = engineRef.current;
     if (!engine || !playerRef.current || !obstacleRef.current || !coinRef.current) return;
 
-    // стопаем обязательно, чтобы не было двух циклов
     engine.stop();
     startedRef.current = false;
 
@@ -104,11 +87,10 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
       .initGameObject(coinRef.current.reset())
       .init();
 
-    // если хотим продолжить игру сразу — перезапускаем один цикл
     engine.start();
     startedRef.current = true;
 
-    reset(); // обнуляем метрики
+    reset();
   }, [reset]);
 
   useEffect(() => {

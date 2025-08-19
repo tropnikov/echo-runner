@@ -7,15 +7,13 @@ import { Provider } from 'react-redux';
 import NotificationProvider from '@/components/NotificationProvider/NotificationProvider';
 import { store } from '@/redux/store';
 
-import { createRouter } from './routes';
+import router from './routes';
 
 import './index.css';
 
 import startServiceWorker from './helpers/sw';
 
 startServiceWorker();
-
-const router = createRouter();
 
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,

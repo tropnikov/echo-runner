@@ -1,4 +1,4 @@
-import { createBrowserRouter, createMemoryRouter } from 'react-router';
+import { createBrowserRouter } from 'react-router';
 
 import App from './App';
 import { appRoutes } from './constants/appRoutes';
@@ -14,7 +14,7 @@ import ProfilePage from './pages/ProfilePage/ProfilePage';
 import Registration from './pages/Registration/Registration';
 import ServerError from './pages/ServerError/ServerError';
 
-export const routes = [
+export default createBrowserRouter([
   {
     path: appRoutes.MAIN,
     Component: App,
@@ -36,12 +36,4 @@ export const routes = [
       { path: appRoutes.NOT_FOUND, Component: NotFound },
     ],
   },
-];
-
-export const createRouter = (initialEntries?: string[]) => {
-  if (typeof window !== 'undefined') {
-    return createBrowserRouter(routes);
-  }
-
-  return createMemoryRouter(routes, { initialEntries: initialEntries || ['/'] });
-};
+]);

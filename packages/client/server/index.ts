@@ -3,7 +3,6 @@ import path from 'path';
 
 import dotenv from 'dotenv';
 import express, { Request } from 'express';
-import serialize from 'serialize-javascript';
 import { createServer as createViteServer, ViteDevServer } from 'vite';
 
 import { RenderResult } from './types';
@@ -65,20 +64,14 @@ async function createServer() {
         render = (await import(pathToServer)).render;
       }
 
-      const { antStyles, html: appHtml, helmet, initialState }: RenderResult = await render(req);
+      const { antStyles, html: appHtml, helmet }: RenderResult = await render(req);
 
       allStyles += `\n${antStyles}`;
 
       const html = template
         .replace(`<!--ssr-helmet-->`, `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`)
         .replace(`<!--ssr-styles-->`, allStyles)
-        .replace(`<!--ssr-outlet-->`, appHtml)
-        .replace(
-          `<!--ssr-initial-state-->`,
-          `<script>window.APP_INITIAL_STATE = ${serialize(initialState, {
-            isJSON: true,
-          })}</script>`,
-        );
+        .replace(`<!--ssr-outlet-->`, appHtml);
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
     } catch (error) {
       if (viteServer?.ssrFixStacktrace) {

@@ -4,5 +4,4 @@ export type RenderResult = {
   antStyles: string;
   html: string;
   helmet: HelmetData;
-  initialState: unknown;
 };

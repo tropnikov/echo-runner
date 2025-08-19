@@ -1,156 +1,79 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-export type Stats = {
+declare global {
+  interface Performance {
+    memory?: {
+      usedJSHeapSize: number;
+      totalJSHeapSize: number;
+      jsHeapSizeLimit: number;
+    };
+  }
+}
+
+type PerfStats = {
   fps: number;
-  frameMsAvg: number;
-  frameMsP99: number;
-  droppedFrames: number;
-  longTasks: number;
-  memMB?: number;
+  avg: number; // средний межкадровый интервал (мс)
+  p99: number; // p99 интервала (мс)
+  drops: number; // dt > 50мс
+  long: number; // dt > 16.7мс
+  mem: number;
 };
 
-const MAX_SAMPLES = 300; // ~5 сек при 60fps
-const DROP_THRESHOLD = 1000 / 55; // считаем дропом, если кадр дольше ~18мс
-// const IDLE_THRESHOLD_MS = 250; // если rAF молчит — включаем фолбэк
+export type Stats = PerfStats;
 
-interface PerformanceWithMemory extends Performance {
-  memory?: {
-    usedJSHeapSize: number;
-    totalJSHeapSize: number;
-    jsHeapSizeLimit: number;
-  };
-}
-/** Хук сбора перф-метрик рендера (fps, p99, long tasks, memory). */
+const WINDOW = 120; // ~2s при 60 Гц
+
 export function usePerformanceStats() {
-  // накопители
-  const samples = useRef<number[]>([]);
-
-  const dropped = useRef(0);
-  const longTasks = useRef(0);
-
-  // таймстемпы
-  const lastT = useRef<number | null>(null);
-  const lastRealTick = useRef<number>(0);
-  const fallbackLast = useRef<number | null>(null);
-
-  const [stats, setStats] = useState<Stats>({
+  const lastRef = useRef<number | null>(null);
+  const bufRef = useRef<number[]>([]);
+  const [stats, setStats] = useState<PerfStats>({
     fps: 0,
-    frameMsAvg: 0,
-    frameMsP99: 0,
-    droppedFrames: 0,
-    longTasks: 0,
-    memMB: undefined,
+    avg: 0,
+    p99: 0,
+    drops: 0,
+    long: 0,
+    mem: 0,
   });
 
   const beginFrame = useCallback(() => {
-    lastT.current = performance.now();
+    const now = performance.now();
+    const last = lastRef.current;
+    if (last != null) {
+      const dt = now - last;
+      const buf = bufRef.current;
+      buf.push(dt);
+      if (buf.length > WINDOW) buf.shift();
+
+      const n = buf.length || 1;
+      const sum = buf.reduce((a, b) => a + b, 0);
+      const avg = sum / n;
+      const sorted = [...buf].sort((a, b) => a - b);
+      const p99 = sorted[Math.max(0, Math.floor(0.99 * (n - 1)))];
+      const fps = 1000 / avg;
+
+      const drops = buf.filter((x) => x > 50).length;
+      const long = buf.filter((x) => x > 16.7).length;
+
+      let mem = 0;
+
+      if (performance.memory?.usedJSHeapSize) {
+        mem = performance.memory.usedJSHeapSize / 1024 / 1024; // MB
+      }
+
+      setStats((s) => ({ ...s, fps: Math.round(fps), avg, p99, drops, long, mem }));
+    }
+    lastRef.current = now;
   }, []);
 
   const endFrame = useCallback(() => {
-    const now = performance.now();
-    const prev = lastT.current ?? now;
-    const dt = now - prev;
-
-    if (dt <= 0.5 || dt > 1000) {
-      lastT.current = now;
-      return;
-    }
-
-    lastT.current = now;
-    lastRealTick.current = now;
-
-    samples.current.push(dt);
-    if (dt > DROP_THRESHOLD) dropped.current += 1;
-    if (samples.current.length > MAX_SAMPLES) samples.current.shift();
+    // опционально: можно мерить «work time» кадра отдельно, но не для fps
   }, []);
-
-  // агрегируем метрики раз в 0.5с
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      const arr = samples.current;
-      if (!arr.length) return;
-
-      const duration = arr.reduce((a, b) => a + b, 0);
-      const fps = duration > 0 ? Math.round((arr.length / duration) * 1000) : 0;
-
-      const avg = duration / arr.length;
-      const sorted = [...arr].sort((a, b) => a - b);
-      const idx = Math.max(0, Math.floor(0.99 * (sorted.length - 1)));
-      const p99 = sorted[idx];
-
-      const perf = performance as PerformanceWithMemory;
-      const mem = perf.memory ? Math.round(perf.memory.usedJSHeapSize / 1024 / 1024) : undefined;
-
-      setStats({
-        fps,
-        frameMsAvg: Math.round(avg * 10) / 10,
-        frameMsP99: Math.round(p99 * 10) / 10,
-        droppedFrames: dropped.current,
-        longTasks: longTasks.current,
-        memMB: mem,
-      });
-    }, 500);
-
-    return () => window.clearInterval(id);
-  }, []);
-
-  // Long Task API (если доступно)
-  // useEffect(() => {
-  //   if (typeof PerformanceObserver === 'undefined') return;
-  //   try {
-  //     const obs = new PerformanceObserver((list) => {
-  //       longTasks.current += list.getEntries().length;
-  //     });
-  //     obs.observe({ type: 'longtask', buffered: true });
-  //     return () => obs.disconnect();
-  //   } catch {
-  //     // игнор, если недоступно
-  //   }
-  // }, []);
-
-  // Фолбэк-тикер: если реальных кадров нет > IDLE_THRESHOLD_MS — подкидываем синтетические (~60fps)
-  //   useEffect(() => {
-  //     let rafId = 0;
-  //     const loop = () => {
-  //       const now = performance.now();
-  //       const idle = now - lastRealTick.current;
-
-  //       if (idle > IDLE_THRESHOLD_MS) {
-  //         const prev = fallbackLast.current ?? now - 1000 / 60;
-  //         const dt = now - prev;
-  //         fallbackLast.current = now;
-
-  //         samples.current.push(dt);
-  //         if (dt > DROP_THRESHOLD) dropped.current += 1;
-  //         if (samples.current.length > MAX_SAMPLES) samples.current.shift();
-  //       } else {
-  //         fallbackLast.current = null;
-  //       }
-
-  //       rafId = requestAnimationFrame(loop);
-  //     };
-
-  //     rafId = requestAnimationFrame(loop);
-  //     return () => cancelAnimationFrame(rafId);
-  //   }, []);
 
   const reset = useCallback(() => {
-    samples.current = [];
-    dropped.current = 0;
-    longTasks.current = 0;
-    lastT.current = null;
-    lastRealTick.current = 0;
-    fallbackLast.current = null;
-
-    setStats((s) => ({
-      ...s,
-      fps: 0,
-      frameMsAvg: 0,
-      frameMsP99: 0,
-      droppedFrames: 0,
-      longTasks: 0,
-    }));
+    lastRef.current = null;
+    bufRef.current = [];
+    setStats((s) => ({ ...s, fps: 0, avg: 0, p99: 0, drops: 0, long: 0 }));
   }, []);
 
-  return useMemo(() => ({ beginFrame, endFrame, stats, reset }), [beginFrame, endFrame, stats, reset]);
+  return { beginFrame, endFrame, stats, reset };
 }

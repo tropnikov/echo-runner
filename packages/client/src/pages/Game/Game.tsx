@@ -24,16 +24,19 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
       if (next >= maxDamage) {
         engineRef.current?.stop();
         setIsPaused(false);
+        setIsStarted(false);
       }
       return next;
     });
   }, [maxDamage]);
 
   const handleStart = () => {
-    setIsStarted(true);
+    if (isStarted) return;
     const ctx = getCanvasContext(canvasRef);
     if (!ctx) return;
     initGame(ctx);
+    setIsStarted(true);
+    setIsPaused(false);
   };
 
   const handleOnPause = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -44,15 +47,11 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   const handleRestart = () => {
     setScore(0);
     setDamage(0);
-
-    engineRef.current?.stop();
-
-    const ctx = getCanvasContext(canvasRef);
-    if (!ctx) return;
+    setIsPaused(false);
 
     resetScene();
 
-    engineRef.current?.start();
+    setIsStarted(true);
   };
 
   const pauseGame = useCallback(() => {

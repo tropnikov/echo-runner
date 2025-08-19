@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useState } from 'react';
+import { MouseEvent, useState } from 'react';
 
 import { Button, theme } from 'antd';
 import {
@@ -13,7 +13,6 @@ import {
 import { PerformancePanel } from '@/components/PerformancePanel/PerformancePanel';
 import StartGameView from '@/components/StartGameView/StartGameView';
 import { useFullscreen } from '@/hooks/useFullscreen';
-import { usePerformanceStats } from '@/hooks/usePerformanceStats';
 
 import { GameViewProps } from './types';
 
@@ -35,18 +34,10 @@ function GameView({
 }: GameViewProps) {
   const { elementRef, isFullscreen, toggleFullscreen } = useFullscreen();
   const [isPerformancePanelVisible, setPerformancePanelVisible] = useState(false);
-  const { beginFrame, endFrame, reset } = usePerformanceStats(); // оставил, если PerformancePanel читает их из хука
 
   const {
     token: { colorBgContainer },
   } = useToken();
-
-  useEffect(() => {
-    const id = setTimeout(() => {
-      reset(); // сброс статистики через 100мс после старта
-    }, 100);
-    return () => clearTimeout(id);
-  }, [isStarted, reset]);
 
   function handleFullscreenButtonClick(e: MouseEvent<HTMLButtonElement>) {
     if (e.currentTarget && e.currentTarget instanceof HTMLButtonElement) {
@@ -111,6 +102,7 @@ function GameView({
           icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
           className={styles.fullScreenButton}
           onClick={handleFullscreenButtonClick}
+          aria-label={isFullscreen ? 'Выйти из полноэкранного режима' : 'На весь экран'}
         />
       </div>
     </section>

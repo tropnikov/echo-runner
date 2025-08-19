@@ -13,20 +13,20 @@ export function PerformancePanel({ stats }: PerformancePanelProps) {
         <b>FPS:</b> {stats.fps}
       </div>
       <div>
-        <b>avg:</b> {stats.frameMsAvg} ms
+        <b>avg:</b> {stats.avg.toFixed(1)} ms
       </div>
       <div>
-        <b>p99:</b> {stats.frameMsP99} ms
+        <b>p99:</b> {stats.p99.toFixed(1)} ms
       </div>
       <div>
-        <b>drops:</b> {stats.droppedFrames}
+        <b>drops:</b> {stats.drops}
       </div>
       <div>
-        <b>long:</b> {stats.longTasks}
+        <b>long:</b> {stats.long}
       </div>
-      {typeof stats.memMB === 'number' && (
+      {typeof stats.mem === 'number' && (
         <div>
-          <b>mem:</b> {stats.memMB} MB
+          <b>mem:</b> {stats.mem.toFixed(0)} MB
         </div>
       )}
     </div>

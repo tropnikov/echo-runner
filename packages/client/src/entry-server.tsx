@@ -3,7 +3,8 @@ import { createMemoryRouter, StaticHandlerContext, StaticRouterProvider } from '
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 
 import { renderToString } from 'react-dom/server';
-import { Helmet } from 'react-helmet';
+import { HelmetProvider } from 'react-helmet-async';
+import type { HelmetServerState } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 
 import { RenderResult } from '../server/types';
@@ -42,19 +43,22 @@ const mockContext = {
 
 export const render = async (): Promise<RenderResult> => {
   const cache = createCache();
+  const helmetContext: { helmet?: HelmetServerState } = {};
 
   const html = renderToString(
-    <StyleProvider cache={cache}>
-      <Provider store={store}>
-        <NotificationProvider>
-          <StaticRouterProvider router={router} context={mockContext} />
-        </NotificationProvider>
-      </Provider>
-    </StyleProvider>,
+    <HelmetProvider context={helmetContext}>
+      <StyleProvider cache={cache}>
+        <Provider store={store}>
+          <NotificationProvider>
+            <StaticRouterProvider router={router} context={mockContext} />
+          </NotificationProvider>
+        </Provider>
+      </StyleProvider>
+    </HelmetProvider>,
   );
 
-  const helmet = Helmet.renderStatic();
   const antStylesText = extractStyle(cache);
+  const { helmet } = helmetContext;
 
   return {
     antStyles: antStylesText,

@@ -11,6 +11,8 @@ import router from './routes';
 
 import './index.css';
 
+import { HelmetProvider } from 'react-helmet-async';
+
 import startServiceWorker from './helpers/sw';
 
 startServiceWorker();
@@ -18,10 +20,12 @@ startServiceWorker();
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,
   <React.StrictMode>
-    <Provider store={store}>
-      <NotificationProvider>
-        <RouterProvider router={router} />
-      </NotificationProvider>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <NotificationProvider>
+          <RouterProvider router={router} />
+        </NotificationProvider>
+      </Provider>
+    </HelmetProvider>
   </React.StrictMode>,
 );

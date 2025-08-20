@@ -1,7 +1,7 @@
-import { HelmetData } from 'react-helmet';
+import type { HelmetServerState } from 'react-helmet-async';
 
 export type RenderResult = {
   antStyles: string;
   html: string;
-  helmet: HelmetData;
+  helmet?: HelmetServerState;
 };

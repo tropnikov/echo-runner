@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { Space } from 'antd';
 
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 import FeatureBlock from '@/components/MainPage/FeatureBlock';
 import GalleryBlock from '@/components/MainPage/GalleryBlock';

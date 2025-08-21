@@ -11,18 +11,21 @@ import router from './routes';
 
 import './index.css';
 
+import { HelmetProvider } from 'react-helmet-async';
+
 import startServiceWorker from './helpers/sw';
 
 startServiceWorker();
 
-const root = document.getElementById('root');
-
-ReactDOM.createRoot(root as HTMLElement).render(
+ReactDOM.hydrateRoot(
+  document.getElementById('root') as HTMLElement,
   <React.StrictMode>
-    <Provider store={store}>
-      <NotificationProvider>
-        <RouterProvider router={router} />
-      </NotificationProvider>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <NotificationProvider>
+          <RouterProvider router={router} />
+        </NotificationProvider>
+      </Provider>
+    </HelmetProvider>
   </React.StrictMode>,
 );

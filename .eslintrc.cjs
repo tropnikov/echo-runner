@@ -19,5 +19,5 @@ module.exports = {
     '@typescript-eslint/ban-ts-comment': 1,
     '@typescript-eslint/no-explicit-any': 'error',
   },
-  ignorePatterns: ['**/node_modules/*', '**/dist/*', '**/api/generated*'],
+  ignorePatterns: ['**/node_modules/*', '**/dist/*', '**/api/generated*', 'packages/client/server/build/**'],
 };

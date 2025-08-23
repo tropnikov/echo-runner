@@ -1,3 +1,5 @@
+/// <reference lib="webworker" />
+
 const CACHE_NAME = 'echo-runner-cache-v1';
 const API_CACHE_NAME = 'echo-runner-api-cache-v2';
 const API_ENDPOINTS = ['/auth/user'];

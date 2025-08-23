@@ -35,8 +35,6 @@ export const useOAuth = () => {
     processedCodeRef.current = code;
 
     try {
-      console.log('Получен OAuth code:', code);
-
       await postOauthYandex({
         oauthSignInRequest: {
           code,

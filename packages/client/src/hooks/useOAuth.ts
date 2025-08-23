@@ -4,6 +4,8 @@ import { useNavigate, useSearchParams } from 'react-router';
 import { useLazyGetOauthYandexServiceIdQuery, usePostOauthYandexMutation } from '@/api/generated';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes } from '@/constants/appRoutes';
+import { api } from '@/redux/api';
+import { useAppDispatch } from '@/redux/store';
 import { isErrorWithReason } from '@/types/errors';
 
 export const useOAuth = () => {
@@ -12,6 +14,7 @@ export const useOAuth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const notification = useNotification();
+  const dispatch = useAppDispatch();
   const isProcessingRef = useRef(false);
   const processedCodeRef = useRef<string | null>(null);
 
@@ -41,6 +44,9 @@ export const useOAuth = () => {
           message: 'OAuth авторизация прошла успешно',
         });
 
+        // Инвалидируем кэш для принудительного обновления данных пользователя
+        dispatch(api.util.resetApiState());
+
         navigate(`/${appRoutes.GAME}`);
 
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -57,7 +63,7 @@ export const useOAuth = () => {
         isProcessingRef.current = false;
       }
     },
-    [postOauthYandex, navigate, notification, redirectUri],
+    [postOauthYandex, navigate, notification, redirectUri, dispatch],
   );
 
   const oauthInit = useCallback(async () => {

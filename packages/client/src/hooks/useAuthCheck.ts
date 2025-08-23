@@ -10,12 +10,12 @@ export const useAuthCheck = () => {
   const isAuthorized = useAppSelector((state) => state.auth.isAuthorized);
 
   useEffect(() => {
-    if (isSuccess && data && isAuthorized === null) {
+    if (isSuccess && data) {
       dispatch(setUser(data));
-    } else if (!isLoading && isError && isAuthorized === null) {
+    } else if (!isLoading && isError) {
       dispatch(resetUser());
     }
-  }, [data, isError, isLoading, isSuccess, isAuthorized, dispatch]);
+  }, [data, isError, isLoading, isSuccess, dispatch]);
 
   return {
     isAuthorized,

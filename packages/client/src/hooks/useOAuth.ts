@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
-import {
-  GetOauthYandexServiceIdApiResponse,
-  useLazyGetOauthYandexServiceIdQuery,
-  usePostOauthYandexMutation,
-} from '@/api/generated';
+import { useLazyGetOauthYandexServiceIdQuery, usePostOauthYandexMutation } from '@/api/generated';
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes } from '@/constants/appRoutes';
 import { isErrorWithReason } from '@/types/errors';
@@ -66,7 +62,7 @@ export const useOAuth = () => {
   // Инициализация OAuth авторизации
   const oauthInit = useCallback(async () => {
     try {
-      const { service_id }: GetOauthYandexServiceIdApiResponse = await getOauthYandexServiceId({
+      const { service_id } = await getOauthYandexServiceId({
         redirectUri,
       }).unwrap();
 

@@ -17,49 +17,49 @@ export const useOAuth = () => {
 
   const redirectUri = window.location.origin;
 
-  // Обработка OAuth callback
-  useEffect(() => {
-    const code = searchParams.get('code');
+  const getOauthYandexUrl = useCallback(
+    (serviceId: string) => {
+      return `https://oauth.yandex.ru/authorize?response_type=code&client_id=${serviceId}&redirect_uri=${redirectUri}`;
+    },
+    [redirectUri],
+  );
 
-    if (code && !isProcessingRef.current && processedCodeRef.current !== code) {
-      handleOAuthCallback(code);
-    }
-  }, [searchParams, postOauthYandex, navigate, notification, redirectUri]);
+  const handleOAuthCallback = useCallback(
+    async (code: string) => {
+      isProcessingRef.current = true;
+      processedCodeRef.current = code;
 
-  const handleOAuthCallback = async (code: string) => {
-    isProcessingRef.current = true;
-    processedCodeRef.current = code;
+      try {
+        await postOauthYandex({
+          oauthSignInRequest: {
+            code,
+            redirect_uri: redirectUri,
+          },
+        }).unwrap();
 
-    try {
-      await postOauthYandex({
-        oauthSignInRequest: {
-          code,
-          redirect_uri: redirectUri,
-        },
-      }).unwrap();
+        notification.success({
+          message: 'OAuth авторизация прошла успешно',
+        });
 
-      notification.success({
-        message: 'OAuth авторизация прошла успешно',
-      });
+        navigate(`/${appRoutes.GAME}`);
 
-      navigate(`/${appRoutes.GAME}`);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } catch (error) {
+        console.error('Ошибка OAuth авторизации:', error);
+        notification.error({
+          message: isErrorWithReason(error) ? error.data.reason : 'Произошла ошибка при OAuth авторизации',
+        });
 
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } catch (error) {
-      console.error('Ошибка OAuth авторизации:', error);
-      notification.error({
-        message: isErrorWithReason(error) ? error.data.reason : 'Произошла ошибка при OAuth авторизации',
-      });
+        navigate(`/${appRoutes.MAIN}`);
 
-      navigate(`/${appRoutes.MAIN}`);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } finally {
+        isProcessingRef.current = false;
+      }
+    },
+    [postOauthYandex, navigate, notification, redirectUri],
+  );
 
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } finally {
-      isProcessingRef.current = false;
-    }
-  };
-
-  // Инициализация OAuth авторизации
   const oauthInit = useCallback(async () => {
     try {
       const { service_id } = await getOauthYandexServiceId({
@@ -73,11 +73,15 @@ export const useOAuth = () => {
       console.error('Ошибка при получении service_id:', error);
       throw error;
     }
-  }, [getOauthYandexServiceId, redirectUri]);
+  }, [getOauthYandexServiceId, redirectUri, getOauthYandexUrl]);
 
-  const getOauthYandexUrl = (serviceId: string) => {
-    return `https://oauth.yandex.ru/authorize?response_type=code&client_id=${serviceId}&redirect_uri=${redirectUri}`;
-  };
+  useEffect(() => {
+    const code = searchParams.get('code');
+
+    if (code && !isProcessingRef.current && processedCodeRef.current !== code) {
+      handleOAuthCallback(code);
+    }
+  }, [searchParams, postOauthYandex, navigate, notification, redirectUri, handleOAuthCallback]);
 
   return {
     oauthInit,

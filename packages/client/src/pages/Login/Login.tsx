@@ -64,14 +64,14 @@ const Login = () => {
             <Input.Password />
           </Form.Item>
 
-          <Flex gap={16}>
+          <Flex gap={16} vertical>
             <Form.Item label={null}>
               <Button type="primary" htmlType="submit" loading={isLoading}>
                 Войти
               </Button>
             </Form.Item>
-            <Button type="primary" loading={isLoading} onClick={() => oauthInit()}>
-              Яндекс ID
+            <Button type="default" loading={isLoading} onClick={oauthInit}>
+              Войти через Яндекс ID
             </Button>
           </Flex>
         </Form>

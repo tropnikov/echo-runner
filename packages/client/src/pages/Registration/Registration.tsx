@@ -87,14 +87,14 @@ const Registration: FC = () => {
             <Input />
           </Form.Item>
 
-          <Flex gap={16}>
+          <Flex gap={16} vertical>
             <Form.Item label={null}>
               <Button type="primary" htmlType="submit" loading={isLoading}>
                 Зарегистрироваться
               </Button>
             </Form.Item>
-            <Button type="primary" loading={isLoading} onClick={() => oauthInit()}>
-              Яндекс ID
+            <Button type="default" loading={isLoading} onClick={oauthInit}>
+              Зарегистрироваться через Яндекс ID
             </Button>
           </Flex>
         </Form>

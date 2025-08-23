@@ -46,7 +46,7 @@ export const useOAuth = () => {
         message: 'OAuth авторизация прошла успешно',
       });
 
-      navigate(`/${appRoutes.MAIN}`);
+      navigate(`/${appRoutes.GAME}`);
 
       window.history.replaceState({}, document.title, window.location.pathname);
     } catch (error) {

@@ -28,17 +28,20 @@ self.addEventListener('install', ((event: ExtendableEvent) => {
 self.addEventListener('activate', ((event: ExtendableEvent) => {
   console.log('activate');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      console.log('activate:', cacheNames);
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME && name !== API_CACHE_NAME)
-          .map((name) => {
-            caches.delete(name);
-            console.log('delete cache', name);
-          }),
-      );
-    }),
+    caches
+      .keys()
+      .then((cacheNames) => {
+        console.log('activate:', cacheNames);
+        return Promise.all(
+          cacheNames
+            .filter((name) => name !== CACHE_NAME && name !== API_CACHE_NAME)
+            .map((name) => {
+              caches.delete(name);
+              console.log('delete cache', name);
+            }),
+        );
+      })
+      .then(() => (self as unknown as ServiceWorkerGlobalScope).clients.claim()),
   );
 }) as EventListener);
 
@@ -130,3 +133,15 @@ function handleApiRequest(event: FetchEvent): Promise<Response> {
     });
   });
 }
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    (self as unknown as ServiceWorkerGlobalScope).skipWaiting();
+  }
+  if (event.data && event.data.type === 'CLEAR_API_CACHE') {
+    console.log('Clearing API cache...');
+    caches.delete(API_CACHE_NAME).then(() => {
+      console.log('API cache cleared');
+    });
+  }
+});

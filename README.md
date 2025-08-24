@@ -39,6 +39,77 @@
 
 ## Как запускать?
 
+### Вариант 1: Docker (рекомендуется)
+
+#### Предварительные требования
+1. Установите [Docker Desktop](https://www.docker.com/products/docker-desktop/) для вашей ОС
+2. Убедитесь, что Docker запущен и работает
+
+#### Настройка переменных окружения
+1. Создайте файл `.env` в корне проекта:
+   ```bash
+   # Client configuration
+   CLIENT_PORT=3000
+   
+   # Server configuration
+   SERVER_PORT=3001
+   
+   # PostgreSQL configuration
+   POSTGRES_PORT=5432
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=password
+   POSTGRES_DB=echo_runner
+   ```
+
+#### Запуск приложения
+1. Откройте терминал в корне проекта
+2. Выполните команду для сборки и запуска всех сервисов:
+   ```bash
+   docker compose up --build -d
+   ```
+3. Дождитесь завершения сборки (может занять несколько минут при первом запуске)
+4. Проверьте статус контейнеров:
+   ```bash
+   docker compose ps
+   ```
+
+#### Доступ к приложению
+После успешного запуска приложение будет доступно по адресам:
+- **Клиент**: http://localhost:3000
+- **Сервер API**: http://localhost:3001
+- **База данных**: localhost:5432
+
+#### Полезные команды для работы с Docker
+```bash
+# Просмотр логов всех сервисов
+docker compose logs -f
+
+# Просмотр логов конкретного сервиса
+docker compose logs -f postgres
+docker compose logs -f server
+docker compose logs -f client
+
+# Остановка всех сервисов
+docker compose down
+
+# Перезапуск конкретного сервиса
+docker compose restart postgres
+
+# Подключение к базе данных
+docker compose exec postgres psql -U postgres -d echo_runner
+
+# Полная очистка (удалит все данные БД)
+docker compose down -v
+```
+
+#### Устранение неполадок
+- **Если порты заняты**: Измените значения `CLIENT_PORT`, `SERVER_PORT`, `POSTGRES_PORT` в файле `.env`
+- **Если контейнеры не запускаются**: Проверьте логи командой `docker compose logs`
+- **Если нужно пересобрать образы**: Выполните `docker compose up --build -d`
+- **Если нужно сбросить данные БД**: Выполните `docker compose down -v` и запустите заново
+
+### Вариант 2: Локальная разработка
+
 1. Убедитесь что у вас установлен `node` и `docker`
 2. Выполните команду `yarn bootstrap` - это обязательный шаг, без него ничего работать не будет :)
 3. Выполните команду `yarn dev`
@@ -83,6 +154,8 @@
 
 `yarn preview --scope client`
 `yarn preview --scope server`
+
+
 
 ## Хуки
 

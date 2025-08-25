@@ -1,47 +1,55 @@
-import { createMemoryRouter, StaticHandlerContext, StaticRouterProvider } from 'react-router';
+import { createStaticHandler, createStaticRouter, matchRoutes, StaticRouterProvider } from 'react-router';
 
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 
+import type { Request } from 'express';
 import { renderToString } from 'react-dom/server';
 import { HelmetProvider } from 'react-helmet-async';
 import type { HelmetServerState } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 
+import { api as generatedApi } from '@/api/generated';
+
 import { RenderResult } from '../server/types';
-import App from './App';
 import NotificationProvider from './components/NotificationProvider/NotificationProvider';
-import { appRoutes } from './constants/appRoutes';
-import MainPage from './pages/MainPage/MainPage';
-import { store } from './redux/store';
+import { createFetchRequest, createUrl, prefetch } from './entry-server.utils';
+import { makeStore } from './redux/store';
+import { routesConfig } from './routesConfig';
 
-// Заглушка router
-const router = createMemoryRouter(
-  [
-    {
-      path: appRoutes.MAIN,
-      Component: App,
-      children: [{ index: true, Component: MainPage }],
-    },
-  ],
-  {
-    initialEntries: ['/'],
-    initialIndex: 0,
-  },
-);
+export const render = async (req: Request): Promise<RenderResult> => {
+  const handler = createStaticHandler(routesConfig);
+  const fetchRequest = createFetchRequest(req);
+  const context = await handler.query(fetchRequest);
 
-// Мок context
-const mockContext = {
-  location: {
-    pathname: '/',
-    search: '',
-    hash: '',
-    state: null,
-    key: 'default',
-  },
-  matches: [],
-} as unknown as StaticHandlerContext;
+  const store = makeStore(undefined, { req });
 
-export const render = async (): Promise<RenderResult> => {
+  await prefetch(store);
+  await Promise.all(store.dispatch(generatedApi.util.getRunningQueriesThunk()));
+
+  const url = createUrl(req);
+  const foundedRoutes = matchRoutes(routesConfig, url);
+  if (!foundedRoutes) {
+    throw new Error(`Not found: ${url}`);
+  }
+
+  const [{ route }] = foundedRoutes;
+
+  const preFetchData = (route as { preFetchData?: (store: ReturnType<typeof makeStore>) => Promise<unknown> })
+    .preFetchData;
+
+  if (preFetchData) {
+    console.log('in prefetch');
+    await preFetchData(store);
+  }
+
+  await Promise.all(store.dispatch(generatedApi.util.getRunningQueriesThunk()));
+
+  if (context instanceof Response) {
+    throw context;
+  }
+
+  const router = createStaticRouter(handler.dataRoutes, context);
+
   const cache = createCache();
   const helmetContext: { helmet?: HelmetServerState } = {};
 
@@ -50,7 +58,7 @@ export const render = async (): Promise<RenderResult> => {
       <StyleProvider cache={cache}>
         <Provider store={store}>
           <NotificationProvider>
-            <StaticRouterProvider router={router} context={mockContext} />
+            <StaticRouterProvider router={router} context={context} />
           </NotificationProvider>
         </Provider>
       </StyleProvider>
@@ -64,5 +72,6 @@ export const render = async (): Promise<RenderResult> => {
     antStyles: antStylesText,
     html,
     helmet,
+    initialState: store.getState(),
   };
 };

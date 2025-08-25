@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 
 import NotificationProvider from '@/components/NotificationProvider/NotificationProvider';
-import { store } from '@/redux/store';
+import { makeStore } from '@/redux/store';
 
 import router from './routes';
 
@@ -15,7 +15,9 @@ import { HelmetProvider } from 'react-helmet-async';
 
 import startServiceWorker from './helpers/sw';
 
-startServiceWorker();
+// startServiceWorker();
+
+const store = makeStore(window.__APP_INITIAL_STATE__);
 
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,

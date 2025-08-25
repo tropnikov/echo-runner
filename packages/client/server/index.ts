@@ -3,6 +3,7 @@ import path from 'path';
 
 import dotenv from 'dotenv';
 import express, { Request } from 'express';
+import serialize from 'serialize-javascript';
 import { createServer as createViteServer, ViteDevServer } from 'vite';
 
 import { RenderResult } from './types';
@@ -16,6 +17,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 async function createServer() {
   const app = express();
+
   let viteServer: ViteDevServer | undefined;
 
   if (isDev) {
@@ -64,14 +66,23 @@ async function createServer() {
         render = (await import(pathToServer)).render;
       }
 
-      const { antStyles, html: appHtml, helmet }: RenderResult = await render(req);
+      const { antStyles, html: appHtml, helmet, initialState }: RenderResult = await render(req);
 
       allStyles += `\n${antStyles}`;
 
       const html = template
-        .replace(`<!--ssr-helmet-->`, `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`)
+        .replace(
+          `<!--ssr-helmet-->`,
+          `${helmet?.meta.toString() || ''} ${helmet?.title.toString() || ''} ${helmet?.link.toString() || ''}`,
+        )
         .replace(`<!--ssr-styles-->`, allStyles)
-        .replace(`<!--ssr-outlet-->`, appHtml);
+        .replace(`<!--ssr-outlet-->`, appHtml)
+        .replace(
+          `<!--ssr-initial-state-->`,
+          `<script>window.__APP_INITIAL_STATE__ = ${serialize(initialState, {
+            isJSON: true,
+          })}</script>`,
+        );
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
     } catch (error) {
       if (viteServer?.ssrFixStacktrace) {

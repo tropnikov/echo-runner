@@ -10,7 +10,7 @@ import { appRoutes } from '@/constants/appRoutes';
 import { rules } from '@/helpers/validators';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { useLogin } from '@/hooks/useLogin';
-import { useOAuth } from '@/hooks/useOAuth';
+import { useYandexOAuth } from '@/hooks/useYandexOAuth';
 import { isErrorWithReason } from '@/types/errors';
 
 import styles from './Login.module.css';
@@ -19,7 +19,7 @@ const Login = () => {
   const navigate = useNavigate();
   const notification = useNotification();
   const { login } = useLogin();
-  const { oauthInit } = useOAuth();
+  const { startOAuthFlow } = useYandexOAuth();
   const { isAuthorized } = useAuthCheck();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -70,7 +70,7 @@ const Login = () => {
                 Войти
               </Button>
             </Form.Item>
-            <Button type="default" loading={isLoading} onClick={oauthInit}>
+            <Button type="default" loading={isLoading} onClick={startOAuthFlow}>
               Войти через Яндекс ID
             </Button>
           </Flex>

@@ -8,7 +8,7 @@ import { api } from '@/redux/api';
 import { useAppDispatch } from '@/redux/store';
 import { isErrorWithReason } from '@/types/errors';
 
-export const useOAuth = () => {
+export const useYandexOAuth = () => {
   const [getOauthYandexServiceId] = useLazyGetOauthYandexServiceIdQuery();
   const [postOauthYandex] = usePostOauthYandexMutation();
   const [searchParams] = useSearchParams();
@@ -66,7 +66,7 @@ export const useOAuth = () => {
     [postOauthYandex, navigate, notification, redirectUri, dispatch],
   );
 
-  const oauthInit = useCallback(async () => {
+  const startOAuthFlow = useCallback(async () => {
     try {
       const { service_id } = await getOauthYandexServiceId({
         redirectUri,
@@ -77,6 +77,9 @@ export const useOAuth = () => {
       document.location.href = oauthUrl;
     } catch (error) {
       console.error('Ошибка при получении service_id:', error);
+      notification.error({
+        message: isErrorWithReason(error) ? error.data.reason : 'Произошла ошибка при OAuth авторизации',
+      });
       throw error;
     }
   }, [getOauthYandexServiceId, redirectUri, getOauthYandexUrl]);
@@ -87,9 +90,9 @@ export const useOAuth = () => {
     if (code && !isProcessingRef.current && processedCodeRef.current !== code) {
       handleOAuthCallback(code);
     }
-  }, [searchParams, postOauthYandex, navigate, notification, redirectUri, handleOAuthCallback]);
+  }, [searchParams, handleOAuthCallback]);
 
   return {
-    oauthInit,
+    startOAuthFlow,
   };
 };

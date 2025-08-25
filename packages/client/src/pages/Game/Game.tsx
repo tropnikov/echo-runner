@@ -1,6 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import GameView from '@/components/GameView/GameView';
+import { teamName } from '@/constants/leaderboardStats';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useAppSelector } from '@/redux/store';
 
 import PlayerJump from './assets/player/jump.png';
 import PlayerRun from './assets/player/run.png';
@@ -18,12 +21,23 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     setScore((prev) => prev + 1);
   }, []);
 
+  const { sendNewRating } = useLeaderboard();
+  const user = useAppSelector((state) => state.auth.user);
+
   const handleOnDamage = useCallback(() => {
     setDamage((prev) => {
       const next = prev + 1;
       if (next >= maxDamage) {
         engineRef.current?.stop();
         setIsPaused(false);
+        setScore((prevScore) => {
+          sendNewRating({
+            data: { score: prevScore, login: user?.login, user_id: user?.id },
+            ratingFieldName: 'score',
+            teamName,
+          });
+          return prevScore;
+        });
         setIsStarted(false);
       }
       return next;

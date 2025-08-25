@@ -49,7 +49,9 @@ function GameView({
   return (
     <section ref={elementRef} className={styles.gameViewContainer}>
       <div style={{ backgroundColor: colorBgContainer }} className={styles.gameViewContainer}>
-        {!isStarted && <StartGameView text="Игра не начата" ButtonIcon={PlayCircleOutlined} onButtonClick={onStart} />}
+        {!isStarted && damage < maxDamage && (
+          <StartGameView text="Игра не начата" ButtonIcon={PlayCircleOutlined} onButtonClick={onStart} />
+        )}
 
         {damage >= maxDamage && (
           <StartGameView

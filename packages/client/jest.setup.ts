@@ -1,6 +1,7 @@
 import { TextDecoder, TextEncoder } from 'util';
 
 import '@testing-library/jest-dom';
+import 'jest-canvas-mock';
 
 // Polyfill for TextEncoder
 if (typeof global.TextEncoder === 'undefined') {

@@ -13,6 +13,7 @@ import { title } from '@/constants/siteConfig';
 import { rules } from '@/helpers/validators';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { useLogin } from '@/hooks/useLogin';
+import { useYandexOAuth } from '@/hooks/useYandexOAuth';
 import { isErrorWithReason } from '@/types/errors';
 
 import styles from './Login.module.css';
@@ -21,6 +22,7 @@ const Login = () => {
   const navigate = useNavigate();
   const notification = useNotification();
   const { login } = useLogin();
+  const { startOAuthFlow } = useYandexOAuth();
   const { isAuthorized } = useAuthCheck();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -86,11 +88,16 @@ const Login = () => {
               <Input.Password />
             </Form.Item>
 
-            <Form.Item label={null}>
-              <Button type="primary" htmlType="submit" loading={isLoading}>
-                Войти
+            <Flex gap={16} vertical>
+              <Form.Item label={null}>
+                <Button type="primary" htmlType="submit" loading={isLoading}>
+                  Войти
+                </Button>
+              </Form.Item>
+              <Button type="default" loading={isLoading} onClick={startOAuthFlow}>
+                Войти через Яндекс ID
               </Button>
-            </Form.Item>
+            </Flex>
           </Form>
         </Card>
       </Flex>

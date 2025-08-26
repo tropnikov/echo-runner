@@ -1,8 +1,10 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import express, { Request } from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import serialize from 'serialize-javascript';
 import { createServer as createViteServer, ViteDevServer } from 'vite';
 
@@ -17,6 +19,19 @@ const isDev = process.env.NODE_ENV === 'development';
 
 async function createServer() {
   const app = express();
+
+  app.use(cookieParser());
+
+  app.use(
+    '/api/v2',
+    createProxyMiddleware({
+      target: 'https://ya-praktikum.tech',
+      changeOrigin: true,
+      cookieDomainRewrite: {
+        '*': isDev ? '' : 'ya-praktikum.tech',
+      },
+    }),
+  );
 
   let viteServer: ViteDevServer | undefined;
 

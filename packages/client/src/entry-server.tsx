@@ -12,7 +12,7 @@ import { api as generatedApi } from '@/api/generated';
 
 import { RenderResult } from '../server/types';
 import NotificationProvider from './components/NotificationProvider/NotificationProvider';
-import { createFetchRequest, createUrl, prefetch } from './entry-server.utils';
+import { createContext, createFetchRequest, createUrl } from './entry-server.utils';
 import { makeStore } from './redux/store';
 import { routesConfig } from './routesConfig';
 
@@ -21,25 +21,28 @@ export const render = async (req: Request): Promise<RenderResult> => {
   const fetchRequest = createFetchRequest(req);
   const context = await handler.query(fetchRequest);
 
-  const store = makeStore(undefined, { req });
-
-  await prefetch(store);
-  await Promise.all(store.dispatch(generatedApi.util.getRunningQueriesThunk()));
+  const store = makeStore(undefined, { ctx: createContext(req) });
 
   const url = createUrl(req);
-  const foundedRoutes = matchRoutes(routesConfig, url);
-  if (!foundedRoutes) {
-    throw new Error(`Not found: ${url}`);
+  const foundRoutes = matchRoutes(routesConfig, url);
+  if (!foundRoutes) {
+    throw new Error(`Страница не найдена! ${url}`);
   }
 
-  const [{ route }] = foundedRoutes;
+  const [
+    {
+      route: { preFetchData },
+    },
+  ] = foundRoutes;
 
-  const preFetchData = (route as { preFetchData?: (store: ReturnType<typeof makeStore>) => Promise<unknown> })
-    .preFetchData;
+  console.log(req.headers);
 
   if (preFetchData) {
-    console.log('in prefetch');
-    await preFetchData(store);
+    try {
+      await preFetchData({ store });
+    } catch (e) {
+      console.log('Инициализация страницы произошла с ошибкой', e);
+    }
   }
 
   await Promise.all(store.dispatch(generatedApi.util.getRunningQueriesThunk()));

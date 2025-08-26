@@ -4,6 +4,7 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 
 import { api } from '@/api/generated';
 
+import type { PageInitContext } from '../types/pageContext';
 import authReducer from './slices/auth';
 
 const rootReducer = combineReducers({
@@ -11,7 +12,10 @@ const rootReducer = combineReducers({
   auth: authReducer,
 });
 
-export function makeStore(preloadedState?: Partial<ReturnType<typeof rootReducer>>, extraArgument?: unknown) {
+export function makeStore(
+  preloadedState?: Partial<ReturnType<typeof rootReducer>>,
+  extraArgument?: { ctx: PageInitContext },
+) {
   return configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) => {

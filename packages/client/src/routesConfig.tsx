@@ -19,7 +19,7 @@ import Registration from './pages/Registration/Registration';
 import ServerError from './pages/ServerError/ServerError';
 
 type ExtendedRouteObject = RouteObject & {
-  preFetchData?: (store: AppStore) => Promise<unknown>;
+  preFetchData?: ({ store }: { store: AppStore }) => Promise<unknown>;
   children?: ExtendedRouteObject[];
 };
 
@@ -27,8 +27,8 @@ export const routesConfig: ExtendedRouteObject[] = [
   {
     path: appRoutes.MAIN,
     Component: App,
-    preFetchData: (store) => {
-      return store.dispatch(generatedApi.endpoints.getAuthUser.initiate());
+    preFetchData: ({ store }) => {
+      return store.dispatch(generatedApi.endpoints.getAuthUser.initiate()).unwrap();
     },
     children: [
       { index: true, Component: MainPage },
@@ -44,12 +44,12 @@ export const routesConfig: ExtendedRouteObject[] = [
       {
         path: appRoutes.PROFILE,
         Component: withAuth(ProfilePage),
-        preFetchData: (store) => store.dispatch(generatedApi.endpoints.getAuthUser.initiate()),
+        preFetchData: ({ store }) => store.dispatch(generatedApi.endpoints.getAuthUser.initiate()),
       },
       {
         path: appRoutes.LEADERBOARD,
         Component: withAuth(LeaderboardPage),
-        preFetchData: (store) =>
+        preFetchData: ({ store }) =>
           store.dispatch(
             generatedApi.endpoints.postLeaderboardByTeamName.initiate({
               teamName,

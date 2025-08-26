@@ -12,8 +12,9 @@ export const useAuthCheck = () => {
   useEffect(() => {
     if (isSuccess && data && isAuthorized === null) {
       dispatch(setUser(data));
-    } else if (!isLoading && isError && isAuthorized === null) {
-      dispatch(resetUser());
+      // temp
+      // } else if (!isLoading && isError && isAuthorized === null && typeof window !== 'undefined') {
+      //   dispatch(resetUser());
     }
   }, [data, isError, isLoading, isSuccess, isAuthorized, dispatch]);
 

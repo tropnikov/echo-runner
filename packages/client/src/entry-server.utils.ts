@@ -4,6 +4,7 @@ import { api as generatedApi } from '@/api/generated';
 import { teamName } from '@/constants/leaderboardStats';
 
 import { AppStore } from './redux/store';
+import type { PageInitContext } from './types/pageContext';
 
 export const createUrl = (req: ExpressRequest) => {
   const origin = `${req.protocol}://${req.get('host')}`;
@@ -72,4 +73,17 @@ export const prefetch = async (store: AppStore) => {
     console.error('Error prefetching', error);
     return store.getState();
   }
+};
+
+export const createContext = (req: ExpressRequest): PageInitContext => {
+  const requestHeaders = Object.fromEntries(
+    Object.entries(req.headers).map(([key, value]) => [key, Array.isArray(value) ? value.join(', ') : value || '']),
+  );
+
+  return {
+    cookies: req.cookies,
+    requestHeaders: {
+      ...requestHeaders,
+    },
+  };
 };

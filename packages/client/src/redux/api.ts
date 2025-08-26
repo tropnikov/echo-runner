@@ -4,8 +4,19 @@ const baseQuery = fetchBaseQuery({
   baseUrl: 'https://ya-praktikum.tech/api/v2',
   credentials: 'include',
   prepareHeaders: (headers, { extra }) => {
-    const req = (extra as { req?: { headers?: Record<string, string> } })?.req;
-    if (req?.headers?.cookie) headers.set('cookie', req.headers.cookie);
+    const extraArgument = extra as {
+      ctx?: {
+        cookies?: Record<string, string>;
+      };
+    };
+
+    if (extraArgument?.ctx?.cookies) {
+      const cookieString = Object.entries(extraArgument.ctx.cookies)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('; ');
+      headers.set('cookie', cookieString);
+    }
+
     return headers;
   },
   responseHandler: async (response) => {

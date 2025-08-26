@@ -2,7 +2,7 @@ import { createStaticHandler, createStaticRouter, matchRoutes, StaticRouterProvi
 
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 import { renderToString } from 'react-dom/server';
 import { HelmetProvider } from 'react-helmet-async';
 import type { HelmetServerState } from 'react-helmet-async';
@@ -12,16 +12,21 @@ import { api as generatedApi } from '@/api/generated';
 
 import { RenderResult } from '../server/types';
 import NotificationProvider from './components/NotificationProvider/NotificationProvider';
-import { createContext, createFetchRequest, createUrl } from './entry-server.utils';
+import { createContext, createFetchRequest, createUrl, prefetch } from './entry-server.utils';
 import { makeStore } from './redux/store';
 import { routesConfig } from './routesConfig';
 
-export const render = async (req: Request): Promise<RenderResult> => {
+export const render = async (req: Request, res?: Response): Promise<RenderResult> => {
   const handler = createStaticHandler(routesConfig);
   const fetchRequest = createFetchRequest(req);
   const context = await handler.query(fetchRequest);
 
-  const store = makeStore(undefined, { ctx: createContext(req) });
+  const context_data = createContext(req, res);
+  const store = makeStore(undefined, { ctx: context_data });
+
+  const hasCookies = context_data.cookies && Object.keys(context_data.cookies).length > 0;
+
+  await prefetch(store, hasCookies);
 
   const url = createUrl(req);
   const foundRoutes = matchRoutes(routesConfig, url);
@@ -35,8 +40,6 @@ export const render = async (req: Request): Promise<RenderResult> => {
     },
   ] = foundRoutes;
 
-  console.log(req.headers);
-
   if (preFetchData) {
     try {
       await preFetchData({ store });
@@ -45,7 +48,12 @@ export const render = async (req: Request): Promise<RenderResult> => {
     }
   }
 
-  await Promise.all(store.dispatch(generatedApi.util.getRunningQueriesThunk()));
+  try {
+    const runningQueries = store.dispatch(generatedApi.util.getRunningQueriesThunk());
+    await Promise.all(runningQueries);
+  } catch (error) {
+    console.log('Error waiting for running queries (ignoring):', error);
+  }
 
   if (context instanceof Response) {
     throw context;

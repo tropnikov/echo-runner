@@ -27,8 +27,8 @@ export const routesConfig: ExtendedRouteObject[] = [
   {
     path: appRoutes.MAIN,
     Component: App,
-    preFetchData: ({ store }) => {
-      return store.dispatch(generatedApi.endpoints.getAuthUser.initiate()).unwrap();
+    preFetchData: () => {
+      return Promise.resolve();
     },
     children: [
       { index: true, Component: MainPage },
@@ -44,18 +44,33 @@ export const routesConfig: ExtendedRouteObject[] = [
       {
         path: appRoutes.PROFILE,
         Component: withAuth(ProfilePage),
-        preFetchData: ({ store }) => store.dispatch(generatedApi.endpoints.getAuthUser.initiate()),
+        preFetchData: async ({ store }) => {
+          try {
+            return await store.dispatch(generatedApi.endpoints.getAuthUser.initiate()).unwrap();
+          } catch (error) {
+            console.log('Profile preFetchData: Auth failed, will be handled on the client', error);
+            return null;
+          }
+        },
       },
       {
         path: appRoutes.LEADERBOARD,
         Component: withAuth(LeaderboardPage),
-        preFetchData: ({ store }) =>
-          store.dispatch(
-            generatedApi.endpoints.postLeaderboardByTeamName.initiate({
-              teamName,
-              leaderboardRequest: { ratingFieldName: 'score', cursor: 0, limit: 10 },
-            }),
-          ),
+        preFetchData: async ({ store }) => {
+          try {
+            return await store
+              .dispatch(
+                generatedApi.endpoints.postLeaderboardByTeamName.initiate({
+                  teamName,
+                  leaderboardRequest: { ratingFieldName: 'score', cursor: 0, limit: 10 },
+                }),
+              )
+              .unwrap();
+          } catch (error) {
+            console.log('Leaderboard preFetchData: Failed, will be handled on the client', error);
+            return null;
+          }
+        },
       },
       { path: appRoutes.GAME, Component: withAuth(Game) },
       { path: appRoutes.ERROR, Component: ServerError },

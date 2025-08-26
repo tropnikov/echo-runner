@@ -1,4 +1,4 @@
-import { Request as ExpressRequest } from 'express';
+import { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 
 import { api as generatedApi } from '@/api/generated';
 import { teamName } from '@/constants/leaderboardStats';
@@ -52,21 +52,29 @@ export const createFetchRequest = (req: ExpressRequest) => {
   return new Request(url.href, init);
 };
 
-export const prefetch = async (store: AppStore) => {
+export const prefetch = async (store: AppStore, hasCookies = false) => {
   try {
-    const preloadPromises = [
-      store
-        .dispatch(
-          generatedApi.endpoints.postLeaderboardByTeamName.initiate({
-            teamName,
-            leaderboardRequest: { ratingFieldName: 'score', cursor: 0, limit: 10 },
-          }),
-        )
-        .unwrap(),
-      store.dispatch(generatedApi.endpoints.getAuthUser.initiate()).unwrap(),
-    ];
+    const preloadPromises = [];
+
+    // Делаем запросы только если есть cookies
+    if (hasCookies) {
+      preloadPromises.push(store.dispatch(generatedApi.endpoints.getAuthUser.initiate()).unwrap());
+      preloadPromises.push(
+        store
+          .dispatch(
+            generatedApi.endpoints.postLeaderboardByTeamName.initiate({
+              teamName,
+              leaderboardRequest: { ratingFieldName: 'score', cursor: 0, limit: 10 },
+            }),
+          )
+          .unwrap(),
+      );
+    } else {
+      console.log('Skipping prefetch');
+    }
 
     await Promise.all(preloadPromises);
+    console.log('Prefetch completed successfully');
 
     return store.getState();
   } catch (error) {
@@ -75,7 +83,7 @@ export const prefetch = async (store: AppStore) => {
   }
 };
 
-export const createContext = (req: ExpressRequest): PageInitContext => {
+export const createContext = (req: ExpressRequest, res?: ExpressResponse): PageInitContext => {
   const requestHeaders = Object.fromEntries(
     Object.entries(req.headers).map(([key, value]) => [key, Array.isArray(value) ? value.join(', ') : value || '']),
   );
@@ -85,5 +93,6 @@ export const createContext = (req: ExpressRequest): PageInitContext => {
     requestHeaders: {
       ...requestHeaders,
     },
+    res,
   };
 };

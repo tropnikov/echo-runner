@@ -1,7 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 
+import { Helmet } from 'react-helmet-async';
+
 import GameView from '@/components/GameView/GameView';
 import { teamName } from '@/constants/leaderboardStats';
+import { title } from '@/constants/siteConfig';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useAppSelector } from '@/redux/store';
 
@@ -106,17 +109,39 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   });
 
   return (
-    <GameView
-      canvasRef={canvasRef}
-      score={score}
-      damage={damage}
-      maxDamage={maxDamage}
-      isPaused={isPaused}
-      isStarted={isStarted}
-      onStart={handleStart}
-      onRestart={handleRestart}
-      onPause={handleOnPause}
-    />
+    <>
+      <Helmet>
+        <title>Игра | {title}</title>
+        <meta
+          name="description"
+          content="Играйте в Echo Runner! Управляйте персонажем, преодолевайте препятствия, набирайте очки и устанавливайте новые рекорды."
+        />
+        <meta name="keywords" content="игра, играть, echo runner, платформер, очки, рекорды, геймплей" />
+        <meta property="og:title" content={`Игра | ${title}`} />
+        <meta
+          property="og:description"
+          content="Играйте в Echo Runner! Управляйте персонажем, преодолевайте препятствия, набирайте очки и устанавливайте новые рекорды."
+        />
+        <meta property="og:url" content="/game" />
+        <meta name="twitter:title" content={`Игра | ${title}`} />
+        <meta
+          name="twitter:description"
+          content="Играйте в Echo Runner! Управляйте персонажем, преодолевайте препятствия, набирайте очки и устанавливайте новые рекорды."
+        />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <GameView
+        canvasRef={canvasRef}
+        score={score}
+        damage={damage}
+        maxDamage={maxDamage}
+        isPaused={isPaused}
+        isStarted={isStarted}
+        onStart={handleStart}
+        onRestart={handleRestart}
+        onPause={handleOnPause}
+      />
+    </>
   );
 }
 

@@ -26,6 +26,11 @@ jest.mock('@/components/GameView/GameView', () => ({
   },
 }));
 
+jest.mock('react-helmet-async', () => ({
+  Helmet: ({ children }: { children: React.ReactNode }) => <div data-testid="helmet">{children}</div>,
+  HelmetProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
 jest.mock('react-redux', () => ({
   useSelector: Object.assign(jest.fn().mockReturnValue({}), {
     withTypes: () => jest.fn(),
@@ -45,16 +50,20 @@ jest.mock('react-redux', () => ({
   ),
 }));
 
+const renderGame = (props?: { maxDamage?: number }) => {
+  return render(<Game {...props} />);
+};
+
 describe('Game', () => {
   test('рендерится с начальными значениями', () => {
-    render(<Game maxDamage={5} />);
+    renderGame({ maxDamage: 5 });
 
     expect(screen.getByTestId('score').textContent).toBe('0');
     expect(screen.getByTestId('damage').textContent).toBe('0');
   });
 
   test('игра начинается после клика по Start', () => {
-    render(<Game />);
+    renderGame();
     expect(screen.getByText('Игра не начата')).toBeInTheDocument();
     fireEvent.click(screen.getByTestId('start'));
     // "Игра не начата" должен исчезнуть
@@ -62,7 +71,7 @@ describe('Game', () => {
   });
 
   test('рестарт сбрасывает score и damage в 0', () => {
-    render(<Game />);
+    renderGame();
     fireEvent.click(screen.getByTestId('start'));
 
     fireEvent.click(screen.getByTestId('restart'));
@@ -71,7 +80,7 @@ describe('Game', () => {
   });
 
   test('pause можно вызывать без ошибок', () => {
-    render(<Game />);
+    renderGame();
     fireEvent.click(screen.getByTestId('pause'));
   });
 });

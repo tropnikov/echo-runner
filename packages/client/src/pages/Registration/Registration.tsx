@@ -9,13 +9,14 @@ import { appRoutes } from '@/constants/appRoutes';
 import { getConfirmPasswordRule, rules } from '@/helpers/validators';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { useRegister } from '@/hooks/useRegister';
+import { useYandexOAuth } from '@/hooks/useYandexOAuth';
 import { isErrorWithReason } from '@/types/errors';
 
 import styles from './registration.module.css';
 
 const Registration: FC = () => {
   const [form] = Form.useForm();
-
+  const { startOAuthFlow } = useYandexOAuth();
   const navigate = useNavigate();
   const notification = useNotification();
   const { register } = useRegister();
@@ -86,11 +87,16 @@ const Registration: FC = () => {
             <Input />
           </Form.Item>
 
-          <Form.Item label={null}>
-            <Button type="primary" htmlType="submit" loading={isLoading}>
-              Зарегистрироваться
+          <Flex gap={16} vertical>
+            <Form.Item label={null}>
+              <Button type="primary" htmlType="submit" loading={isLoading}>
+                Зарегистрироваться
+              </Button>
+            </Form.Item>
+            <Button type="default" loading={isLoading} onClick={startOAuthFlow}>
+              Зарегистрироваться через Яндекс ID
             </Button>
-          </Form.Item>
+          </Flex>
         </Form>
       </Card>
     </Flex>

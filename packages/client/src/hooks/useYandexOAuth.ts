@@ -18,7 +18,8 @@ export const useYandexOAuth = () => {
   const isProcessingRef = useRef(false);
   const processedCodeRef = useRef<string | null>(null);
 
-  const redirectUri = window.location.origin;
+  const isClient = typeof window !== 'undefined';
+  const redirectUri = isClient ? window.location.origin : '';
 
   const getOauthYandexUrl = useCallback(
     (serviceId: string) => {
@@ -49,7 +50,9 @@ export const useYandexOAuth = () => {
 
         navigate(`/${appRoutes.GAME}`);
 
-        window.history.replaceState({}, document.title, window.location.pathname);
+        if (isClient) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
       } catch (error) {
         console.error('Ошибка OAuth авторизации:', error);
         notification.error({
@@ -58,7 +61,9 @@ export const useYandexOAuth = () => {
 
         navigate(`/${appRoutes.MAIN}`);
 
-        window.history.replaceState({}, document.title, window.location.pathname);
+        if (isClient) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
       } finally {
         isProcessingRef.current = false;
       }
@@ -74,7 +79,9 @@ export const useYandexOAuth = () => {
 
       const oauthUrl = getOauthYandexUrl(service_id);
 
-      document.location.href = oauthUrl;
+      if (isClient) {
+        window.location.href = oauthUrl;
+      }
     } catch (error) {
       console.error('Ошибка при получении service_id:', error);
       notification.error({
@@ -82,7 +89,7 @@ export const useYandexOAuth = () => {
       });
       throw error;
     }
-  }, [getOauthYandexServiceId, redirectUri, getOauthYandexUrl]);
+  }, [getOauthYandexServiceId, redirectUri, getOauthYandexUrl, notification]);
 
   useEffect(() => {
     const code = searchParams.get('code');

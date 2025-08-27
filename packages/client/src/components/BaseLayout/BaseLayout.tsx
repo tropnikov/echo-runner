@@ -102,7 +102,6 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
                   variant="filled"
                   type="text"
                   icon={<UserOutlined />}
-                  className={styles.userButton}
                   onClick={() => handleAuthClick(appRoutes.PROFILE)}>
                   {user?.first_name}
                 </Button>
@@ -112,11 +111,7 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
               </>
             ) : (
               <>
-                <Button
-                  type="text"
-                  icon={<LoginOutlined />}
-                  className={styles.loginButton}
-                  onClick={() => handleAuthClick(appRoutes.SIGNIN)}>
+                <Button type="text" icon={<LoginOutlined />} onClick={() => handleAuthClick(appRoutes.SIGNIN)}>
                   Вход
                 </Button>
                 <Button type="primary" icon={<UserAddOutlined />} onClick={() => handleAuthClick(appRoutes.SIGNUP)}>
@@ -130,7 +125,7 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
 
       <Content className={styles.layoutContainer}>{children}</Content>
 
-      <Footer className={styles.footer}>© 2025 Created by Echo Team</Footer>
+      <Footer className={styles.footer}>© {new Date().getFullYear()} Created by Echo Team</Footer>
     </Layout>
   );
 }

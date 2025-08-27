@@ -1,17 +1,4 @@
-.wrapper {
-  height: 100%;
-}
-
 .card {
   max-width: 400px;
   width: 100%;
-  border-color: var(--ant-color-border-secondary);
-}
-
-.cardForm {
-  width: 100%;
-}
-
-.cardForm :global(.ant-card-head) {
-  border-bottom-color: var(--ant-color-border-secondary);
 }

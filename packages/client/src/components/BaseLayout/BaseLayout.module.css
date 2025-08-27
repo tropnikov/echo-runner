@@ -1,7 +1,6 @@
 @import '@/helpers/breakpoints.css';
 
 .layout {
-  background: var(--ant-color-bg-layout, #0f172a);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -71,18 +70,9 @@
   align-items: center;
 }
 
-.userButton {
-  color: var(--ant-color-text, #e2e8f0);
-}
-
-.loginButton {
-  color: var(--ant-color-text, #e2e8f0);
-}
-
 .footer {
   text-align: center;
   background: var(--ant-color-bg-container, #1e293b);
-  color: var(--ant-color-text, #e2e8f0);
   border-top: 1px solid var(--ant-color-border-secondary, #64748b);
   padding: 16px;
 }

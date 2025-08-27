@@ -18,7 +18,8 @@ export const useYandexOAuth = () => {
   const isProcessingRef = useRef(false);
   const processedCodeRef = useRef<string | null>(null);
 
-  const redirectUri = typeof window !== 'undefined' ? window.location.origin : '';
+  const isClient = typeof window !== 'undefined';
+  const redirectUri = isClient ? window.location.origin : '';
 
   const getOauthYandexUrl = useCallback(
     (serviceId: string) => {
@@ -49,7 +50,7 @@ export const useYandexOAuth = () => {
 
         navigate(`/${appRoutes.GAME}`);
 
-        if (typeof window !== 'undefined') {
+        if (isClient) {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       } catch (error) {
@@ -60,7 +61,7 @@ export const useYandexOAuth = () => {
 
         navigate(`/${appRoutes.MAIN}`);
 
-        if (typeof window !== 'undefined') {
+        if (isClient) {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       } finally {
@@ -78,7 +79,7 @@ export const useYandexOAuth = () => {
 
       const oauthUrl = getOauthYandexUrl(service_id);
 
-      if (typeof window !== 'undefined') {
+      if (isClient) {
         window.location.href = oauthUrl;
       }
     } catch (error) {

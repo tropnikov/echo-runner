@@ -1,6 +1,6 @@
 import { MouseEvent } from 'react';
 
-import { Button, theme } from 'antd';
+import { Button } from 'antd';
 import {
   FullscreenExitOutlined,
   FullscreenOutlined,
@@ -16,8 +16,6 @@ import { GameViewProps } from './types';
 
 import styles from './GameView.module.css';
 
-const { useToken } = theme;
-
 function GameView({
   canvasRef,
   score,
@@ -31,10 +29,6 @@ function GameView({
 }: GameViewProps) {
   const { elementRef, isFullscreen, toggleFullscreen } = useFullscreen();
 
-  const {
-    token: { colorBgContainer },
-  } = useToken();
-
   function handleFullscreenButtonClick(e: MouseEvent<HTMLButtonElement>) {
     if (e.currentTarget && e.currentTarget instanceof HTMLButtonElement) {
       e.currentTarget.blur();
@@ -45,7 +39,7 @@ function GameView({
 
   return (
     <section ref={elementRef} className={styles.gameViewContainer}>
-      <div style={{ backgroundColor: colorBgContainer }} className={styles.gameViewContainer}>
+      <div className={styles.gameViewContainer}>
         {!isStarted && <StartGameView text="Игра не начата" ButtonIcon={PlayCircleOutlined} onButtonClick={onStart} />}
         {damage >= maxDamage && (
           <StartGameView

@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router';
 
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider } from 'antd';
 
 import BaseLayout from './components/BaseLayout/BaseLayout';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import { darkTheme } from './themes/darkTheme';
 
 function App() {
   useEffect(() => {
@@ -22,7 +23,8 @@ function App() {
     <ErrorBoundary>
       <ConfigProvider
         theme={{
-          algorithm: theme.defaultAlgorithm,
+          cssVar: true,
+          ...darkTheme,
         }}>
         <BaseLayout>
           <Outlet />

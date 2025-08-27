@@ -1,5 +1,18 @@
 .featureCardIcon {
   font-size: 48px;
-  color: #1890ff;
   margin-bottom: 16px;
+  color: var(--ant-color-primary);
+}
+
+.featureCardTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--ant-color-text);
+}
+
+.featureCardDescription {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ant-color-text-secondary);
 }

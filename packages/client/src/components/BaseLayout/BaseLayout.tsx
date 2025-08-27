@@ -128,11 +128,9 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
         </div>
       </Header>
 
-      <Content className={styles.layoutContainer}>
-        <div className={styles.content}>{children}</div>
-      </Content>
+      <Content className={styles.layoutContainer}>{children}</Content>
 
-      <Footer className={styles.footer}>© 2024 Created by Echo Team</Footer>
+      <Footer className={styles.footer}>© 2025 Created by Echo Team</Footer>
     </Layout>
   );
 }

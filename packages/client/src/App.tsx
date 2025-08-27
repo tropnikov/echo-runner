@@ -6,6 +6,7 @@ import { ConfigProvider } from 'antd';
 import BaseLayout from './components/BaseLayout/BaseLayout';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { darkTheme } from './themes/darkTheme';
+import { lightTheme } from './themes/lightTheme';
 
 function App() {
   useEffect(() => {
@@ -24,7 +25,8 @@ function App() {
       <ConfigProvider
         theme={{
           cssVar: true,
-          ...darkTheme,
+          // ...darkTheme,
+          ...lightTheme,
         }}>
         <BaseLayout>
           <Outlet />

@@ -17,12 +17,11 @@
 .heroHeaderDescription {
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--ant-color-text);
   font-weight: 400;
   letter-spacing: 0.01em;
 }
 
 .heroHeaderTitle {
   font-size: 80px;
-  color: var(--ant-color-text);
+  margin-top: 0;
 }

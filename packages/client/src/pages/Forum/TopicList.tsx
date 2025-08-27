@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 
 import { Button, Flex, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
-import TopicModal from '../../components/Forum/TopicModal';
+import TopicModal from '@/components/Forum/TopicModal';
+import { useTopicList } from '@/hooks/useTopicList';
 
 const { Text, Title } = Typography;
 
@@ -15,12 +16,12 @@ interface DataType {
     id: number;
     title: string;
     author: string;
-    created_at: string;
+    created_at: Date;
   };
   count: number;
   last: {
     user: string;
-    date: string;
+    date: Date;
   };
 }
 
@@ -61,39 +62,41 @@ const columns: TableProps<DataType>['columns'] = [
   },
 ];
 
-const data: DataType[] = [
-  {
-    key: '1',
-    topic: {
-      id: 1,
-      title: 'Правила игры',
-      author: 'Пупкин',
-      created_at: '03 мая 2025г.',
-    },
-    count: 26,
-    last: {
-      user: 'david',
-      date: '15 мая 2025',
-    },
-  },
-  {
-    key: '2',
-    topic: {
-      id: 2,
-      title: 'Управление игрой',
-      author: 'Тюлькин',
-      created_at: '03 февраля 2025г.',
-    },
-    count: 12,
-    last: {
-      user: 'john',
-      date: '25 марта 2025',
-    },
-  },
-];
+// const data: DataType[] = [
+//   {
+//     key: '1',
+//     topic: {
+//       id: 1,
+//       title: 'Правила игры',
+//       author: 'Пупкин',
+//       created_at: '03 мая 2025г.',
+//     },
+//     count: 26,
+//     last: {
+//       user: 'david',
+//       date: '15 мая 2025',
+//     },
+//   },
+//   {
+//     key: '2',
+//     topic: {
+//       id: 2,
+//       title: 'Управление игрой',
+//       author: 'Тюлькин',
+//       created_at: '03 февраля 2025г.',
+//     },
+//     count: 12,
+//     last: {
+//       user: 'john',
+//       date: '25 марта 2025',
+//     },
+//   },
+// ];
 
 function TopicList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pageNumber] = useState(0);
+  const [pageSize] = useState(10);
 
   const handleOk = () => {
     setIsModalOpen(false);
@@ -107,12 +110,33 @@ function TopicList() {
     setIsModalOpen(true);
   };
 
+  const { data } = useTopicList(pageNumber, pageSize);
+
+  const topics: DataType[] = useMemo<DataType[]>(
+    () =>
+      data.map((item) => ({
+        key: item.id.toString(),
+        topic: {
+          id: item.id,
+          title: item.name,
+          author: item.owner_id.toString(),
+          created_at: item.create_date,
+        },
+        count: item.comment_count,
+        last: {
+          user: item.last.owner_id.toString(),
+          date: item.last.create_date,
+        },
+      })),
+    [data],
+  );
+
   return (
     <Flex vertical>
       <Title level={2}>Форум игры</Title>
       <Table<DataType>
         columns={columns}
-        dataSource={data}
+        dataSource={topics}
         showHeader={false}
         pagination={{
           showTotal: (total) => (

@@ -12,6 +12,8 @@ import { useRegister } from '@/hooks/useRegister';
 import { useYandexOAuth } from '@/hooks/useYandexOAuth';
 import { isErrorWithReason } from '@/types/errors';
 
+import { withMeta } from '@/hocs/withMeta';
+
 import styles from './registration.module.css';
 
 const Registration: FC = () => {
@@ -88,11 +90,9 @@ const Registration: FC = () => {
           </Form.Item>
 
           <Flex gap={16} vertical>
-            <Form.Item label={null}>
-              <Button type="primary" htmlType="submit" loading={isLoading}>
-                Зарегистрироваться
-              </Button>
-            </Form.Item>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
+              Зарегистрироваться
+            </Button>
             <Button type="default" loading={isLoading} onClick={startOAuthFlow}>
               Зарегистрироваться через Яндекс ID
             </Button>
@@ -103,4 +103,10 @@ const Registration: FC = () => {
   );
 };
 
-export default Registration;
+export default withMeta(Registration, {
+  title: 'Регистрация',
+  description:
+    'Создайте аккаунт Echo Runner, чтобы играть, соревноваться с другими игроками и отслеживать свои достижения.',
+  keywords: 'регистрация, создать аккаунт, echo runner, новый пользователь, присоединиться',
+  url: '/signup',
+});

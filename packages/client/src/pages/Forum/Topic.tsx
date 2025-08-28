@@ -2,6 +2,8 @@ import { ChangeEvent, useState } from 'react';
 
 import { Avatar, Button, Flex, Input, List, Typography } from 'antd';
 
+import { withMeta } from '@/hocs/withMeta';
+
 const { Text, Title } = Typography;
 
 const data = Array.from({ length: 23 }).map((_, i) => ({
@@ -64,4 +66,9 @@ function Topic() {
   );
 }
 
-export default Topic;
+export default withMeta(Topic, {
+  title: 'Правила игры | Форум',
+  description: 'Обсуждение правил игры Echo Runner. Читайте комментарии, задавайте вопросы и участвуйте в дискуссии.',
+  keywords: 'правила игры, echo runner, форум, комментарии, дискуссия',
+  noIndex: true,
+});

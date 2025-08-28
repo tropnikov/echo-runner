@@ -3,6 +3,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 
 import { api } from '@/api/generated';
+import { themeApi } from '@/api/themeApi';
 
 import authReducer from './slices/auth';
 
@@ -10,11 +11,12 @@ export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
     auth: authReducer,
+    [themeApi.reducerPath]: themeApi.reducer,
   },
   middleware: (getDefaultMiddleware) => {
     const middleware = getDefaultMiddleware();
 
-    return middleware.concat(api.middleware);
+    return middleware.concat(api.middleware, themeApi.middleware);
   },
 });
 

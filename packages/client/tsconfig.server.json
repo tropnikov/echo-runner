@@ -14,6 +14,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["./server/**/*.ts", "./src/redux/**/*.ts", "./src/api/generated/**/*.ts"],
+  "include": ["./server/**/*.ts", "./src/redux/**/*.ts", "./src/api/**/*.ts", "./src/types/**/*.ts"],
   "exclude": ["./server/**/*.d.ts", "./server/build"]
 }

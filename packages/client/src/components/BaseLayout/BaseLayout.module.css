@@ -24,6 +24,12 @@
   border-bottom: 1px solid var(--ant-color-border-secondary, #64748b);
 }
 
+.headerThemeSwitch {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .headerContent {
   display: flex;
   align-items: center;

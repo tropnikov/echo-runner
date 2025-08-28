@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { GetUserThemeArgs, GetUserThemeResponse, SetUserThemeArgs, SetUserThemeResponse } from '@/types/Theme';
+import { GetUserThemeArgs, GetUserThemeResponse, SetUserThemeArgs, SetUserThemeResponse } from '@/types/themes';
 
 import { themeMock } from './themeMock';
 

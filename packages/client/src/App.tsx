@@ -12,11 +12,14 @@ import { useTheme } from './hooks/useTheme';
 import { darkTheme } from './themes/darkTheme';
 import { lightTheme } from './themes/lightTheme';
 
-function App() {
-  const mockUserId = 1;
-  const { currentTheme } = useTheme(mockUserId);
+const THEMES = {
+  dark: darkTheme,
+  light: lightTheme,
+} as const;
 
-  const themeConfig = useMemo(() => (currentTheme === 'dark' ? darkTheme : lightTheme), [currentTheme]);
+function App() {
+  const { currentTheme } = useTheme();
+  const themeConfig = THEMES[currentTheme];
 
   useEffect(() => {
     const fetchServerData = async () => {

@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 
-import { Button, Layout, Menu, Space } from 'antd';
+import { Button, Layout, Menu, Space, Switch } from 'antd';
 import { LoginOutlined, LogoutOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { useLogout } from '@/hooks/useLogout';
+import { useTheme } from '@/hooks/useTheme';
 import { useYandexOAuth } from '@/hooks/useYandexOAuth';
 import { useAppSelector } from '@/redux/store';
 import { isErrorWithReason } from '@/types/errors';
@@ -35,6 +36,7 @@ const menuItems = [
 ];
 
 function BaseLayout({ children }: { children: React.ReactNode }) {
+  const { currentTheme, switchTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const notification = useNotification();
@@ -98,6 +100,9 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
               <div>Loading...</div> // Или другой индикатор загрузки
             ) : isAuthorized ? (
               <>
+                <div className={styles.headerThemeSwitch}>
+                  Темная тема: <Switch checked={currentTheme === 'dark'} onChange={switchTheme} />
+                </div>
                 <Button
                   variant="filled"
                   type="text"

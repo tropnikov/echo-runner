@@ -2,9 +2,7 @@ import { ChangeEvent, useState } from 'react';
 
 import { Avatar, Button, Flex, Input, List, Typography } from 'antd';
 
-import { Helmet } from 'react-helmet-async';
-
-import { title } from '@/constants/siteConfig';
+import { withMeta } from '@/hocs/withMeta';
 
 const { Text, Title } = Typography;
 
@@ -46,51 +44,31 @@ function Topic() {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>Правила игры | Форум | {title}</title>
-        <meta
-          name="description"
-          content="Обсуждение правил игры Echo Runner. Читайте комментарии, задавайте вопросы и участвуйте в дискуссии."
-        />
-        <meta name="keywords" content="правила игры, echo runner, форум, комментарии, дискуссия" />
-        <meta property="og:title" content={`Правила игры | Форум | ${title}`} />
-        <meta
-          property="og:description"
-          content="Обсуждение правил игры Echo Runner. Читайте комментарии, задавайте вопросы и участвуйте в дискуссии."
-        />
-        <meta name="twitter:title" content={`Правила игры | Форум | ${title}`} />
-        <meta
-          name="twitter:description"
-          content="Обсуждение правил игры Echo Runner. Читайте комментарии, задавайте вопросы и участвуйте в дискуссии."
-        />
-      </Helmet>
-      <Flex vertical>
-        <Title level={2}>Правила игры</Title>
-        <List
-          itemLayout="vertical"
-          size="large"
-          pagination={{
-            pageSize: 4,
-          }}
-          dataSource={data}
-          renderItem={(item) => <TopicItem {...item} />}
-        />
-        <Flex vertical gap="middle" style={{ padding: '16px' }}>
-          <Text>Напишите комментарий</Text>
-          <Input.TextArea
-            id="topic_comment"
-            value={comment}
-            placeholder="Текст комментария"
-            onChange={onCommentChange}
-          />
-          <Button style={{ width: 'fit-content', marginLeft: 'auto' }} onClick={onSendComment}>
-            Отправить
-          </Button>
-        </Flex>
+    <Flex vertical>
+      <Title level={2}>Правила игры</Title>
+      <List
+        itemLayout="vertical"
+        size="large"
+        pagination={{
+          pageSize: 4,
+        }}
+        dataSource={data}
+        renderItem={(item) => <TopicItem {...item} />}
+      />
+      <Flex vertical gap="middle" style={{ padding: '16px' }}>
+        <Text>Напишите комментарий</Text>
+        <Input.TextArea id="topic_comment" value={comment} placeholder="Текст комментария" onChange={onCommentChange} />
+        <Button style={{ width: 'fit-content', marginLeft: 'auto' }} onClick={onSendComment}>
+          Отправить
+        </Button>
       </Flex>
-    </>
+    </Flex>
   );
 }
 
-export default Topic;
+export default withMeta(Topic, {
+  title: 'Правила игры | Форум',
+  description: 'Обсуждение правил игры Echo Runner. Читайте комментарии, задавайте вопросы и участвуйте в дискуссии.',
+  keywords: 'правила игры, echo runner, форум, комментарии, дискуссия',
+  noIndex: true,
+});

@@ -27,9 +27,6 @@ export const routesConfig: ExtendedRouteObject[] = [
   {
     path: appRoutes.MAIN,
     Component: App,
-    preFetchData: () => {
-      return Promise.resolve();
-    },
     children: [
       { index: true, Component: MainPage },
       {

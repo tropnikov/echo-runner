@@ -5,9 +5,7 @@ import { Button, Flex, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
-import { Helmet } from 'react-helmet-async';
-
-import { title } from '@/constants/siteConfig';
+import { withMeta } from '@/hocs/withMeta';
 
 import TopicModal from '../../components/Forum/TopicModal';
 
@@ -112,47 +110,33 @@ function TopicList() {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>Форум | {title}</title>
-        <meta
-          name="description"
-          content="Форум Echo Runner. Обсуждайте игру, делитесь советами, задавайте вопросы и общайтесь с другими игроками."
-        />
-        <meta name="keywords" content="форум, обсуждение, echo runner, игроки, советы, вопросы, темы" />
-        <meta property="og:title" content={`Форум | ${title}`} />
-        <meta
-          property="og:description"
-          content="Форум Echo Runner. Обсуждайте игру, делитесь советами, задавайте вопросы и общайтесь с другими игроками."
-        />
-        <meta property="og:url" content="/topics" />
-        <meta name="twitter:title" content={`Форум | ${title}`} />
-        <meta
-          name="twitter:description"
-          content="Форум Echo Runner. Обсуждайте игру, делитесь советами, задавайте вопросы и общайтесь с другими игроками."
-        />
-      </Helmet>
-      <Flex vertical>
-        <Title level={2}>Форум игры</Title>
-        <Table<DataType>
-          columns={columns}
-          dataSource={data}
-          showHeader={false}
-          pagination={{
-            showTotal: (total) => (
-              <div>
-                {`Всего тем: ${total}`}
-                <Button type="primary" icon={<FileTwoTone />} onClick={openModal} style={{ marginLeft: 8 }}>
-                  Создать тему
-                </Button>
-                <TopicModal show={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
-              </div>
-            ),
-          }}
-        />
-      </Flex>
-    </>
+    <Flex vertical>
+      <Title level={2}>Форум игры</Title>
+      <Table<DataType>
+        columns={columns}
+        dataSource={data}
+        showHeader={false}
+        pagination={{
+          showTotal: (total) => (
+            <div>
+              {`Всего тем: ${total}`}
+              <Button type="primary" icon={<FileTwoTone />} onClick={openModal} style={{ marginLeft: 8 }}>
+                Создать тему
+              </Button>
+              <TopicModal show={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
+            </div>
+          ),
+        }}
+      />
+    </Flex>
   );
 }
 
-export default TopicList;
+export default withMeta(TopicList, {
+  title: 'Форум',
+  description:
+    'Форум Echo Runner. Обсуждайте игру, делитесь советами, задавайте вопросы и общайтесь с другими игроками.',
+  keywords: 'форум, обсуждение, echo runner, игроки, советы, вопросы, темы',
+  url: '/topics',
+  noIndex: true,
+});

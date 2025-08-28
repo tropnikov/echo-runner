@@ -15,7 +15,7 @@ import { HelmetProvider } from 'react-helmet-async';
 
 import startServiceWorker from './helpers/sw';
 
-// startServiceWorker();
+startServiceWorker();
 
 const store = makeStore(window.__APP_INITIAL_STATE__);
 

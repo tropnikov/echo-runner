@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 
 import { Button, Flex, Table, Typography } from 'antd';
@@ -7,25 +7,26 @@ import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
 import TopicModal from '@/components/Forum/TopicModal';
 import { useTopicList } from '@/hooks/useTopicList';
+import { GetTopicListResponse } from '@/types/Forum';
 
 const { Text, Title } = Typography;
 
-interface DataType {
-  key: string;
-  topic: {
-    id: number;
-    title: string;
-    author: string;
-    created_at: Date;
-  };
-  count: number;
-  last: {
-    user: string;
-    date: Date;
-  };
-}
+// interface DataType {
+//   key: string;
+//   topic: {
+//     id: number;
+//     title: string;
+//     author: string;
+//     created_at: Date;
+//   };
+//   count: number;
+//   last: {
+//     user: string;
+//     date: Date;
+//   };
+// }
 
-const columns: TableProps<DataType>['columns'] = [
+const columns: TableProps<GetTopicListResponse>['columns'] = [
   {
     key: 'icon',
     width: 32,
@@ -97,9 +98,21 @@ function TopicList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pageNumber] = useState(0);
   const [pageSize] = useState(10);
+  const [loading] = useState(true);
 
   const handleOk = () => {
     setIsModalOpen(false);
+
+    // try {
+    //       const newTopic = await topicApi.createTopic({
+    //         title,
+    //         content,
+    //         author: 'Current User'
+    //       });
+    //       setTopics(prev => [...prev, newTopic]);
+    //     } catch (error) {
+    //       console.error('Error creating topic:', error);
+    //     }
   };
 
   const handleCancel = () => {
@@ -110,48 +123,62 @@ function TopicList() {
     setIsModalOpen(true);
   };
 
-  const { data } = useTopicList(pageNumber, pageSize);
+  const { topics } = useTopicList(pageNumber, pageSize);
 
-  const topics: DataType[] = useMemo<DataType[]>(
-    () =>
-      data.map((item) => ({
-        key: item.id.toString(),
-        topic: {
-          id: item.id,
-          title: item.name,
-          author: item.owner_id.toString(),
-          created_at: item.create_date,
-        },
-        count: item.comment_count,
-        last: {
-          user: item.last.owner_id.toString(),
-          date: item.last.create_date,
-        },
-      })),
-    [data],
-  );
+  // const topics: DataType[] = useMemo<DataType[]>(
+  //   () =>
+  //     data.map((item) => ({
+  //       key: item.id.toString(),
+  //       topic: {
+  //         id: item.id,
+  //         title: item.name,
+  //         author: item.owner_id.toString(),
+  //         created_at: item.create_date,
+  //       },
+  //       count: item.comment_count,
+  //       last: {
+  //         user: item.last.owner_id.toString(),
+  //         date: item.last.create_date,
+  //       },
+  //     })),
+  //   [data],
+  // );
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <Flex vertical>
       <Title level={2}>Форум игры</Title>
-      <Table<DataType>
+      <Table<GetTopicListResponse>
         columns={columns}
         dataSource={topics}
         showHeader={false}
         pagination={{
-          showTotal: (total) => (
-            <div>
-              {`Всего тем: ${total}`}
-              <Button type="primary" icon={<FileTwoTone />} onClick={openModal} style={{ marginLeft: 8 }}>
-                Создать тему
-              </Button>
-              <TopicModal show={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
-            </div>
-          ),
+          showTotal: (total) => `Всего тем: ${total}`,
         }}
       />
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+        <span>{`Всего тем: ${topics.length}`}</span>
+        <Button type="primary" icon={<FileTwoTone />} onClick={openModal}>
+          Создать тему
+        </Button>
+      </div>
+
+      <TopicModal show={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
     </Flex>
   );
 }
 
 export default TopicList;
+
+// pagination={{
+//   showTotal: (total) => (
+//     <div>
+//       {`Всего тем: ${total}`}
+//       <Button type="primary" icon={<FileTwoTone />} onClick={openModal} style={{ marginLeft: 8 }}>
+//         Создать тему
+//       </Button>
+//       <TopicModal show={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
+//     </div>
+//   ),
+// }}

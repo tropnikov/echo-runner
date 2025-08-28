@@ -1,24 +1,37 @@
 import { useEffect, useState } from 'react';
 
-import { baseBackEndUrl } from '../constants/apiEndpoint';
-import { GetTopicListResponse } from '../types/Forum';
+import { topicApi } from '@/api/apiForum';
+import { GetTopicListResponse } from '@/types/Forum';
 
 export const useTopicList = (pageNumber: number, pageSize: number) => {
-  const [data, setData] = useState<GetTopicListResponse[]>([]);
+  const [topics, setTopics] = useState<GetTopicListResponse[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const url =
-        baseBackEndUrl +
-        'topics?' +
-        new URLSearchParams({ pageNumber: pageNumber.toString(), pageSize: pageSize.toString() }).toString();
-      const response = await fetch(url);
-      const result = (await response.json()) as GetTopicListResponse[];
-      setData(result);
+    const loadTopics = async (pageNumber: number, pageSize: number) => {
+      try {
+        const data = await topicApi.getAllTopics(pageNumber, pageSize);
+        setTopics(data);
+      } catch (error) {
+        console.error('Error loading topics:', error);
+      }
     };
 
-    fetchData();
+    loadTopics(pageNumber, pageSize);
   }, [pageNumber, pageSize]);
 
-  return { data };
+  return { topics };
 };
+
+/*
+const handleCreateTopic = async (title: string, content: string) => {
+  try {
+    const topic: GetTopicResponse = getDefaultTopic();
+    topic.name = title;
+
+    const newTopic = await topicApi.createTopic(topic);
+    //    setTopics(prev => [...prev, newTopic]);
+  } catch (error) {
+    console.error('Error creating topic:', error);
+  }
+};
+*/

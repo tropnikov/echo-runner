@@ -1,30 +1,48 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 
 import { api } from '@/api/generated';
 import { themeApi } from '@/api/themeApi';
 
+import type { PageInitContext } from '../types/pageContext';
 import authReducer from './slices/auth';
 
-export const store = configureStore({
-  reducer: {
-    [api.reducerPath]: api.reducer,
-    auth: authReducer,
-    [themeApi.reducerPath]: themeApi.reducer,
-  },
-  middleware: (getDefaultMiddleware) => {
-    const middleware = getDefaultMiddleware();
-
-    return middleware.concat(api.middleware, themeApi.middleware);
-  },
+const rootReducer = combineReducers({
+  [api.reducerPath]: api.reducer,
+  auth: authReducer,
+  [themeApi.reducerPath]: themeApi.reducer,
 });
 
-setupListeners(store.dispatch);
+export function makeStore(
+  preloadedState?: Partial<ReturnType<typeof rootReducer>>,
+  extraArgument?: { ctx: PageInitContext },
+) {
+  return configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) => {
+      const middleware = getDefaultMiddleware({
+        thunk: {
+          extraArgument,
+        },
+      });
+      return middleware.concat(api.middleware, themeApi.middleware);
+    },
+    preloadedState,
+  });
+}
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-export type AppStore = typeof store;
+setupListeners(makeStore().dispatch);
+
+export type AppStore = ReturnType<typeof makeStore>;
+export type AppDispatch = AppStore['dispatch'];
+export type RootState = ReturnType<ReturnType<typeof makeStore>['getState']>;
+
+declare global {
+  interface Window {
+    __APP_INITIAL_STATE__?: RootState;
+  }
+}
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();

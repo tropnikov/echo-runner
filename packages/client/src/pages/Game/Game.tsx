@@ -5,6 +5,8 @@ import { teamName } from '@/constants/leaderboardStats';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useAppSelector } from '@/redux/store';
 
+import { withMeta } from '@/hocs/withMeta';
+
 import PlayerJump from './assets/player/jump.png';
 import PlayerRun from './assets/player/run.png';
 import { getCanvasContext } from './helpers/getCanvasContext';
@@ -120,4 +122,11 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   );
 }
 
-export default Game;
+export default withMeta(Game, {
+  title: 'Игра',
+  description:
+    'Играйте в Echo Runner! Управляйте персонажем, преодолевайте препятствия, набирайте очки и устанавливайте новые рекорды.',
+  keywords: 'игра, играть, echo runner, платформер, очки, рекорды, геймплей',
+  url: '/game',
+  noIndex: true,
+});

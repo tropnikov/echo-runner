@@ -3,7 +3,7 @@ import { GetTopicListResponse, GetTopicResponse } from '@/types/Forum';
 
 export const topicApi = {
   getAllTopics: async (pageNumber: number, pageSize: number): Promise<GetTopicListResponse[]> => {
-    const response = await fetch(`${baseBackEndUrl}/topics?${pageNumber}&${pageSize}`);
+    const response = await fetch(`${baseBackEndUrl}/topics?pageNumber=${pageNumber}&pageSize=${pageSize}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch topics');
@@ -19,7 +19,6 @@ export const topicApi = {
     return response.json();
   },
 
-  // Создать новую тему
   createTopic: async (topic: GetTopicResponse): Promise<GetTopicResponse> => {
     const response = await fetch(`${baseBackEndUrl}/topics`, {
       method: 'POST',

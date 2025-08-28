@@ -5,6 +5,7 @@ import { Button, Flex, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
+import { topicApi } from '@/api/apiForum';
 import TopicModal from '@/components/Forum/TopicModal';
 import { useTopicList } from '@/hooks/useTopicList';
 import { GetTopicListResponse } from '@/types/Forum';
@@ -96,23 +97,25 @@ const columns: TableProps<GetTopicListResponse>['columns'] = [
 
 function TopicList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [pageNumber] = useState(0);
-  const [pageSize] = useState(10);
+  const [pageNumber, setPageNumber] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [loading] = useState(true);
 
-  const handleOk = () => {
+  const { topics, loadTopics } = useTopicList(pageNumber, pageSize);
+
+  const handleOk = async (name: string, comment: string) => {
     setIsModalOpen(false);
 
-    // try {
-    //       const newTopic = await topicApi.createTopic({
-    //         title,
-    //         content,
-    //         author: 'Current User'
-    //       });
-    //       setTopics(prev => [...prev, newTopic]);
-    //     } catch (error) {
-    //       console.error('Error creating topic:', error);
-    //     }
+    //   try {
+    //     const newTopic = await topicApi.createTopic({
+    //       name,
+    //       comment,
+    //       author: 'Current User'
+    //     });
+    //     loadTopics( pageNumber, pageSize);
+    //   } catch (error) {
+    //     console.error('Error creating topic:', error);
+    //   }
   };
 
   const handleCancel = () => {
@@ -122,8 +125,6 @@ function TopicList() {
   const openModal = () => {
     setIsModalOpen(true);
   };
-
-  const { topics } = useTopicList(pageNumber, pageSize);
 
   // const topics: DataType[] = useMemo<DataType[]>(
   //   () =>
@@ -155,6 +156,12 @@ function TopicList() {
         showHeader={false}
         pagination={{
           showTotal: (total) => `Всего тем: ${total}`,
+          pageSize,
+          current: pageNumber,
+          onChange: (page, pageSize) => {
+            setPageNumber(page);
+            setPageSize(pageSize);
+          },
         }}
       />
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>

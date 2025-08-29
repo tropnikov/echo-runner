@@ -1,11 +1,47 @@
 import { NextFunction, Request, Response } from 'express';
+import fetch from 'node-fetch';
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export interface User {
+  id: number;
+  login: string;
+  first_name: string;
+  second_name: string;
+  display_name: string | null;
+  email: string;
+  phone: string;
+  avatar: string | null;
+}
+
+// вынести в общий тип
+export type RequestWithUser = Request & { user?: User };
+
+export async function authMiddleware(req: RequestWithUser, res: Response, next: NextFunction): Promise<void> {
   const authCookie = req.cookies?.authCookie;
 
   if (!authCookie) {
-    return res.status(403).json({ reason: 'Unauthorized' });
+    res.status(403).json({ reason: 'Forbidden' });
+    return;
   }
 
-  return next();
+  try {
+    const response = await fetch('https://ya-praktikum.tech/api/v2/auth/user', {
+      headers: {
+        cookie: req.headers.cookie || '',
+      },
+    });
+
+    if (!response.ok) {
+      res.status(403).json({ reason: 'Forbidden' });
+      return;
+    }
+
+    const user = (await response.json()) as User;
+
+    req.user = user;
+
+    next();
+  } catch (error) {
+    console.error('Auth check error:', error);
+    res.status(500).json({ reason: 'Auth check failed' });
+  }
 }

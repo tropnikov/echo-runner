@@ -19,6 +19,12 @@ export class Comment extends Model<InferAttributes<Comment>, InferCreationAttrib
     allowNull: false,
   })
   declare ownerId: number;
+  @Column({
+    type: DataType.STRING,
+    field: 'owner_login',
+    allowNull: false,
+  })
+  declare ownerLogin: string;
   @ForeignKey(() => Comment)
   @Column({
     type: DataType.INTEGER,

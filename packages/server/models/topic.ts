@@ -21,9 +21,17 @@ export class Topic extends Model<InferAttributes<Topic>, InferCreationAttributes
   declare ownerId: number;
   @Column({
     type: DataType.STRING,
+    field: 'owner_login',
+    allowNull: false,
+  })
+  declare ownerLogin: string;
+  @Column({
+    type: DataType.STRING,
     allowNull: false,
   })
   declare name: string;
   @HasMany(() => Comment)
   declare comments: CreationOptional<Comment[]>;
+  @HasMany(() => Comment, { as: 'lastComment' })
+  declare lastComment: CreationOptional<Comment[]>;
 }

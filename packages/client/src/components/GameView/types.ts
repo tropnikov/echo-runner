@@ -1,3 +1,5 @@
+import type { Stats } from '@/hooks/usePerformanceStats';
+
 export type GameViewProps = {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   score: number;
@@ -8,4 +10,5 @@ export type GameViewProps = {
   onStart: () => void;
   onRestart: () => void;
   onPause: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  stats?: Stats;
 };

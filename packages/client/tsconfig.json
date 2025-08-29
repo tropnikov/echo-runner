@@ -17,11 +17,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@server/*": ["../server/*"]
     },
     "types": ["@types/jest", "@types/node"]
   },
   "include": ["src"],
-  "exclude": ["src/sw.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.server.json" }]
+  "exclude": ["src/sw.ts", "../server/build"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

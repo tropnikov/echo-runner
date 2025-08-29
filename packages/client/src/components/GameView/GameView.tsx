@@ -1,7 +1,8 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, useState } from 'react';
 
 import { Button, theme } from 'antd';
 import {
+  DashboardOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   PauseCircleOutlined,
@@ -9,6 +10,7 @@ import {
   ReloadOutlined,
 } from '@ant-design/icons';
 
+import { PerformancePanel } from '@/components/PerformancePanel/PerformancePanel';
 import StartGameView from '@/components/StartGameView/StartGameView';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
@@ -28,8 +30,10 @@ function GameView({
   onStart,
   onRestart,
   onPause,
+  stats,
 }: GameViewProps) {
   const { elementRef, isFullscreen, toggleFullscreen } = useFullscreen();
+  const [isPerformancePanelVisible, setPerformancePanelVisible] = useState(false);
 
   const {
     token: { colorBgContainer },
@@ -39,14 +43,16 @@ function GameView({
     if (e.currentTarget && e.currentTarget instanceof HTMLButtonElement) {
       e.currentTarget.blur();
     }
-
     toggleFullscreen();
   }
 
   return (
     <section ref={elementRef} className={styles.gameViewContainer}>
       <div style={{ backgroundColor: colorBgContainer }} className={styles.gameViewContainer}>
-        {!isStarted && <StartGameView text="Игра не начата" ButtonIcon={PlayCircleOutlined} onButtonClick={onStart} />}
+        {!isStarted && damage < maxDamage && (
+          <StartGameView text="Игра не начата" ButtonIcon={PlayCircleOutlined} onButtonClick={onStart} />
+        )}
+
         {damage >= maxDamage && (
           <StartGameView
             text={`Игра окончена, вы набрали очков: ${score}`}
@@ -54,6 +60,7 @@ function GameView({
             onButtonClick={onRestart}
           />
         )}
+
         <div
           className={styles.gameContainer}
           style={{
@@ -73,16 +80,33 @@ function GameView({
               </span>
             </div>
           </div>
+
           <canvas ref={canvasRef} className={styles.canvas} />
         </div>
       </div>
-      <Button
-        type="primary"
-        shape="circle"
-        icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-        className={styles.fullScreenButton}
-        onClick={handleFullscreenButtonClick}
-      />
+
+      {isPerformancePanelVisible && stats && <PerformancePanel stats={stats} />}
+
+      <div className={styles.controlButtons}>
+        <Button
+          type="primary"
+          shape="circle"
+          icon={<DashboardOutlined />}
+          className={styles.perfPanelButton}
+          onClick={() => setPerformancePanelVisible((prev) => !prev)}
+          aria-label={
+            isPerformancePanelVisible ? 'Скрыть панель производительности' : 'Показать панель производительности'
+          }
+        />
+        <Button
+          type="primary"
+          shape="circle"
+          icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+          className={styles.fullScreenButton}
+          onClick={handleFullscreenButtonClick}
+          aria-label={isFullscreen ? 'Выйти из полноэкранного режима' : 'На весь экран'}
+        />
+      </div>
     </section>
   );
 }

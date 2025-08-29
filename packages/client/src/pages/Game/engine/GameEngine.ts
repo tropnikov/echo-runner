@@ -4,6 +4,8 @@ import { ParallaxBackground } from './ParallaxBackground';
 import { Player } from './Player';
 import { Collision, ObjectEffectType } from './types';
 
+export type FrameHooks = { before?: () => void; after?: () => void };
+
 /**
  * Класс игрового движка, управляющего обновлением и рендерингом сцены.
  *
@@ -24,14 +26,21 @@ export class GameEngine {
 
   private gameSpeed = config.initialSpeed;
 
-  private lastTime = 0;
+  private lastTime: number | null = null;
 
   private speedTimer = 0;
+
+  private hooks: FrameHooks = {};
 
   constructor(props: { ctx: CanvasRenderingContext2D; onDamage: () => void; onScore: () => void }) {
     this.onDamage = props.onDamage;
     this.onScore = props.onScore;
     this.ctx = props.ctx;
+  }
+
+  setFrameHooks(h: FrameHooks) {
+    this.hooks = h;
+    return this;
   }
 
   /**
@@ -54,23 +63,27 @@ export class GameEngine {
    * Основной цикл игрового движка.
    */
   private loop() {
-    this.lastTime = performance.now();
-
     const sceneTimer = (now: number) => {
       if (!this.animationId) return;
+      if (this.lastTime === null) this.lastTime = now;
 
-      const deltaTime = (now - this.lastTime) / 1000;
-      this.lastTime = now;
+      this.hooks.before?.();
 
-      this.updateGameSpeed(deltaTime);
-      this.clearScene();
+      try {
+        const deltaTime = (now - this.lastTime) / 1000;
+        this.lastTime = now;
 
-      this.renderSceneBackground(deltaTime);
+        this.updateGameSpeed(deltaTime);
+        this.clearScene();
 
-      this.gameObjects.forEach((obj) => obj.update(deltaTime, this.gameSpeed));
-      this.checkCollisions();
-      this.gameObjects.forEach((obj) => obj.render());
+        this.renderSceneBackground(deltaTime);
 
+        this.gameObjects.forEach((obj) => obj.update(deltaTime, this.gameSpeed));
+        this.checkCollisions();
+        this.gameObjects.forEach((obj) => obj.render());
+      } finally {
+        this.hooks.after?.();
+      }
       this.animationId = requestAnimationFrame(sceneTimer);
     };
 
@@ -114,8 +127,7 @@ export class GameEngine {
 
     this.gameSpeed = config.initialSpeed;
     this.speedTimer = 0;
-    this.lastTime = performance.now();
-
+    this.lastTime = null;
     this.loop();
   }
 
@@ -132,9 +144,7 @@ export class GameEngine {
    * Приостанавливает игру.
    */
   pause() {
-    if (!this.animationId) return;
-    cancelAnimationFrame(this.animationId);
-    this.animationId = null;
+    this.stop();
   }
 
   /**
@@ -142,7 +152,7 @@ export class GameEngine {
    */
   resume() {
     if (this.animationId) return;
-    this.lastTime = performance.now();
+    this.lastTime = null;
     this.loop();
   }
 

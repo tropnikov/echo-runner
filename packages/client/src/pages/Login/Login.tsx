@@ -10,7 +10,10 @@ import { appRoutes } from '@/constants/appRoutes';
 import { rules } from '@/helpers/validators';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { useLogin } from '@/hooks/useLogin';
+import { useYandexOAuth } from '@/hooks/useYandexOAuth';
 import { isErrorWithReason } from '@/types/errors';
+
+import { withMeta } from '@/hocs/withMeta';
 
 import styles from './Login.module.css';
 
@@ -18,6 +21,7 @@ const Login = () => {
   const navigate = useNavigate();
   const notification = useNotification();
   const { login } = useLogin();
+  const { startOAuthFlow } = useYandexOAuth();
   const { isAuthorized } = useAuthCheck();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,15 +66,24 @@ const Login = () => {
             <Input.Password />
           </Form.Item>
 
-          <Form.Item label={null}>
+          <Flex gap={16} vertical>
             <Button type="primary" htmlType="submit" loading={isLoading}>
               Войти
             </Button>
-          </Form.Item>
+            <Button type="default" loading={isLoading} onClick={startOAuthFlow}>
+              Войти через Яндекс ID
+            </Button>
+          </Flex>
         </Form>
       </Card>
     </Flex>
   );
 };
 
-export default Login;
+export default withMeta(Login, {
+  title: 'Вход',
+  description: 'Войдите в свой аккаунт Echo Runner для доступа к игре, профилю и таблице лидеров.',
+  keywords: 'вход, авторизация, логин, echo runner, аккаунт',
+  url: '/signin',
+  noIndex: true,
+});

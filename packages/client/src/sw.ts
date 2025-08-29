@@ -134,7 +134,7 @@ function handleApiRequest(event: FetchEvent): Promise<Response> {
   });
 }
 
-self.addEventListener('message', (event) => {
+self.addEventListener('message', (event: MessageEvent) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     (self as unknown as ServiceWorkerGlobalScope).skipWaiting();
   }

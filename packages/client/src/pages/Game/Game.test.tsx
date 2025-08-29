@@ -13,6 +13,7 @@ global.fetch = jest.fn(() =>
   } as Response),
 ) as jest.Mock;
 
+// Мокаем getCanvasContext
 jest.mock('./helpers/getCanvasContext', () => ({
   getCanvasContext: (canvasRef: React.RefObject<HTMLCanvasElement>) => canvasRef.current?.getContext('2d') ?? null,
 }));
@@ -21,7 +22,9 @@ jest.mock('./helpers/getCanvasContext', () => ({
 jest.mock('./hooks/useGameSetup', () => ({
   useGameSetup: jest.fn(() => ({
     canvasRef: { current: document.createElement('canvas') },
-    engineRef: { current: { pause: jest.fn(), resume: jest.fn(), stop: jest.fn() } },
+    engineRef: {
+      current: { pause: jest.fn(), resume: jest.fn(), stop: jest.fn() },
+    },
     playerRef: { current: { jump: jest.fn() } },
     initGame: jest.fn(),
     resetScene: jest.fn(),
@@ -33,6 +36,19 @@ jest.mock('./hooks/useGameSetup', () => ({
 jest.mock('@/hooks/useLeaderboard', () => ({
   useLeaderboard: () => ({
     sendNewRating: jest.fn(),
+  }),
+}));
+
+// Мокаем Helmet (из dev)
+jest.mock('react-helmet-async', () => ({
+  Helmet: ({ children }: { children: React.ReactNode }) => <div data-testid="helmet">{children}</div>,
+  HelmetProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+// Мокаем react-redux (из dev)
+jest.mock('react-redux', () => ({
+  useSelector: Object.assign(jest.fn().mockReturnValue({}), {
+    withTypes: () => jest.fn(),
   }),
 }));
 
@@ -72,15 +88,20 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
+// Хелпер для рендера
+const renderGame = (props?: { maxDamage?: number }) => {
+  return render(<Game {...props} />);
+};
+
 describe('Game', () => {
   test('рендерится с начальными значениями', () => {
-    render(<Game maxDamage={5} />);
+    renderGame({ maxDamage: 5 });
     expect(screen.getByTestId('score')).toHaveTextContent('0');
     expect(screen.getByTestId('damage')).toHaveTextContent('0');
   });
 
   test('игра начинается после клика по Start', async () => {
-    render(<Game />);
+    renderGame();
     expect(screen.getByText('Игра не начата')).toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('start'));
@@ -92,7 +113,7 @@ describe('Game', () => {
   });
 
   test('рестарт сбрасывает score и damage в 0', () => {
-    render(<Game />);
+    renderGame();
     fireEvent.click(screen.getByTestId('start'));
     fireEvent.click(screen.getByTestId('restart'));
     expect(screen.getByTestId('score')).toHaveTextContent('0');
@@ -100,7 +121,7 @@ describe('Game', () => {
   });
 
   test('pause можно вызывать без ошибок', () => {
-    render(<Game />);
+    renderGame();
     fireEvent.click(screen.getByTestId('pause'));
   });
 });

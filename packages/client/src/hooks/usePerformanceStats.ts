@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 
+import { bytesToMB, computeFrameStats, computeP99 } from '@/helpers/perfUtils';
+
 /**
  * Расширяем глобальный Performance для Chrome/Chromium:
  * performance.memory.* (может быть недоступно в Safari/Firefox)
@@ -40,16 +42,9 @@ type PerfStats = {
 
 export type Stats = PerfStats;
 
-/**
- * Хук метрик производительности.
- * FPS считается по межкадровому интервалу (dt между RAF), а не по «времени работы кадра».
- */
 export function usePerformanceStats() {
-  // предыдущее время кадра
   const lastTsRef = useRef<number | null>(null);
-  // скользящее окно межкадровых интервалов
   const dtBufferRef = useRef<number[]>([]);
-  // счётчик кадров — чтобы реже пересчитывать p99
   const frameCounterRef = useRef(0);
 
   const [stats, setStats] = useState<PerfStats>({
@@ -61,19 +56,6 @@ export function usePerformanceStats() {
     mem: 0,
   });
 
-  const readMemoryMB = (): number => {
-    const m = performance.memory?.usedJSHeapSize;
-    return typeof m === 'number' && Number.isFinite(m) ? m / 1024 / 1024 : 0;
-  };
-
-  const computeP99 = (arr: number[]): number => {
-    if (arr.length === 0) return 0;
-    // копию сортируем, чтобы не мутировать буфер
-    const sorted = [...arr].sort((a, b) => a - b);
-    const idx = Math.max(0, Math.floor(0.99 * (sorted.length - 1)));
-    return sorted[idx];
-  };
-
   const beginFrame = useCallback(() => {
     const now = performance.now();
     const last = lastTsRef.current;
@@ -82,17 +64,10 @@ export function usePerformanceStats() {
       const dt = now - last;
       const buf = dtBufferRef.current;
 
-      // пополняем буфер межкадровых интервалов
       buf.push(dt);
       if (buf.length > WINDOW_FRAMES) buf.shift();
 
-      // быстрые метрики без тяжёлой сортировки
-      const n = buf.length || 1;
-      const sum = buf.reduce((a, b) => a + b, 0);
-      const avg = sum / n;
-      const fps = avg > 0 ? 1000 / avg : 0;
-      const drops = buf.filter((x) => x > DROP_FRAME_MS).length;
-      const long = buf.filter((x) => x > LONG_FRAME_MS).length;
+      const { avg, fps, drops, long } = computeFrameStats(buf, DROP_FRAME_MS, LONG_FRAME_MS);
 
       frameCounterRef.current += 1;
       const shouldRecalcP99 = frameCounterRef.current % P99_INTERVAL_FRAMES === 0;
@@ -104,7 +79,7 @@ export function usePerformanceStats() {
         p99,
         drops,
         long,
-        mem: readMemoryMB(), // 0 если недоступно
+        mem: bytesToMB(performance.memory?.usedJSHeapSize), // 0 если недоступно
       });
     }
 

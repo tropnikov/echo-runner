@@ -1,7 +1,7 @@
 services:
   client:
-    container_name: prakticum-client
-    image: prakticum-client
+    container_name: praktikum-client
+    image: praktikum-client
     build:
       context: .
       dockerfile: Dockerfile.client
@@ -35,8 +35,8 @@ services:
       - 'com.echo-runner.version=${VERSION:-latest}'
 
   server:
-    container_name: prakticum-server
-    image: prackicum-server
+    container_name: praktikum-server
+    image: praktikum-server
     build:
       context: .
       dockerfile: Dockerfile.server
@@ -70,7 +70,7 @@ services:
 
   postgres:
     image: postgres:14
-    container_name: prakticum-postgres
+    container_name: praktikum-postgres
     restart: always
     ports:
       - '${POSTGRES_PORT:-5432}:5432'

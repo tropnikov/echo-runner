@@ -1,9 +1,11 @@
 import { ChangeEvent, useState } from 'react';
 
-import { Avatar, Button, Flex, Input, List, Typography } from 'antd';
+import { Button, Flex, Input, List, Typography } from 'antd';
 
-import { useTopic } from '@/hooks/useTopic';
-import { GetCommentResponse } from '@/types/Forum';
+//import { topicApi } from '@/api/apiForum';
+import { useCommentList, useTopic } from '@/hooks/useTopic';
+//import { useAppSelector } from '@/redux/store';
+import type { Topic } from '@/types/Forum';
 
 const { Text, Title } = Typography;
 
@@ -16,57 +18,55 @@ const { Text, Title } = Typography;
 //     'Отличный раздел! Часто возникают спорные моменты в правилах. Хорошо, что здесь можно уточнить детали у опытных игроков.',
 // }));
 
-// interface TopicItemProps {
-//   id: number;
-//   avatar: string;
-//   author: string;
-//   date: string;
-//   comment: string;
-// }
-
-// const topicItem: DataType[] = useMemo<DataType[]>(
-//     () =>
-//       data.map((item) => ({
-//         key: item.id.toString(),
-//         topic: {
-//           id: item.id,
-//           title: item.name,
-//           author: item.owner_id.toString(),
-//           created_at: item.create_date,
-//         },
-//         count: item.comment_count,
-//         last: {
-//           user: item.last.owner_id.toString(),
-//           date: item.last.create_date,
-//         },
-//       })),
-//     [data],
-//   );
-
-function TopicComment({ id, avatar, owner_login, create_date, text }: GetCommentResponse /*TopicItemProps*/) {
+/*
+function TopicComment({ id, avatar, author, date, comment }: Comment ) {
   return (
     <List.Item key={id}>
-      <List.Item.Meta avatar={<Avatar src={avatar} />} title={owner_login} description={create_date.toDateString()} />
-      {text}
+      <List.Item.Meta avatar={<Avatar src={avatar} />} title={author} description={date} />
+      {comment}
     </List.Item>
   );
-}
+}*/
 
 function Topic() {
   const [comment, setComment] = useState('');
-  const [comment_start] = useState(0);
-  const [size] = useState(10);
+  const [comment_start, setCommentStart] = useState(0);
+  const [size, setSize] = useState(10);
   const [id] = useState(0);
+  const { comments } = useCommentList(/*id, comment_start, size*/);
 
   const onCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
   };
 
-  const onSendComment = () => {
-    setComment('');
+  const onSendComment = async () => {
+    setComment(comment);
+    //const user = useAppSelector((state) => state.auth.user);
+    /*
+    const newComment = await topicApi.createComment({
+      text: comment,
+      ownerId: user!.id,
+      ownerLogin: user!.login,
+      topicId: id,
+    });
+*/
   };
 
-  const { topic } = useTopic(id, comment_start, size);
+  const { topic } = useTopic(id);
+
+  // const data: Comment[] = useMemo<Comment[]>(
+  //   () =>
+  //     comments.map((item) => ({
+  //       id: id.toString(),
+  //       topic: {
+  //         id: item.id,
+  //         comment: item.text,
+  //         author: item.ownerId.toString(),
+  //         created_at: item.createdAt,
+  //       },
+  //     })),
+  //   [data],
+  // );
 
   return (
     <Flex vertical>
@@ -75,10 +75,16 @@ function Topic() {
         itemLayout="vertical"
         size="large"
         pagination={{
-          pageSize: 4,
+          showTotal: (total) => `Всего тем: ${total}`,
+          pageSize: size,
+          current: comment_start,
+          onChange: (page, pageSize) => {
+            setCommentStart(page);
+            setSize(pageSize);
+          },
         }}
-        dataSource={topic.comments}
-        renderItem={(item) => <TopicComment {...item} />}
+        dataSource={comments}
+        // renderItem={(item) => <TopicComment {...item} />}
       />
       <Flex vertical gap="middle" style={{ padding: '16px' }}>
         <Text>Напишите комментарий</Text>

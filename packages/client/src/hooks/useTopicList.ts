@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { topicApi } from '@/api/apiForum';
-import { getDefaultTopic, GetTopicListResponse, GetTopicResponse } from '@/types/Forum';
+import { /*getDefaultTopic, */ GetTopicResponse } from '@/types/Forum';
 
 export const useTopicList = (pageNumber: number, pageSize: number) => {
-  const [topics, setTopics] = useState<GetTopicListResponse[]>([]);
+  const [topics, setTopics] = useState<GetTopicResponse[]>([]);
 
   const loadTopics = async (pageNumber: number, pageSize: number) => {
     try {
@@ -22,13 +22,13 @@ export const useTopicList = (pageNumber: number, pageSize: number) => {
   return { topics, loadTopics };
 };
 
-const handleCreateTopic = async (title: string, content: string) => {
-  try {
-    const topic: GetTopicResponse = getDefaultTopic();
-    topic.name = title;
+// const handleCreateTopic = async (title: string, content: string) => {
+//   try {
+//     const topic: GetTopicResponse = getDefaultTopic();
+//     topic.name = title;
 
-    const newTopic = await topicApi.createTopic(topic);
-  } catch (error) {
-    console.error('Error creating topic:', error);
-  }
-};
+//     const newTopic = await topicApi.createTopic(topic);
+//   } catch (error) {
+//     console.error('Error creating topic:', error);
+//   }
+// };

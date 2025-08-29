@@ -1,47 +1,66 @@
-import { createMemoryRouter, StaticHandlerContext, StaticRouterProvider } from 'react-router';
+import { createStaticHandler, createStaticRouter, matchRoutes, StaticRouterProvider } from 'react-router';
 
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 
+import type { Request, Response } from 'express';
 import { renderToString } from 'react-dom/server';
 import { HelmetProvider } from 'react-helmet-async';
 import type { HelmetServerState } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 
+import { api as generatedApi } from '@/api/generated';
+
 import { RenderResult } from '../server/types';
-import App from './App';
 import NotificationProvider from './components/NotificationProvider/NotificationProvider';
-import { appRoutes } from './constants/appRoutes';
-import MainPage from './pages/MainPage/MainPage';
-import { store } from './redux/store';
+import { createContext, createFetchRequest, createUrl, prefetch } from './entry-server.utils';
+import { makeStore } from './redux/store';
+import { routesConfig } from './routesConfig';
 
-// Заглушка router
-const router = createMemoryRouter(
-  [
+export const render = async (req: Request, res?: Response): Promise<RenderResult> => {
+  const handler = createStaticHandler(routesConfig);
+  const fetchRequest = createFetchRequest(req);
+  const context = await handler.query(fetchRequest);
+
+  const context_data = createContext(req, res);
+  const store = makeStore(undefined, { ctx: context_data });
+
+  const hasCookies = context_data.cookies && Object.keys(context_data.cookies).length > 0;
+
+  await prefetch(store, hasCookies);
+
+  const url = createUrl(req);
+  const foundRoutes = matchRoutes(routesConfig, url);
+  if (!foundRoutes) {
+    throw new Error(`Страница не найдена! ${url}`);
+  }
+
+  const [
     {
-      path: appRoutes.MAIN,
-      Component: App,
-      children: [{ index: true, Component: MainPage }],
+      route: { preFetchData },
     },
-  ],
-  {
-    initialEntries: ['/'],
-    initialIndex: 0,
-  },
-);
+  ] = foundRoutes;
 
-// Мок context
-const mockContext = {
-  location: {
-    pathname: '/',
-    search: '',
-    hash: '',
-    state: null,
-    key: 'default',
-  },
-  matches: [],
-} as unknown as StaticHandlerContext;
+  if (preFetchData) {
+    try {
+      await preFetchData({ store });
+    } catch (e) {
+      console.log('Инициализация страницы произошла с ошибкой', e);
+    }
+  }
 
-export const render = async (): Promise<RenderResult> => {
+  try {
+    const runningQueries = store.dispatch(generatedApi.util.getRunningQueriesThunk());
+    await Promise.all(runningQueries);
+  } catch (error) {
+    console.log('Error waiting for running queries (ignoring):', error);
+  }
+
+  if (context instanceof Response) {
+    throw context;
+  }
+
+  const router = createStaticRouter(handler.dataRoutes, context);
+
   const cache = createCache();
   const helmetContext: { helmet?: HelmetServerState } = {};
 
@@ -50,7 +69,7 @@ export const render = async (): Promise<RenderResult> => {
       <StyleProvider cache={cache}>
         <Provider store={store}>
           <NotificationProvider>
-            <StaticRouterProvider router={router} context={mockContext} />
+            <StaticRouterProvider router={router} context={context} />
           </NotificationProvider>
         </Provider>
       </StyleProvider>
@@ -64,5 +83,6 @@ export const render = async (): Promise<RenderResult> => {
     antStyles: antStylesText,
     html,
     helmet,
+    initialState: store.getState(),
   };
 };

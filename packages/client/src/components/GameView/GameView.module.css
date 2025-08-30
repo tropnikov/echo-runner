@@ -10,6 +10,7 @@
   flex-direction: column;
   position: relative;
   overflow: auto;
+  background-color: var(--ant-layout-body-bg, #f1f5f9);
 }
 
 .perfPanelButton {

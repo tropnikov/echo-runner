@@ -3,6 +3,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 
 import { api } from '@/api/generated';
+import { themeApi } from '@/api/themeApi';
 
 import type { PageInitContext } from '../types/pageContext';
 import authReducer from './slices/auth';
@@ -10,6 +11,7 @@ import authReducer from './slices/auth';
 const rootReducer = combineReducers({
   [api.reducerPath]: api.reducer,
   auth: authReducer,
+  [themeApi.reducerPath]: themeApi.reducer,
 });
 
 export function makeStore(
@@ -24,7 +26,7 @@ export function makeStore(
           extraArgument,
         },
       });
-      return middleware.concat(api.middleware);
+      return middleware.concat(api.middleware, themeApi.middleware);
     },
     preloadedState,
   });

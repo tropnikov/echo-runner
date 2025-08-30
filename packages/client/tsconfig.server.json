@@ -5,6 +5,8 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "esModuleInterop": true,
     "lib": ["es2022", "DOM"],
     "skipLibCheck": true,
@@ -14,6 +16,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["./server/**/*.ts", "./src/redux/**/*.ts", "./src/api/generated/**/*.ts"],
-  "exclude": ["./server/**/*.d.ts", "./server/build"]
+  "include": ["./server/**/*.ts"],
+  "exclude": ["./server/**/*.d.ts", "./node_modules"]
 }

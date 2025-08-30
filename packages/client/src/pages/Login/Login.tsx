@@ -48,11 +48,10 @@ const Login = () => {
   }
 
   return (
-    <Flex vertical justify="center" align="center" flex={1} className={styles.wrapper}>
+    <Flex vertical justify="center" align="center" flex={1}>
       <Card title={<Typography.Title level={1}>Вход</Typography.Title>} className={styles.card}>
         <Form
           name="basic"
-          className={styles.cardForm}
           initialValues={{ remember: true }}
           validateTrigger="onBlur"
           onFinish={onFinish}

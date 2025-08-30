@@ -1,13 +1,14 @@
 import { useCallback, useState } from 'react';
 
 import { useGetUserThemeQuery, useSetUserThemeMutation } from '@/api/themeApi';
+import { selectUserId } from '@/redux/selectors/auth';
 import { useAppSelector } from '@/redux/store';
 import { Theme } from '@/types/themes';
 
 export const useTheme = () => {
-  const [currentTheme, setCurrentTheme] = useState<Theme>('light');
-  const { user } = useAppSelector((state) => state.auth);
-  const userId = user?.id;
+  const isDark = typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)').matches : false;
+  const [currentTheme, setCurrentTheme] = useState<Theme>(isDark ? 'dark' : 'light');
+  const userId = useAppSelector(selectUserId);
 
   const { data: themeData, isLoading: isLoadingTheme } = useGetUserThemeQuery(
     { userId: userId ?? 0 },

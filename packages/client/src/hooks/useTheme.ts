@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useGetUserThemeQuery, useSetUserThemeMutation } from '@/api/themeApi';
 import { selectUserId } from '@/redux/selectors/auth';
@@ -14,11 +14,14 @@ export const useTheme = () => {
     { userId: userId ?? 0 },
     { skip: !userId },
   );
+
   const [setUserTheme, { isLoading: isSettingTheme }] = useSetUserThemeMutation();
 
-  if (themeData && themeData.theme !== currentTheme) {
-    setCurrentTheme(themeData.theme);
-  }
+  useEffect(() => {
+    if (themeData?.theme && themeData.theme !== currentTheme) {
+      setCurrentTheme(themeData.theme);
+    }
+  }, [themeData?.theme, currentTheme]);
 
   const changeTheme = useCallback(
     async (newTheme: Theme) => {

@@ -19,10 +19,10 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "lib": ["es2022", "esnext.asynciterable"],
-    "types": ["node", "jest"],
+    "types": ["node", "jest", "./types/ExpressUpdate"],
     "baseUrl": ".",
     "outDir": "dist"
   },
-  "include": ["./**/*.ts"],
+  "include": ["./**/*.ts", "./types/**/*.d.ts"],
   "exclude": ["dist"]
 }

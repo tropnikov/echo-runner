@@ -23,6 +23,6 @@
     "types": ["@types/jest", "@types/node"]
   },
   "include": ["src"],
-  "exclude": ["src/sw.ts", "../server/build"],
+  "exclude": ["src/sw.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

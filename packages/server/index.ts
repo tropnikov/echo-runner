@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser';
 import { errors } from 'celebrate';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { NextFunction, Request, Response } from 'express';
@@ -25,6 +26,7 @@ const startServer = async () => {
 
     app.use(cors());
     app.use(helmet());
+    app.use(cookieParser());
     app.use(bodyParser.json());
     app.use(xssMiddleware);
     app.use(requestLogger);

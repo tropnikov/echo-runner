@@ -1,9 +1,11 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { ProtectedRequest } from 'ProtectedRequest';
 
+import { createdCode } from '../constants/createdCode';
 import { Comment } from '../models/comment';
 
 export class CommentController {
-  static getAll(req: Request, res: Response) {
+  static getAll(req: Request, res: Response, next: NextFunction) {
     const offset = Number(req.query.offset) || 0;
     const limit = Number(req.query.limit) || 10;
     const topicId = Number(req.query.topicId);
@@ -16,15 +18,16 @@ export class CommentController {
       offset,
       order: [['id', 'ASC']],
     })
-      .then(({ count, rows }) => res.json({ comments: rows, count }))
-      .catch((err) => res.status(500).json({ message: err.message }));
+      .then(({ count, rows: comments }) => res.json({ comments, count }))
+      .catch(next);
   }
 
-  static create(req: Request, res: Response) {
-    const ownerId = Number(req.body.ownerId);
+  static create(req: ProtectedRequest, res: Response, next: NextFunction) {
     const topicId = Number(req.body.topicId);
-    const { text, ownerLogin } = req.body;
+    const { text } = req.body;
     const replyCommentId = req.body.replyCommentId ? Number(req.body.replyCommentId) : null;
+
+    const { id: ownerId, login: ownerLogin } = req.user;
 
     Comment.create({
       ownerId,
@@ -33,7 +36,7 @@ export class CommentController {
       ownerLogin,
       replyCommentId,
     })
-      .then((comment) => res.status(201).json(comment))
-      .catch((err) => res.status(500).json({ message: err.message }));
+      .then((comment) => res.status(createdCode).json(comment))
+      .catch(next);
   }
 }

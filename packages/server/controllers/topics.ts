@@ -1,11 +1,15 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { ProtectedRequest } from 'ProtectedRequest';
 import { col, fn } from 'sequelize';
 
+import { createdCode } from '../constants/createdCode';
+import { topicNotFoundErrorMessage } from '../constants/topicNotFoundErrorMessage';
+import NotFoundError from '../errors/NotFoundError';
 import { Comment } from '../models/comment';
 import { Topic } from '../models/topic';
 
 export class TopicController {
-  static getAll(req: Request, res: Response) {
+  static getAll(req: Request, res: Response, next: NextFunction) {
     const offset = Number(req.query.offset) || 0;
     const limit = Number(req.query.limit) || 10;
 
@@ -55,27 +59,30 @@ export class TopicController {
 
         return res.json({ topics, count });
       })
-      .catch((err) => res.status(500).json({ message: err.message }));
+      .catch(next);
   }
 
-  static create(req: Request, res: Response) {
-    const ownerId = Number(req.body.ownerId);
-    const { name, ownerLogin } = req.body;
+  static create(req: ProtectedRequest, res: Response, next: NextFunction) {
+    const { name } = req.body;
+
+    const { id: ownerId, login: ownerLogin } = req.user;
 
     Topic.create({ ownerId, name, ownerLogin })
-      .then((topic) => res.status(201).json(topic))
-      .catch((err) => res.status(500).json({ message: err.message }));
+      .then((topic) => res.status(createdCode).json(topic))
+      .catch(next);
   }
 
-  static getById(req: Request, res: Response) {
+  static getById(req: Request, res: Response, next: NextFunction) {
     const topicId = Number(req.params.topicId);
 
     Topic.findByPk(topicId)
       .then((topic) => {
-        if (!topic) return res.status(404).json({ message: 'Not found' });
+        if (!topic) {
+          throw new NotFoundError(topicNotFoundErrorMessage);
+        }
 
-        return res.status(200).json(topic);
+        return res.json(topic);
       })
-      .catch((err) => res.status(500).json({ message: err.message }));
+      .catch(next);
   }
 }

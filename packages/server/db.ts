@@ -3,6 +3,7 @@ import winston from 'winston';
 
 import { Comment } from './models/comment';
 import { Topic } from './models/topic';
+import { UserTheme } from './models/UserTheme';
 
 const logger = winston.createLogger({
   level: 'info',
@@ -19,7 +20,7 @@ const sequelizeOptions: SequelizeOptions = {
   password: POSTGRES_PASSWORD,
   database: POSTGRES_DB,
   dialect: 'postgres',
-  models: [Comment, Topic],
+  models: [Comment, Topic, UserTheme],
   logging: (msg) => logger.info(msg),
 };
 

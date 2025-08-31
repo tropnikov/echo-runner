@@ -5,13 +5,12 @@ export interface GetUserThemeParams {
 }
 
 export interface SetUserThemeBody {
-  userId: number;
   theme: string;
 }
 
-export type GetUserThemeRequest = Request<GetUserThemeParams>;
+export type GetUserThemeRequest = Request;
 
-export type SetUserThemeRequest = Request<Record<string, never>, Record<string, never>, SetUserThemeBody>;
+export type SetUserThemeRequest = Request<Record<string, unknown>, Record<string, unknown>, SetUserThemeBody>;
 
 export interface UserThemeResponse {
   id: number;

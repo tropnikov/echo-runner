@@ -8,7 +8,7 @@ export class UserThemeController {
   constructor(private readonly userThemeService: UserThemeService) {}
 
   async getUserTheme(req: GetUserThemeRequest, res: Response<UserThemeResponse | ErrorResponse>) {
-    const validation = GetUserThemeDto.validate({ userId: Number(req.params.userId) });
+    const validation = GetUserThemeDto.validate({ userId: req.user?.id });
 
     if (validation.error || !validation.value) {
       return res.status(400).json({ error: validation.error || 'Validation error' });
@@ -33,7 +33,7 @@ export class UserThemeController {
 
   async setUserTheme(req: SetUserThemeRequest, res: Response<UserThemeResponse | ErrorResponse>) {
     const validation = SetUserThemeDto.validate({
-      userId: Number(req.body.userId),
+      userId: req.user?.id,
       theme: req.body.theme,
     });
 

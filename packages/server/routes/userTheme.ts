@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { UserThemeController } from '../controllers/userTheme';
+import { authMiddleware } from '../middlewares/authMiddleware';
 import { UserTheme } from '../models/UserTheme';
 import { UserThemeService } from '../services/UserTheme';
 
@@ -11,11 +12,11 @@ const router: Router = Router();
 /**
  * Get user theme
  */
-router.get('/:userId', (req, res) => userThemeController.getUserTheme(req, res));
+router.get('/', authMiddleware, (req, res) => userThemeController.getUserTheme(req, res));
 
 /**
  * Set user theme
  */
-router.post('/', (req, res) => userThemeController.setUserTheme(req, res));
+router.post('/', authMiddleware, (req, res) => userThemeController.setUserTheme(req, res));
 
 export default router;

@@ -10,11 +10,7 @@ export const useTheme = () => {
   const [currentTheme, setCurrentTheme] = useState<Theme>(isDark ? 'dark' : 'light');
   const userId = useAppSelector(selectUserId);
 
-  const { data: themeData, isLoading: isLoadingTheme } = useGetUserThemeQuery(
-    { userId: userId ?? 0 },
-    { skip: !userId },
-  );
-
+  const { data: themeData, isLoading: isLoadingTheme } = useGetUserThemeQuery();
   const [setUserTheme, { isLoading: isSettingTheme }] = useSetUserThemeMutation();
 
   useEffect(() => {
@@ -30,7 +26,7 @@ export const useTheme = () => {
       if (!userId) return;
 
       try {
-        await setUserTheme({ userId, theme: newTheme });
+        await setUserTheme({ theme: newTheme });
       } catch (error) {
         throw new Error(`Failed to set theme${error instanceof Error ? `: ${error.message}` : ''}`);
       }

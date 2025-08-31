@@ -1,17 +1,29 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useGetUserThemeQuery, useSetUserThemeMutation } from '@/api/themeApi';
-import { selectUserId } from '@/redux/selectors/auth';
+import { selectIsAuthorized, selectUserId } from '@/redux/selectors/auth';
 import { useAppSelector } from '@/redux/store';
 import { Theme } from '@/types/themes';
 
 export const useTheme = () => {
   const isDark = typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)').matches : false;
   const [currentTheme, setCurrentTheme] = useState<Theme>(isDark ? 'dark' : 'light');
-  const userId = useAppSelector(selectUserId);
+  const isAuthorized = useAppSelector(selectIsAuthorized);
 
-  const { data: themeData, isLoading: isLoadingTheme } = useGetUserThemeQuery();
+  const {
+    data: themeData,
+    isLoading: isLoadingTheme,
+    refetch,
+  } = useGetUserThemeQuery(undefined, {
+    skip: !isAuthorized,
+  });
   const [setUserTheme, { isLoading: isSettingTheme }] = useSetUserThemeMutation();
+
+  useEffect(() => {
+    if (isAuthorized && !isLoadingTheme) {
+      refetch();
+    }
+  }, [isAuthorized, refetch, isLoadingTheme]);
 
   useEffect(() => {
     if (themeData?.theme && themeData.theme !== currentTheme) {
@@ -23,15 +35,17 @@ export const useTheme = () => {
     async (newTheme: Theme) => {
       setCurrentTheme(newTheme);
 
-      if (!userId) return;
+      if (!isAuthorized) return;
 
       try {
         await setUserTheme({ theme: newTheme });
+        refetch();
       } catch (error) {
+        setCurrentTheme(currentTheme);
         throw new Error(`Failed to set theme${error instanceof Error ? `: ${error.message}` : ''}`);
       }
     },
-    [userId, setUserTheme],
+    [isAuthorized, setUserTheme, refetch, currentTheme],
   );
 
   const switchTheme = useCallback(() => {

@@ -1,21 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import fetch from 'node-fetch';
 
-export interface User {
-  id: number;
-  login: string;
-  first_name: string;
-  second_name: string;
-  display_name: string | null;
-  email: string;
-  phone: string;
-  avatar: string | null;
-}
+import { User } from '../types/User';
 
-// вынести в общий тип
-export type RequestWithUser = Request & { user?: User };
-
-export async function authMiddleware(req: RequestWithUser, res: Response, next: NextFunction): Promise<void> {
+export async function authMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
   const authCookie = req.cookies?.authCookie;
 
   if (!authCookie) {
@@ -36,7 +24,6 @@ export async function authMiddleware(req: RequestWithUser, res: Response, next: 
     }
 
     const user = (await response.json()) as User;
-
     req.user = user;
 
     next();

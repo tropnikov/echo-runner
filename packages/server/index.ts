@@ -1,10 +1,10 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import express, { Response } from 'express';
+import express, { Request, Response } from 'express';
 
 import { createClientAndConnect } from './db';
-import { authMiddleware, RequestWithUser } from './middlewares/authMiddleware';
+import { authMiddleware } from './middlewares/authMiddleware';
 
 dotenv.config();
 
@@ -17,9 +17,9 @@ const port = Number(process.env.SERVER_PORT) || 3001;
 app.use((req, res, next) => {
   const publicPaths = ['/', '/signin', '/signup', '/oauth'];
   if (publicPaths.includes(req.path)) {
-    next();
+    return next();
   }
-  authMiddleware(req, res, next);
+  return authMiddleware(req, res, next);
 });
 
 createClientAndConnect();
@@ -28,7 +28,7 @@ app.get('/', (_, res) => {
   res.json('👋 Howdy from the server :)');
 });
 
-app.get('/private', (req: RequestWithUser, res: Response): void => {
+app.get('/private', (req: Request, res: Response): void => {
   if (!req.user) {
     res.status(403).json({ reason: 'Forbidden' });
     return;

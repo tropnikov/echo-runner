@@ -10,6 +10,8 @@ import { useNotification } from '@/components/NotificationProvider/NotificationP
 import { GetAllRatingsResponse, useLeaderboard } from '@/hooks/useLeaderboard';
 import { isErrorWithReason } from '@/types/errors';
 
+import { withMeta } from '@/hocs/withMeta';
+
 const LeaderboardPage: FC = () => {
   const limitDelta = 10;
 
@@ -56,4 +58,11 @@ const LeaderboardPage: FC = () => {
   );
 };
 
-export default LeaderboardPage;
+export default withMeta(LeaderboardPage, {
+  title: 'Лидерборд',
+  description:
+    'Таблица лидеров Echo Runner. Посмотрите на лучших игроков, их рекорды и достижения. Соревнуйтесь за место в топе!',
+  keywords: 'лидерборд, таблица лидеров, рейтинг, рекорды, echo runner, топ игроков, очки',
+  url: '/leaderboard',
+  noIndex: true,
+});

@@ -11,6 +11,8 @@ import { useTopic } from '@/hooks/useTopic';
 import { useAppSelector } from '@/redux/store';
 import type { Comment, Topic } from '@/types/Forum';
 
+import { withMeta } from '@/hocs/withMeta';
+
 const { Text, Title } = Typography;
 
 function TopicComment({ id, author, date, comment }: Comment) {
@@ -102,4 +104,9 @@ function Topic() {
   );
 }
 
-export default Topic;
+export default withMeta(Topic, {
+  title: 'Правила игры | Форум',
+  description: 'Обсуждение правил игры Echo Runner. Читайте комментарии, задавайте вопросы и участвуйте в дискуссии.',
+  keywords: 'правила игры, echo runner, форум, комментарии, дискуссия',
+  noIndex: true,
+});

@@ -10,12 +10,11 @@
   flex-direction: column;
   position: relative;
   overflow: auto;
+  background-color: var(--ant-layout-body-bg, #f1f5f9);
 }
 
-.fullScreenButton {
-  position: absolute;
-  right: 40px;
-  top: 40px;
+.perfPanelButton {
+  left: 5px;
 }
 
 .gameContainer {
@@ -40,4 +39,15 @@
   justify-content: center;
   gap: 10px;
   font-size: 20px;
+}
+
+.controlButtons {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
 }

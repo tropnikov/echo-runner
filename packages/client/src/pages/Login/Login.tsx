@@ -13,6 +13,8 @@ import { useLogin } from '@/hooks/useLogin';
 import { useYandexOAuth } from '@/hooks/useYandexOAuth';
 import { isErrorWithReason } from '@/types/errors';
 
+import { withMeta } from '@/hocs/withMeta';
+
 import styles from './Login.module.css';
 
 const Login = () => {
@@ -46,11 +48,10 @@ const Login = () => {
   }
 
   return (
-    <Flex vertical justify="center" align="center" flex={1} className={styles.wrapper}>
+    <Flex vertical justify="center" align="center" flex={1}>
       <Card title={<Typography.Title level={1}>Вход</Typography.Title>} className={styles.card}>
         <Form
           name="basic"
-          className={styles.cardForm}
           initialValues={{ remember: true }}
           validateTrigger="onBlur"
           onFinish={onFinish}
@@ -65,11 +66,9 @@ const Login = () => {
           </Form.Item>
 
           <Flex gap={16} vertical>
-            <Form.Item label={null}>
-              <Button type="primary" htmlType="submit" loading={isLoading}>
-                Войти
-              </Button>
-            </Form.Item>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
+              Войти
+            </Button>
             <Button type="default" loading={isLoading} onClick={startOAuthFlow}>
               Войти через Яндекс ID
             </Button>
@@ -80,4 +79,10 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withMeta(Login, {
+  title: 'Вход',
+  description: 'Войдите в свой аккаунт Echo Runner для доступа к игре, профилю и таблице лидеров.',
+  keywords: 'вход, авторизация, логин, echo runner, аккаунт',
+  url: '/signin',
+  noIndex: true,
+});

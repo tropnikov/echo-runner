@@ -12,6 +12,8 @@ import { useTopicList } from '@/hooks/useTopicList';
 import { useAppSelector } from '@/redux/store';
 import { Topic } from '@/types/Forum';
 
+import { withMeta } from '@/hocs/withMeta';
+
 const { Text, Title } = Typography;
 
 const columns: TableProps<Topic>['columns'] = [
@@ -135,4 +137,11 @@ function TopicList() {
   );
 }
 
-export default TopicList;
+export default withMeta(TopicList, {
+  title: 'Форум',
+  description:
+    'Форум Echo Runner. Обсуждайте игру, делитесь советами, задавайте вопросы и общайтесь с другими игроками.',
+  keywords: 'форум, обсуждение, echo runner, игроки, советы, вопросы, темы',
+  url: '/topics',
+  noIndex: true,
+});

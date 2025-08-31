@@ -1,34 +1,25 @@
 import { useEffect, useState } from 'react';
 
 import { topicApi } from '@/api/apiForum';
-import { /*getDefaultTopic, */ GetTopicResponse } from '@/types/Forum';
+import { GetTopicResponse } from '@/types/Forum';
 
 export const useTopicList = (pageNumber: number, pageSize: number) => {
   const [topics, setTopics] = useState<GetTopicResponse[]>([]);
+  const [count, setCount] = useState(0);
 
-  const loadTopics = async (pageNumber: number, pageSize: number) => {
+  const loadTopics = async () => {
     try {
-      const data = await topicApi.getAllTopics(pageNumber, pageSize);
-      setTopics(data);
+      const { topics, count } = await topicApi.getAllTopics(pageNumber * pageSize, pageSize);
+      setTopics(topics);
+      setCount(count);
     } catch (error) {
       console.error('Error loading topics:', error);
     }
   };
 
   useEffect(() => {
-    loadTopics(pageNumber, pageSize);
+    loadTopics();
   }, [pageNumber, pageSize]);
 
-  return { topics, loadTopics };
+  return { topics, loadTopics, count };
 };
-
-// const handleCreateTopic = async (title: string, content: string) => {
-//   try {
-//     const topic: GetTopicResponse = getDefaultTopic();
-//     topic.name = title;
-
-//     const newTopic = await topicApi.createTopic(topic);
-//   } catch (error) {
-//     console.error('Error creating topic:', error);
-//   }
-// };

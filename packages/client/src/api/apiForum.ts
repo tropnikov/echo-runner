@@ -1,8 +1,11 @@
 import { baseUrlAPI_dev } from '@/constants/apiEndpoint';
-import { GetCommentResponse, GetTopicResponse } from '@/types/Forum';
+import { CommentResponseWithCount, GetCommentResponse, GetTopicResponse } from '@/types/Forum';
 
 export const topicApi = {
-  getAllTopics: async (pageNumber: number, pageSize: number): Promise<GetTopicResponse[]> => {
+  getAllTopics: async (
+    pageNumber: number,
+    pageSize: number,
+  ): Promise<{ topics: GetTopicResponse[]; count: number }> => {
     const response = await fetch(`${baseUrlAPI_dev}/topics?offset=${pageNumber}&limit=${pageSize}`);
 
     if (!response.ok) {
@@ -19,13 +22,13 @@ export const topicApi = {
     return response.json();
   },
 
-  createTopic: async (topic: GetTopicResponse): Promise<GetTopicResponse> => {
+  createTopic: async (name: string, owner_id: number, owner_login: string): Promise<GetTopicResponse> => {
     const response = await fetch(`${baseUrlAPI_dev}/topics`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name: topic.name, ownerId: topic.ownerId, owner_login: topic.ownerLogin }),
+      body: JSON.stringify({ name: name, ownerId: owner_id, ownerLogin: owner_login }),
     });
 
     if (!response.ok) {
@@ -45,7 +48,11 @@ export const topicApi = {
     }
   },
 
-  getTopicComments: async (topic_id: number, comment_start: number, size: number): Promise<GetCommentResponse[]> => {
+  getTopicComments: async (
+    topic_id: number,
+    comment_start: number,
+    size: number,
+  ): Promise<CommentResponseWithCount> => {
     const response = await fetch(
       `${baseUrlAPI_dev}/comments?offset=${comment_start}&limit=${size}&topicId=${topic_id}`,
     );
@@ -57,7 +64,7 @@ export const topicApi = {
   },
 
   createComment: async (comment: GetCommentResponse): Promise<GetCommentResponse> => {
-    const response = await fetch(`${baseUrlAPI_dev}/topics`, {
+    const response = await fetch(`${baseUrlAPI_dev}/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -65,6 +72,7 @@ export const topicApi = {
       body: JSON.stringify({
         text: comment.text,
         ownerId: comment.ownerId,
+        ownerLogin: comment.ownerLogin,
         topicId: comment.topicId,
         replyCommentId: comment.replyCommentId,
       }),

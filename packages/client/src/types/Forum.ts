@@ -1,11 +1,11 @@
 export interface GetTopicResponse {
-  id?: number;
+  id: number;
   ownerId: number;
   ownerLogin: string;
   name: string;
-  createdAt?: string;
+  createdAt: string;
   updatedAt?: string;
-  commentsCount?: number;
+  commentsCount: number;
   lastComment?: GetCommentResponse;
 }
 export interface GetCommentResponse {
@@ -13,21 +13,16 @@ export interface GetCommentResponse {
   ownerId: number;
   ownerLogin: string;
   replyCommentId?: number;
-  text: string;
+  text?: string;
   topicId?: number;
   createdAt?: string;
   updatedAt?: string;
 }
-// export interface GetTopicResponse {
-//   id?: number;
-//   name: string;
-//   owner_id: number;
-//   owner_login: string;
-//   create_date?: Date;
-//   comment_count?: number;
-//   last?: GetCommentResponse;
-//   comments?: GetCommentResponse[];
-// }
+
+export interface CommentResponseWithCount {
+  comments: GetCommentResponse[];
+  count: number;
+}
 
 export const getDefaultComment = (): GetCommentResponse => ({
   id: 0,
@@ -56,13 +51,15 @@ export interface Topic {
   topic: {
     id: number;
     title: string;
-    author: string;
-    created_at: Date;
+    authorId: number;
+    authorLogin: string;
+    created_at?: string;
   };
   count: number;
-  last: {
-    user: string;
-    date?: Date;
+  last?: {
+    authorId?: number;
+    authorLogin?: string;
+    created_at?: string;
   };
 }
 
@@ -71,5 +68,5 @@ export interface Comment {
   avatar?: string;
   author?: string;
   date?: string;
-  comment: string;
+  comment?: string;
 }

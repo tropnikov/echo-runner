@@ -11,7 +11,7 @@ export async function authMiddleware(req: Request, _res: Response, next: NextFun
   const authCookie = req.cookies?.authCookie;
 
   if (!authCookie) {
-    next(new ForbiddenError(cookieNotFoundMessage));
+    return next(new ForbiddenError(cookieNotFoundMessage));
   }
 
   try {
@@ -22,7 +22,7 @@ export async function authMiddleware(req: Request, _res: Response, next: NextFun
     });
 
     if (!response.ok) {
-      next(new ForbiddenError(authFailMessage));
+      return next(new ForbiddenError(authFailMessage));
     }
 
     const user = (await response.json()) as User;

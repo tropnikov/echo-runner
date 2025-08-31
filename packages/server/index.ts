@@ -24,7 +24,11 @@ const startServer = async () => {
 
     const app = express();
 
-    app.use(cors());
+    app.use(
+      cors({
+        credentials: true,
+      }),
+    );
     app.use(helmet());
     app.use(cookieParser());
     app.use(bodyParser.json());

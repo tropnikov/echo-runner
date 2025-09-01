@@ -21,11 +21,7 @@ services:
     networks:
       - echo-runner-network
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'node -e "require(\"http\").get(\"http://localhost:${CLIENT_PORT:-3000}\", (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on(\"error\", () => process.exit(1))"',
-        ]
+      test: ['CMD', 'sh', '-c', 'PORT=${CLIENT_PORT:-3000} node ./healthcheck.js']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -55,11 +51,7 @@ services:
     networks:
       - echo-runner-network
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'node -e "require(\"http\").get(\"http://localhost:${SERVER_PORT:-3001}\", (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on(\"error\", () => process.exit(1))"',
-        ]
+      test: ['CMD', 'sh', '-c', 'PORT=${SERVER_PORT:-3001} node ./healthcheck.js']
       interval: 30s
       timeout: 10s
       retries: 3

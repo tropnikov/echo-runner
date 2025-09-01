@@ -55,7 +55,7 @@
 
 **Development режим (с hot reload):**
 ```bash
-docker-compose -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.dev.yml up --build
 ```
 
 **Production режим:**
@@ -66,7 +66,7 @@ docker compose up --build -d
 4. Проверьте статус контейнеров:
    ```bash
    # Для development
-   docker-compose -f docker-compose.dev.yml ps
+   docker compose -f docker-compose.dev.yml ps
    
    # Для production  
    docker compose ps

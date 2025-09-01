@@ -5,12 +5,17 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "esModuleInterop": true,
     "lib": ["es2022", "DOM"],
     "skipLibCheck": true,
-    "rootDir": "./server",
-    "outDir": "./server/build"
+    "outDir": "./server/build",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["./server/**/*.ts"],
-  "exclude": ["./server/**/*.d.ts", "./server/build"]
+  "exclude": ["./server/**/*.d.ts", "./node_modules"]
 }

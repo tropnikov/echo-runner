@@ -5,6 +5,8 @@ import { Button, Flex, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
+import { withMeta } from '@/hocs/withMeta';
+
 import TopicModal from '../../components/Forum/TopicModal';
 
 const { Text, Title } = Typography;
@@ -130,4 +132,11 @@ function TopicList() {
   );
 }
 
-export default TopicList;
+export default withMeta(TopicList, {
+  title: 'Форум',
+  description:
+    'Форум Echo Runner. Обсуждайте игру, делитесь советами, задавайте вопросы и общайтесь с другими игроками.',
+  keywords: 'форум, обсуждение, echo runner, игроки, советы, вопросы, темы',
+  url: '/topics',
+  noIndex: true,
+});

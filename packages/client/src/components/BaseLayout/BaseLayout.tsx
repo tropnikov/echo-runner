@@ -1,21 +1,21 @@
 import { useMemo } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 
-import { Button, Layout, Menu, Space, theme } from 'antd/lib';
+import { Button, Layout, Menu, Space, Switch } from 'antd';
 import { LoginOutlined, LogoutOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
 
 import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
 import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { useLogout } from '@/hooks/useLogout';
+import { useTheme } from '@/hooks/useTheme';
+import { useYandexOAuth } from '@/hooks/useYandexOAuth';
 import { useAppSelector } from '@/redux/store';
 import { isErrorWithReason } from '@/types/errors';
 
 import styles from './BaseLayout.module.css';
 
 const { Header, Content, Footer } = Layout;
-
-const { useToken } = theme;
 
 const menuItems = [
   {
@@ -36,16 +36,15 @@ const menuItems = [
 ];
 
 function BaseLayout({ children }: { children: React.ReactNode }) {
-  const {
-    token: { colorBgContainer },
-  } = useToken();
-
+  const { currentTheme, switchTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const notification = useNotification();
   const { user } = useAppSelector((state) => state.auth);
   const { isAuthorized, isLoading } = useAuthCheck();
   const { logout } = useLogout();
+
+  useYandexOAuth();
 
   const currentSelectedKey = useMemo(() => {
     const pathname = location.pathname;
@@ -79,21 +78,20 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <Layout>
+    <Layout className={styles.layout}>
       <Header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerContentLeft}>
             <div className={styles.headerLogo}>
-              <NavLink to={appRoutes.MAIN} style={{ color: 'white' }}>
+              <NavLink to={appRoutes.MAIN} className={styles.headerLogoLink}>
                 Echo Runner
               </NavLink>
             </div>
             <Menu
-              theme="dark"
               mode="horizontal"
               selectedKeys={currentSelectedKey}
               items={currentMenuItems}
-              style={{ flex: 1, minWidth: 0, border: 'none' }}
+              className={styles.menu}
             />
           </div>
 
@@ -102,11 +100,13 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
               <div>Loading...</div> // Или другой индикатор загрузки
             ) : isAuthorized ? (
               <>
+                <div className={styles.headerThemeSwitch}>
+                  Темная тема: <Switch checked={currentTheme === 'dark'} onChange={switchTheme} />
+                </div>
                 <Button
                   variant="filled"
                   type="text"
                   icon={<UserOutlined />}
-                  style={{ color: 'white' }}
                   onClick={() => handleAuthClick(appRoutes.PROFILE)}>
                   {user?.first_name}
                 </Button>
@@ -116,11 +116,7 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
               </>
             ) : (
               <>
-                <Button
-                  type="text"
-                  icon={<LoginOutlined />}
-                  style={{ color: 'white' }}
-                  onClick={() => handleAuthClick(appRoutes.SIGNIN)}>
+                <Button type="text" icon={<LoginOutlined />} onClick={() => handleAuthClick(appRoutes.SIGNIN)}>
                   Вход
                 </Button>
                 <Button type="primary" icon={<UserAddOutlined />} onClick={() => handleAuthClick(appRoutes.SIGNUP)}>
@@ -132,30 +128,9 @@ function BaseLayout({ children }: { children: React.ReactNode }) {
         </div>
       </Header>
 
-      <Content className={styles.layoutContainer} style={{ overflowY: 'auto' }}>
-        <div
-          style={{
-            background: colorBgContainer,
-            minHeight: 'calc(100vh - 129.5px)',
-            padding: '24px',
-            maxWidth: '1440px',
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-          {children}
-        </div>
-      </Content>
+      <Content className={styles.layoutContainer}>{children}</Content>
 
-      <Footer
-        style={{
-          textAlign: 'center',
-          bottom: 0,
-          width: '100%',
-          borderTop: '1px solid #1677FF',
-        }}>
-        © {new Date().getFullYear()} Created by Echo Team
-      </Footer>
+      <Footer className={styles.footer}>© {new Date().getFullYear()} Created by Echo Team</Footer>
     </Layout>
   );
 }

@@ -1,19 +1,4 @@
-.wrapper {
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
-  margin-bottom: 64px;
-  background-color: white;
-}
-
 .card {
-  width: 400px;
-}
-
-.cardForm {
   max-width: 400px;
   width: 100%;
-  flex: 1;
-  align-self: center;
-  margin-top: 16px;
 }

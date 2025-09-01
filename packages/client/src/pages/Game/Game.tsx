@@ -5,6 +5,8 @@ import { teamName } from '@/constants/leaderboardStats';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useAppSelector } from '@/redux/store';
 
+import { withMeta } from '@/hocs/withMeta';
+
 import PlayerJump from './assets/player/jump.png';
 import PlayerRun from './assets/player/run.png';
 import { getCanvasContext } from './helpers/getCanvasContext';
@@ -27,7 +29,6 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   const handleOnDamage = useCallback(() => {
     setDamage((prev) => {
       const next = prev + 1;
-
       if (next >= maxDamage) {
         engineRef.current?.stop();
         setIsPaused(false);
@@ -39,20 +40,19 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
           });
           return prevScore;
         });
+        setIsStarted(false);
       }
       return next;
     });
   }, [maxDamage]);
 
   const handleStart = () => {
-    setIsStarted(true);
-
+    if (isStarted) return;
     const ctx = getCanvasContext(canvasRef);
-
     if (!ctx) return;
-
     initGame(ctx);
-    engineRef.current?.start();
+    setIsStarted(true);
+    setIsPaused(false);
   };
 
   const handleOnPause = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -63,24 +63,19 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   const handleRestart = () => {
     setScore(0);
     setDamage(0);
-
-    const ctx = getCanvasContext(canvasRef);
-
-    if (!ctx) return;
+    setIsPaused(false);
 
     resetScene();
 
-    engineRef.current?.start();
+    setIsStarted(true);
   };
 
   const pauseGame = useCallback(() => {
     setIsPaused((prev) => {
       const newState = !prev;
-
       if (engineRef.current) {
         newState ? engineRef.current.pause() : engineRef.current.resume();
       }
-
       return newState;
     });
   }, []);
@@ -99,7 +94,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     [],
   );
 
-  const { canvasRef, engineRef, playerRef, initGame, resetScene } = useGameSetup({
+  const { canvasRef, engineRef, playerRef, initGame, resetScene, stats } = useGameSetup({
     handleOnScore,
     handleOnDamage,
     playerSprites,
@@ -116,8 +111,16 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
       onStart={handleStart}
       onRestart={handleRestart}
       onPause={handleOnPause}
+      stats={stats}
     />
   );
 }
 
-export default Game;
+export default withMeta(Game, {
+  title: 'Игра',
+  description:
+    'Играйте в Echo Runner! Управляйте персонажем, преодолевайте препятствия, набирайте очки и устанавливайте новые рекорды.',
+  keywords: 'игра, играть, echo runner, платформер, очки, рекорды, геймплей',
+  url: '/game',
+  noIndex: true,
+});

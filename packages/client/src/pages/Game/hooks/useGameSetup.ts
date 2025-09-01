@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
+import { usePerformanceStats } from '@/hooks/usePerformanceStats';
+
 import BackgroundImage from '../assets/bg.png';
 import { Coin } from '../engine/Coin';
 import { GameEngine } from '../engine/GameEngine';
@@ -15,69 +17,90 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
   const obstacleRef = useRef<Obstacle | null>(null);
   const playerRef = useRef<Player | null>(null);
   const coinRef = useRef<Coin | null>(null);
+  const startedRef = useRef(false);
 
+  const { beginFrame, endFrame, stats, reset } = usePerformanceStats();
   const { sprite, isLoading: isSpritesLoading, error: spritesError } = usePlayerSprites(playerSprites);
 
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
-
     if (!canvas) return;
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }, []);
 
   const initGame = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      if (!engineRef.current) {
-        engineRef.current = new GameEngine({
+      if (engineRef.current === null) {
+        const e = new GameEngine({
           ctx,
           onDamage: handleOnDamage,
           onScore: handleOnScore,
         });
 
-        initParallaxBackground(engineRef.current, BackgroundImage, 0.5);
+        e.setFrameHooks({
+          before: beginFrame,
+          after: endFrame,
+        });
+
+        initParallaxBackground(e, BackgroundImage, 0.5);
         resizeCanvas();
+
+        engineRef.current = e;
       }
 
-      if (!playerRef.current && sprite) {
-        playerRef.current = new Player(ctx, sprite);
-      }
+      const engine = engineRef.current;
+      if (!engine) return;
 
+      if (!playerRef.current && sprite) playerRef.current = new Player(ctx, sprite);
       if (!obstacleRef.current) obstacleRef.current = new Obstacle(ctx);
       if (!coinRef.current) coinRef.current = new Coin(ctx);
 
-      // Инициализируем только если все объекты созданы
       if (playerRef.current && obstacleRef.current && coinRef.current) {
-        engineRef.current
+        engine
           .initGameObject(playerRef.current)
           .initGameObject(obstacleRef.current)
           .initGameObject(coinRef.current)
           .init();
+
+        if (!startedRef.current) {
+          engine.start();
+          startedRef.current = true;
+        }
       }
     },
-    [handleOnDamage, handleOnScore, sprite, resizeCanvas],
+    [handleOnDamage, handleOnScore, sprite, resizeCanvas, beginFrame, endFrame],
   );
 
   const resetScene = useCallback(() => {
-    if (!engineRef.current || !playerRef.current || !obstacleRef.current || !coinRef.current) {
-      throw new Error('useGameSetup: Not all game entities initialized');
-    }
+    const engine = engineRef.current;
+    if (!engine || !playerRef.current || !obstacleRef.current || !coinRef.current) return;
 
-    engineRef.current
+    engine.stop();
+    startedRef.current = false;
+
+    engine
       .removeAllSceneObjects()
       .clearAndRenderEmpty()
       .initGameObject(playerRef.current.reset())
       .initGameObject(obstacleRef.current.reset())
       .initGameObject(coinRef.current.reset())
       .init();
-  }, []);
+
+    engine.start();
+    startedRef.current = true;
+
+    reset();
+  }, [reset]);
 
   useEffect(() => {
     window.addEventListener('resize', resizeCanvas);
-
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      if (engineRef.current) {
+        engineRef.current.stop();
+      }
+      startedRef.current = false;
     };
   }, [resizeCanvas]);
 
@@ -91,5 +114,6 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
     resetScene,
     isSpritesLoading,
     spritesError,
+    stats,
   };
 }

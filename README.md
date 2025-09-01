@@ -76,14 +76,14 @@
 
 #### Проверка работоспособности
 После запуска проверьте доступность сервисов:
-- **Клиент**: http://localhost:3000
-- **Сервер API**: http://localhost:3001
+- **Клиент**: http://localhost:${CLIENT_PORT}
+- **Сервер API**: http://localhost:${SERVER_PORT}
 
 #### Доступ к приложению
 После успешного запуска приложение будет доступно по адресам:
-- **Клиент**: http://localhost:3000
-- **Сервер API**: http://localhost:3001
-- **База данных**: localhost:5432
+- **Клиент**: http://localhost:${CLIENT_PORT}
+- **Сервер API**: http://localhost:${SERVER_PORT}
+- **База данных**: localhost:${POSTGRES_PORT}
 
 #### Полезные команды для работы с Docker
 ```bash
@@ -102,7 +102,7 @@ docker compose down
 docker compose restart postgres
 
 # Подключение к базе данных
-docker compose exec postgres psql -U postgres -d echo_runner
+docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 
 # Полная очистка (удалит все данные БД)
 docker compose down -v
@@ -136,9 +136,9 @@ docker compose up postgres -d
 
 #### Проверка работоспособности
 После запуска проверьте доступность сервисов:
-- **Клиент**: http://localhost:3000
-- **Сервер API**: http://localhost:3001
-- **База данных**: localhost:5432
+- **Клиент**: http://localhost:${CLIENT_PORT}
+- **Сервер API**: http://localhost:${SERVER_PORT}
+- **База данных**: localhost:${POSTGRES_PORT}
 
 #### Полезные команды для локальной разработки
 ```bash
@@ -149,7 +149,7 @@ docker compose down postgres
 docker compose logs -f postgres
 
 # Подключение к базе данных
-docker compose exec postgres psql -U postgres -d echo_runner
+docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 ```
 
 ## Как добавить зависимости?

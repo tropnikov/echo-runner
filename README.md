@@ -39,11 +39,118 @@
 
 ## Как запускать?
 
+### Вариант 1: Docker (рекомендуется)
+
+#### Предварительные требования
+1. Установите [Docker Desktop](https://www.docker.com/products/docker-desktop/) для вашей ОС
+2. Убедитесь, что Docker запущен и работает
+
+#### Настройка переменных окружения
+1. Создайте файл `.env` в корне проекта:
+   ```bash
+   # Client configuration
+   CLIENT_PORT=3000
+   
+   # Server configuration
+   SERVER_PORT=3001
+   
+   # PostgreSQL configuration
+   POSTGRES_PORT=5432
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=password
+   POSTGRES_DB=echo_runner
+   ```
+
+#### Запуск приложения
+1. Откройте терминал в корне проекта
+2. Выполните команду для сборки и запуска всех сервисов:
+   ```bash
+   docker compose up --build -d
+   ```
+3. Дождитесь завершения сборки (может занять несколько минут при первом запуске)
+4. Проверьте статус контейнеров:
+   ```bash
+   docker compose ps
+   ```
+5. Дождитесь, пока все сервисы станут здоровыми (health check пройдет успешно)
+
+#### Проверка работоспособности
+После запуска проверьте доступность сервисов:
+- **Клиент**: http://localhost:${CLIENT_PORT}
+- **Сервер API**: http://localhost:${SERVER_PORT}
+
+#### Доступ к приложению
+После успешного запуска приложение будет доступно по адресам:
+- **Клиент**: http://localhost:${CLIENT_PORT}
+- **Сервер API**: http://localhost:${SERVER_PORT}
+- **База данных**: localhost:${POSTGRES_PORT}
+
+#### Полезные команды для работы с Docker
+```bash
+# Просмотр логов всех сервисов
+docker compose logs -f
+
+# Просмотр логов конкретного сервиса
+docker compose logs -f postgres
+docker compose logs -f server
+docker compose logs -f client
+
+# Остановка всех сервисов
+docker compose down
+
+# Перезапуск конкретного сервиса
+docker compose restart postgres
+
+# Подключение к базе данных
+docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+
+# Полная очистка (удалит все данные БД)
+docker compose down -v
+```
+
+#### Устранение неполадок
+- **Если порты заняты**: Измените значения `CLIENT_PORT`, `SERVER_PORT`, `POSTGRES_PORT` в файле `.env`
+- **Если контейнеры не запускаются**: Проверьте логи командой `docker compose logs`
+- **Если нужно пересобрать образы**: Выполните `docker compose up --build -d`
+- **Если нужно сбросить данные БД**: Выполните `docker compose down -v` и запустите заново
+- **Если health check не проходит**: Подождите немного, сервисы могут инициализироваться до 1-2 минут
+
+### Вариант 2: Локальная разработка
+
+#### Предварительные требования
 1. Убедитесь что у вас установлен `node` и `docker`
 2. Выполните команду `yarn bootstrap` - это обязательный шаг, без него ничего работать не будет :)
-3. Выполните команду `yarn dev`
-4. Выполните команду `yarn dev --scope=client` чтобы запустить только клиент
-5. Выполните команду `yarn dev --scope=server` чтобы запустить только server
+
+#### Запуск базы данных
+Для локальной разработки нужно запустить только PostgreSQL контейнер:
+```bash
+docker compose up postgres -d
+```
+
+#### Запуск приложения
+После запуска базы данных выполните одну из команд:
+
+- **Запуск всего приложения**: `yarn dev`
+- **Только клиент**: `yarn dev --scope=client`
+- **Только сервер**: `yarn dev --scope=server`
+
+#### Проверка работоспособности
+После запуска проверьте доступность сервисов:
+- **Клиент**: http://localhost:${CLIENT_PORT}
+- **Сервер API**: http://localhost:${SERVER_PORT}
+- **База данных**: localhost:${POSTGRES_PORT}
+
+#### Полезные команды для локальной разработки
+```bash
+# Остановка базы данных
+docker compose down postgres
+
+# Просмотр логов базы данных
+docker compose logs -f postgres
+
+# Подключение к базе данных
+docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+```
 
 ## Как добавить зависимости?
 
@@ -83,6 +190,8 @@
 
 `yarn preview --scope client`
 `yarn preview --scope server`
+
+
 
 ## Хуки
 

@@ -14,7 +14,7 @@ import { extractCSSModules } from './utils/cssModulesExtractor';
 dotenv.config();
 
 const port = process.env.PORT || 3000;
-const clientPath = path.join(__dirname, '../');
+const clientPath = process.cwd();
 const isDev = process.env.NODE_ENV === 'development';
 
 async function createServer() {
@@ -63,7 +63,7 @@ async function createServer() {
   );
 
   if (!isDev) {
-    app.use(express.static(path.join(clientPath, 'dist/client'), { index: false }));
+    app.use(express.static(path.resolve(clientPath, 'dist', 'client'), { index: false }));
   }
 
   app.get('*', async (req, res, next) => {
@@ -90,8 +90,8 @@ async function createServer() {
           .filter(Boolean)
           .join('\n');
       } else {
-        template = await fs.readFile(path.join(clientPath, 'dist/client/index.html'), 'utf-8');
-        const pathToServer = path.join(clientPath, 'dist/server/entry-server.mjs');
+        template = await fs.readFile(path.resolve(clientPath, 'dist', 'client', 'index.html'), 'utf-8');
+        const pathToServer = path.resolve(clientPath, 'dist', 'server', 'entry-server.mjs');
         render = (await import(pathToServer)).render;
       }
 

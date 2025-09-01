@@ -13,7 +13,7 @@ const logger = winston.createLogger({
 const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_PORT } = process.env;
 
 const sequelizeOptions: SequelizeOptions = {
-  host: 'localhost',
+  host: 'postgres',
   port: Number(POSTGRES_PORT),
   username: POSTGRES_USER,
   password: POSTGRES_PASSWORD,

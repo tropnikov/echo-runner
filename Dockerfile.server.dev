@@ -1,0 +1,27 @@
+ARG NODE_VERSION=20
+ARG SERVER_PORT=3001
+
+FROM node:$NODE_VERSION-bullseye
+
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+COPY . .
+
+COPY scripts/wait-for-it.sh /app/scripts/wait-for-it.sh
+RUN chmod +x /app/scripts/wait-for-it.sh
+
+RUN yarn lerna bootstrap
+
+WORKDIR /app/packages/server
+RUN yarn install
+
+WORKDIR /app
+
+ENV NODE_ENV=development
+ENV SERVER_PORT=$SERVER_PORT
+
+EXPOSE $SERVER_PORT
+CMD ["/bin/sh", "-c", "/app/scripts/wait-for-it.sh ${POSTGRES_HOST}:${POSTGRES_PORT} --timeout=30 -- yarn dev:server"]

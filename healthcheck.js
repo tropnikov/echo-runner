@@ -1,8 +1,8 @@
 // Simple HTTP healthcheck. Can be extended to check DB, uptime, etc.
-const http = require('http');
+import http from 'http';
 
 const port = Number(process.env.PORT || process.env.CLIENT_PORT || process.env.SERVER_PORT || 3000);
-const path = process.env.HEALTHCHECK_PATH || '/';
+const path = process.env.HEALTHCHECK_PATH || '/health';
 const timeoutMs = Number(process.env.HEALTHCHECK_TIMEOUT_MS || 5000);
 
 function check() {

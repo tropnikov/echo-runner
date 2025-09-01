@@ -22,7 +22,9 @@ WORKDIR /app
 COPY --from=builder /app/packages/server/dist/ /app/
 COPY --from=builder /app/packages/server/package.json /app/package.json
 COPY --from=builder /app/healthcheck.js /app/healthcheck.js
+COPY scripts/wait-for-it.sh /app/scripts/wait-for-it.sh
+RUN chmod +x /app/scripts/wait-for-it.sh
 RUN yarn install --production=true
 
 EXPOSE $SERVER_PORT
-CMD [ "node", "/app/index.js" ]
+CMD ["/bin/sh", "-c", "/app/scripts/wait-for-it.sh ${POSTGRES_HOST}:${POSTGRES_PORT} --timeout=30 -- node /app/index.js"]

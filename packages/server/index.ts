@@ -43,6 +43,14 @@ const startServer = async () => {
       }),
     );
 
+    app.get('/', (_, res) => {
+      res.json('👋 Howdy from the server :)');
+    });
+
+    app.get('/health', (_req: Request, res: Response) => {
+      res.status(200).json({ status: 'ok', message: 'Server is running' });
+    });
+
     app.use('/api/v1', routes);
 
     app.use('*', (_req: Request, _res: Response, next: NextFunction) =>

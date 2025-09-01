@@ -1,27 +1,39 @@
-import { Client } from 'pg';
+import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
+import winston from 'winston';
+
+import { Comment } from './models/comment';
+import { Topic } from './models/topic';
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.simple(),
+  transports: [new winston.transports.File({ filename: 'logs/sql.log' })],
+});
 
 const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_PORT } = process.env;
 
-export const createClientAndConnect = async (): Promise<Client | null> => {
+const sequelizeOptions: SequelizeOptions = {
+  host: 'localhost',
+  port: Number(POSTGRES_PORT),
+  username: POSTGRES_USER,
+  password: POSTGRES_PASSWORD,
+  database: POSTGRES_DB,
+  dialect: 'postgres',
+  models: [Comment, Topic],
+  logging: (msg) => logger.info(msg),
+};
+
+const sequelize = new Sequelize(sequelizeOptions);
+
+export const initializeDatabase = async () => {
   try {
-    const client = new Client({
-      user: POSTGRES_USER,
-      host: 'localhost',
-      database: POSTGRES_DB,
-      password: POSTGRES_PASSWORD,
-      port: Number(POSTGRES_PORT),
-    });
+    await sequelize.authenticate();
+    console.log('✅ Sequelize connection successful');
 
-    await client.connect();
-
-    const res = await client.query('SELECT NOW()');
-    console.log('  ➜ 🎸 Connected to the database at:', res?.rows?.[0].now);
-    client.end();
-
-    return client;
-  } catch (e) {
-    console.error(e);
+    await sequelize.sync({ alter: true });
+    console.log('✅ Database synchronized');
+  } catch (err) {
+    console.error('❌ Database initialization failed:', err);
+    process.exit(1);
   }
-
-  return null;
 };

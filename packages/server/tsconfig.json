@@ -19,11 +19,13 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "lib": ["es2022", "esnext.asynciterable"],
-    "types": ["node", "jest"],
+    "types": ["node", "jest", "./types/ExpressUpdate"],
     "baseUrl": ".",
     "paths": {
       "*": ["types/*"]
     },
-    "outDir": "dist"
-  }
+    "outDir": "dist",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
 }

@@ -5,10 +5,10 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import type { HelmetServerState } from 'react-helmet-async';
 import serialize from 'serialize-javascript';
-import { createServer as createViteServer, ViteDevServer } from 'vite';
+import { ViteDevServer } from 'vite';
 
-import { RenderResult } from './types';
 import { extractCSSModules } from './utils/cssModulesExtractor';
 
 dotenv.config();
@@ -25,6 +25,7 @@ async function createServer() {
   let viteServer: ViteDevServer | undefined;
 
   if (isDev) {
+    const { createServer: createViteServer } = await import('vite');
     viteServer = await createViteServer({
       server: {
         middlewareMode: true,
@@ -71,7 +72,10 @@ async function createServer() {
     let allStyles = '';
 
     try {
-      let render: (req: Request, res?: Response) => Promise<RenderResult>;
+      let render: (
+        req: Request,
+        res?: Response,
+      ) => Promise<{ antStyles: string; html: string; helmet?: HelmetServerState; initialState?: unknown }>;
       let template: string;
 
       if (viteServer) {
@@ -95,7 +99,7 @@ async function createServer() {
         render = (await import(pathToServer)).render;
       }
 
-      const { antStyles, html: appHtml, helmet, initialState }: RenderResult = await render(req, res);
+      const { antStyles, html: appHtml, helmet, initialState } = await render(req, res);
 
       allStyles += `\n${antStyles}`;
 

@@ -1,7 +1,6 @@
-## Отчет по 5-6 спринтам
+## Отчет по 7-8 спринтам
 
-[Яндекс Диск](https://disk.yandex.ru/i/MU3FMZv8mqDQmw)
-[Google Drive](https://drive.google.com/file/d/1qf2pKSqI3sygJv0ZM6oaKsMZ2NIO9iuw/view?usp=sharing)
+[Яндекс Диск](https://disk.yandex.ru/i/F2NoqLX0vP1S6g)
 
 ## Как работать с проектом:
 

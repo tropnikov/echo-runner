@@ -1,24 +1,23 @@
 services:
   client:
-    container_name: praktikum-client
-    image: praktikum-client
+    container_name: praktikum-client-dev
+    image: praktikum-client-dev
     build:
       context: .
-      dockerfile: Dockerfile.client
+      dockerfile: Dockerfile.client.dev
       args:
         CLIENT_PORT: ${CLIENT_PORT:-3000}
-    restart: always
-    env_file:
-      - .env
+    restart: unless-stopped
     ports:
       - '${CLIENT_PORT:-3000}:${CLIENT_PORT:-3000}'
     environment:
       - CLIENT_PORT=${CLIENT_PORT:-3000}
       - PORT=${CLIENT_PORT:-3000}
       - SERVER_PORT=${SERVER_PORT:-3001}
-      - NODE_ENV=${NODE_ENV:-production}
-      - COOKIE_DOMAIN=${COOKIE_DOMAIN}
-
+      - NODE_ENV=development
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN:-localhost}
+    volumes:
+      - ./packages/client:/app/packages/client
     depends_on:
       server:
         condition: service_healthy
@@ -32,31 +31,30 @@ services:
       start_period: 40s
     labels:
       - 'com.echo-runner.service=client'
-      - 'com.echo-runner.environment=production'
-      - 'com.echo-runner.version=${VERSION:-latest}'
+      - 'com.echo-runner.environment=development'
 
   server:
-    container_name: praktikum-server
-    image: praktikum-server
+    container_name: praktikum-server-dev
+    image: praktikum-server-dev
     build:
       context: .
-      dockerfile: Dockerfile.server
+      dockerfile: Dockerfile.server.dev
       args:
         SERVER_PORT: ${SERVER_PORT:-3001}
-    restart: always
-    env_file:
-      - .env
+    restart: unless-stopped
     ports:
       - '${SERVER_PORT:-3001}:${SERVER_PORT:-3001}'
     environment:
       SERVER_PORT: ${SERVER_PORT:-3001}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-echo_runner}
-      NODE_ENV: ${NODE_ENV:-production}
-      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      NODE_ENV: development
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${POSTGRES_DB:-echo_runner}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+    volumes:
+      - ./packages/server:/app/packages/server
     depends_on:
       postgres:
         condition: service_healthy
@@ -67,26 +65,23 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 30s
     labels:
       - 'com.echo-runner.service=server'
-      - 'com.echo-runner.environment=production'
-      - 'com.echo-runner.version=${VERSION:-latest}'
+      - 'com.echo-runner.environment=development'
 
   postgres:
     image: postgres:14
-    container_name: praktikum-postgres
-    restart: always
-    env_file:
-      - .env
+    container_name: praktikum-postgres-dev
+    restart: unless-stopped
     ports:
-      - '${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}'
+      - '${POSTGRES_PORT:-5432}:5432'
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-echo_runner}
     volumes:
-      - ./tmp/pgdata:/var/lib/postgresql/data
+      - ./tmp/pgdata_dev:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-echo_runner}']
       interval: 10s
@@ -96,23 +91,20 @@ services:
       - echo-runner-network
     labels:
       - 'com.echo-runner.service=database'
-      - 'com.echo-runner.environment=production'
-      - 'com.echo-runner.version=${VERSION:-latest}'
+      - 'com.echo-runner.environment=development'
 
   pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: praktikum-pgadmin
-    restart: always
-    env_file:
-      - .env
+    image: dpage/pgadmin4:8.12
+    container_name: praktikum-pgadmin-dev
+    restart: unless-stopped
     ports:
-      - '${PGADMIN_PORT:-8080}:80'
+      - '${PGADMIN_PORT:-8081}:80'
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-      - ./tmp/pgadmin_data:/var/lib/pgadmin
+      - ./tmp/pgadmin_dev_data:/var/lib/pgadmin
     depends_on:
       postgres:
         condition: service_healthy
@@ -120,8 +112,7 @@ services:
       - echo-runner-network
     labels:
       - 'com.echo-runner.service=pgadmin'
-      - 'com.echo-runner.environment=production'
-      - 'com.echo-runner.version=${VERSION:-latest}'
+      - 'com.echo-runner.environment=development'
 
 networks:
   echo-runner-network:

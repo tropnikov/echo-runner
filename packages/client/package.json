@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "cross-env NODE_ENV=development ts-node --project tsconfig.server.json server/index.ts",
-    "build": "yarn build:sw && yarn build:client && yarn build:server",
+    "build": "yarn build:client && yarn build:server",
     "build:client": "vite build --outDir dist/client",
-    "build:server": "vite build --outDir dist/server --ssr src/entry-server.tsx",
+    "build:server": "tsc -p tsconfig.server.json && vite build --outDir dist/server --ssr src/entry-server.tsx",
     "build:sw": "tsc -p tsconfig.sw.json",
     "preview": "ts-node --project tsconfig.server.json server/index.ts",
     "start": "NODE_ENV=production node server/build/index.js",
@@ -34,7 +34,8 @@
     "react-helmet-async": "^2.0.5",
     "react-redux": "^9.2.0",
     "react-router": "^7.6.3",
-    "serialize-javascript": "^6.0.2"
+    "serialize-javascript": "^6.0.2",
+    "vite": "^7.1.3"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
@@ -69,8 +70,7 @@
     "stylelint-config-standard": "^38.0.0",
     "ts-jest": "^28.0.8",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.0",
-    "vite": "^7.1.3"
+    "typescript": "^5.6.0"
   },
   "license": "MIT"
 }

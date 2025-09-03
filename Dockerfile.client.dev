@@ -1,0 +1,24 @@
+ARG NODE_VERSION=20
+ARG CLIENT_PORT=3000
+
+FROM node:$NODE_VERSION-bullseye
+
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+COPY . .
+
+RUN yarn lerna bootstrap
+
+WORKDIR /app/packages/client
+RUN yarn install
+
+WORKDIR /app
+
+ENV NODE_ENV=development
+ENV CLIENT_PORT=$CLIENT_PORT
+
+EXPOSE $CLIENT_PORT
+CMD ["yarn", "dev:client"]

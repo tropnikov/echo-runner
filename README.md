@@ -47,28 +47,27 @@
 #### Настройка переменных окружения
 1. Создайте файл `.env` в корне проекта:
    ```bash
-   # Client configuration
-   CLIENT_PORT=3000
-   
-   # Server configuration
-   SERVER_PORT=3001
-   
-   # PostgreSQL configuration
-   POSTGRES_PORT=5432
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=password
-   POSTGRES_DB=echo_runner
+   yarn bootstrap
    ```
 
 #### Запуск приложения
-1. Откройте терминал в корне проекта
-2. Выполните команду для сборки и запуска всех сервисов:
-   ```bash
-   docker compose up --build -d
-   ```
+
+**Development режим (с hot reload):**
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+**Production режим:**
+```bash
+docker compose up --build -d
+```
 3. Дождитесь завершения сборки (может занять несколько минут при первом запуске)
 4. Проверьте статус контейнеров:
    ```bash
+   # Для development
+   docker compose -f docker-compose.dev.yml ps
+   
+   # Для production  
    docker compose ps
    ```
 5. Дождитесь, пока все сервисы станут здоровыми (health check пройдет успешно)
@@ -86,16 +85,17 @@
 
 #### Полезные команды для работы с Docker
 ```bash
-# Просмотр логов всех сервисов
-docker compose logs -f
+# Просмотр логов всех сервисов (dev)
+docker compose -f docker-compose.dev.yml logs -f
 
-# Просмотр логов конкретного сервиса
+# Просмотр логов конкретного сервиса (prod)
 docker compose logs -f postgres
 docker compose logs -f server
 docker compose logs -f client
 
 # Остановка всех сервисов
-docker compose down
+docker compose down                          # production
+docker compose -f docker-compose.dev.yml down  # development
 
 # Перезапуск конкретного сервиса
 docker compose restart postgres

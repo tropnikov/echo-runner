@@ -8,16 +8,16 @@ import { getUserURL } from '../constants/getUserURL';
 import ForbiddenError from '../errors/ForbiddenError';
 
 export async function authMiddleware(req: Request, _res: Response, next: NextFunction): Promise<void> {
-  const authCookie = req.cookies?.authCookie;
+  const { authCookie, uuid } = req.cookies;
 
-  if (!authCookie) {
+  if (!authCookie || !uuid) {
     return next(new ForbiddenError(cookieNotFoundMessage));
   }
 
   try {
     const response = await fetch(getUserURL, {
       headers: {
-        cookie: req.headers.cookie || '',
+        cookie: `authCookie=${authCookie}; uuid=${uuid}`,
       },
     });
 

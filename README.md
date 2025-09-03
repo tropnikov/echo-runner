@@ -49,12 +49,19 @@
    ```bash
    yarn bootstrap
    ```
+2. Замените `POSTGRES_HOST` в `.env.local` на `localhost`
 
 #### Запуск приложения
 
 **Development режим (с hot reload):**
 ```bash
 docker compose -f docker-compose.dev.yml up --build
+```
+
+Или поднять только базу в докере:
+```bash
+docker compose -f docker-compose.dev.yml up postgres -d --build
+yarn dev
 ```
 
 **Production режим:**

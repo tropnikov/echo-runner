@@ -14,8 +14,8 @@ import { errorLogger, requestLogger } from './middlewares/logger';
 import { xssMiddleware } from './middlewares/xssMiddleware';
 import routes from './routes';
 
+dotenv.config({ path: '.env.local' });
 dotenv.config();
-
 const port = Number(process.env.SERVER_PORT) || 3001;
 
 const startServer = async () => {

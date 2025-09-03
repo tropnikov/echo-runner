@@ -1,45 +1,70 @@
+import bodyParser from 'body-parser';
+import { errors } from 'celebrate';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
-import { createClientAndConnect } from './db';
-import { authMiddleware } from './middlewares/authMiddleware';
+import { initializeDatabase } from './db';
+import NotFoundError from './errors/NotFoundError';
+import centralErrorHandler from './middlewares/centralErrorHandler';
+import { errorLogger, requestLogger } from './middlewares/logger';
+import { xssMiddleware } from './middlewares/xssMiddleware';
+import routes from './routes';
 
 dotenv.config();
 
-const app = express();
-app.use(cors());
-app.use(cookieParser());
-
 const port = Number(process.env.SERVER_PORT) || 3001;
 
-app.use((req, res, next) => {
-  const publicPaths = ['/', '/signin', '/signup', '/oauth'];
-  if (publicPaths.includes(req.path)) {
-    return next();
+const startServer = async () => {
+  try {
+    await initializeDatabase();
+
+    const app = express();
+
+    app.use(
+      cors({
+        origin: 'http://localhost:3000',
+        credentials: true,
+      }),
+    );
+    app.use(helmet());
+    app.use(cookieParser());
+    app.use(bodyParser.json());
+    app.use(xssMiddleware);
+    app.use(requestLogger);
+
+    app.use(
+      rateLimit({
+        max: 100,
+        windowMs: 15 * 60 * 100,
+        message: { message: 'Too many requests from this IP' },
+      }),
+    );
+
+    app.get('/', (_, res) => {
+      res.json('👋 Howdy from the server :)');
+    });
+
+    app.use('/api/v1', routes);
+
+    app.use('*', (_req: Request, _res: Response, next: NextFunction) =>
+      next(new NotFoundError('Некорректный путь запроса')),
+    );
+
+    app.use(errorLogger);
+    app.use(errors());
+    app.use(centralErrorHandler);
+
+    app.listen(port, () => {
+      console.log(`➜ 🎸 Server is listening on port: ${port}`);
+    });
+  } catch (err) {
+    console.error('❌ Failed to start server:', err);
+    process.exit(1);
   }
-  return authMiddleware(req, res, next);
-});
+};
 
-createClientAndConnect();
-
-app.get('/', (_, res) => {
-  res.json('👋 Howdy from the server :)');
-});
-
-app.get('/me', (req: Request, res: Response): void => {
-  if (!req.user) {
-    res.status(403).json({ reason: 'Forbidden' });
-    return;
-  }
-
-  res.json({
-    id: req.user.id,
-    login: req.user.login,
-  });
-});
-
-app.listen(port, () => {
-  console.log(`  ➜ 🎸 Server is listening on port: ${port}`);
-});
+startServer();

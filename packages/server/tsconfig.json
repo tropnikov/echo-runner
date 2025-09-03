@@ -21,8 +21,11 @@
     "lib": ["es2022", "esnext.asynciterable"],
     "types": ["node", "jest", "./types/ExpressUpdate"],
     "baseUrl": ".",
-    "outDir": "dist"
+    "paths": {
+      "*": ["types/*"]
+    },
+    "outDir": "dist",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
-  "include": ["./**/*.ts", "./types/**/*.d.ts"],
-  "exclude": ["dist"]
 }

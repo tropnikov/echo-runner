@@ -1,4 +1,4 @@
-export interface User {
+export type User = {
   id: number;
   login: string;
   first_name: string;
@@ -7,4 +7,4 @@ export interface User {
   email: string;
   phone: string;
   avatar: string | null;
-}
+};

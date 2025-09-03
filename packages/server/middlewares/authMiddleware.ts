@@ -4,22 +4,25 @@ import fetch from 'node-fetch';
 import { User } from '../types/User';
 
 export async function authMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const authCookie = req.cookies?.authCookie;
+  const { authCookie, uuid } = req.cookies ?? {};
 
   if (!authCookie) {
-    res.status(403).json({ reason: 'Forbidden' });
+    res.status(401).json({ reason: 'No authCookie provided' });
     return;
   }
 
   try {
+    let cookieHeader = `authCookie=${authCookie}`;
+    if (uuid) {
+      cookieHeader += `; uuid=${uuid}`;
+    }
+
     const response = await fetch('https://ya-praktikum.tech/api/v2/auth/user', {
-      headers: {
-        cookie: req.headers.cookie || '',
-      },
+      headers: { cookie: cookieHeader },
     });
 
     if (!response.ok) {
-      res.status(403).json({ reason: 'Forbidden' });
+      res.status(403).json({ reason: 'Invalid authCookie' });
       return;
     }
 

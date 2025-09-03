@@ -28,7 +28,7 @@ app.get('/', (_, res) => {
   res.json('👋 Howdy from the server :)');
 });
 
-app.get('/private', (req: Request, res: Response): void => {
+app.get('/me', (req: Request, res: Response): void => {
   if (!req.user) {
     res.status(403).json({ reason: 'Forbidden' });
     return;

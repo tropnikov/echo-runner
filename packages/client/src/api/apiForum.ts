@@ -92,7 +92,7 @@ export const topicApi = {
     topicId: number,
     emoji: string,
     owner: { ownerId: number; ownerLogin?: string | null },
-  ): Promise<void> => {
+  ): Promise<{ deleted: boolean; emoji: string }> => {
     const response = await fetch(`${baseUrlAPI_dev}/topics/${topicId}/reactions`, {
       method: 'POST',
       headers: {
@@ -101,6 +101,7 @@ export const topicApi = {
       credentials: 'include',
       body: JSON.stringify({ emoji, ownerId: owner.ownerId, ownerLogin: owner.ownerLogin ?? null }),
     });
-    await handleResponse(response, 'Failed to set topic reaction');
+    const data = await handleResponse<{ deleted?: boolean; emoji: string }>(response, 'Failed to set topic reaction');
+    return { deleted: Boolean(data.deleted), emoji: data.emoji };
   },
 };

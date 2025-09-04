@@ -9,12 +9,19 @@ import type { HelmetServerState } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 
 import { api as generatedApi } from '@/api/generated';
+import type { RootState } from '@/redux/store';
 
-import { RenderResult } from '../server/types';
 import NotificationProvider from './components/NotificationProvider/NotificationProvider';
 import { createContext, createFetchRequest, createUrl, prefetch } from './entry-server.utils';
 import { makeStore } from './redux/store';
 import { routesConfig } from './routesConfig';
+
+export interface RenderResult {
+  antStyles: string;
+  html: string;
+  helmet?: HelmetServerState;
+  initialState?: RootState;
+}
 
 export const render = async (req: Request, res?: Response): Promise<RenderResult> => {
   const handler = createStaticHandler(routesConfig);

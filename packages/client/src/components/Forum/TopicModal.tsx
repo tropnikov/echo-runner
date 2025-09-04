@@ -14,6 +14,8 @@ function TopicModal({ handleOk, handleCancel, show }: TopicModalProps) {
 
   const onOk = () => {
     handleOk(name, comment);
+    setName('');
+    setComment('');
   };
 
   const onNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -27,8 +29,13 @@ function TopicModal({ handleOk, handleCancel, show }: TopicModalProps) {
   return (
     <Modal title="Создание новой темы" open={show} onOk={onOk} onCancel={handleCancel}>
       <Flex vertical gap="middle">
-        <Input id="topic_name" placeholder="Укажите название темы" onChange={onNameChange} />
-        <Input.TextArea id="topic_comment" placeholder="Введите текст комментария" onChange={onCommentChange} />
+        <Input id="topic_name" placeholder="Укажите название темы" value={name} onChange={onNameChange} />
+        <Input.TextArea
+          id="topic_comment"
+          placeholder="Введите текст комментария"
+          value={comment}
+          onChange={onCommentChange}
+        />
       </Flex>
     </Modal>
   );

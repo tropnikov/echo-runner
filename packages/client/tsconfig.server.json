@@ -1,20 +1,14 @@
 {
   "compilerOptions": {
-    "composite": true,
     "target": "es2022",
     "module": "commonjs",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "emitDeclarationOnly": true,
     "esModuleInterop": true,
     "lib": ["es2022", "DOM"],
     "skipLibCheck": true,
-    "outDir": "./server/build",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "declaration": false,
+    "outDir": "./server/build/"
   },
   "include": ["./server/**/*.ts"],
   "exclude": ["./server/**/*.d.ts", "./node_modules"]

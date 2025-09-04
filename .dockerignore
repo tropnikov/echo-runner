@@ -1,0 +1,65 @@
+# Dependency directories
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+build/
+*/dist/
+*/build/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Log files
+*.log
+logs/
+
+# Environment files
+.env
+.env.*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker files (not needed inside containers)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Development and testing files
+coverage/
+*.test.ts
+*.test.tsx
+*.test.js
+*.test.jsx
+__tests__/
+
+# Temporary files
+tmp/
+temp/
+
+# Package manager files
+yarn-error.log
+npm-debug.log*
+
+# Documentation
+*.md
+docs/
+
+# Linting and formatting configs
+.eslintrc*
+.prettierrc*
+lefthook.yml
+
+# Memory leak analysis
+docs/memoryLeaks/

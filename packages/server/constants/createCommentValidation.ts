@@ -2,8 +2,8 @@ import { celebrate, Joi } from 'celebrate';
 
 export const createCommentValidation = celebrate({
   body: Joi.object().keys({
-    text: Joi.string().required(),
-    topicId: Joi.number().integer().required(),
-    replyCommentId: Joi.number().integer(),
+    text: Joi.string().min(1).required(),
+    topicId: Joi.number().integer().positive().required(),
+    replyCommentId: Joi.number().integer().positive().optional().allow(null),
   }),
 });

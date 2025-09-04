@@ -1,19 +1,19 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { baseUrlLocal } from '@/constants/apiEndpoint';
+import { baseUrlAPI_dev } from '@/constants/apiEndpoint';
 import { GetUserThemeResponse, SetUserThemeArgs, SetUserThemeResponse } from '@/types/themes';
 
 export const themeApi = createApi({
   reducerPath: 'themeApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: baseUrlLocal,
+    baseUrl: baseUrlAPI_dev,
     credentials: 'include',
   }),
   tagTypes: ['UserTheme'],
   endpoints: (build) => ({
     getUserTheme: build.query<GetUserThemeResponse, void>({
       queryFn: async () => {
-        const response = await fetch(`${baseUrlLocal}/theme`, {
+        const response = await fetch(`${baseUrlAPI_dev}/theme`, {
           credentials: 'include',
         });
 
@@ -31,7 +31,7 @@ export const themeApi = createApi({
     }),
     setUserTheme: build.mutation<SetUserThemeResponse, SetUserThemeArgs>({
       queryFn: async ({ theme }: SetUserThemeArgs) => {
-        const response = await fetch(`${baseUrlLocal}/theme`, {
+        const response = await fetch(`${baseUrlAPI_dev}/theme`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

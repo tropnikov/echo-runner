@@ -14,8 +14,8 @@ import { errorLogger, requestLogger } from './middlewares/logger';
 import { xssMiddleware } from './middlewares/xssMiddleware';
 import routes from './routes';
 
+dotenv.config({ path: '.env.local' });
 dotenv.config();
-
 const port = Number(process.env.SERVER_PORT) || 3001;
 
 const startServer = async () => {
@@ -26,10 +26,8 @@ const startServer = async () => {
 
     app.use(
       cors({
-        origin: ['http://localhost:3000', 'http://localhost:3001'], // Разрешаем localhost
+        origin: 'http://localhost:3000',
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
       }),
     );
     app.use(helmet());
@@ -45,6 +43,14 @@ const startServer = async () => {
         message: { message: 'Too many requests from this IP' },
       }),
     );
+
+    app.get('/', (_, res) => {
+      res.json('👋 Howdy from the server :)');
+    });
+
+    app.get('/health', (_req: Request, res: Response) => {
+      res.status(200).json({ status: 'ok', message: 'Server is running' });
+    });
 
     app.use('/api/v1', routes);
 

@@ -3,7 +3,6 @@ import winston from 'winston';
 
 import { Comment } from './models/comment';
 import { Topic } from './models/topic';
-import { UserTheme } from './models/UserTheme';
 
 const logger = winston.createLogger({
   level: 'info',
@@ -11,16 +10,16 @@ const logger = winston.createLogger({
   transports: [new winston.transports.File({ filename: 'logs/sql.log' })],
 });
 
-const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_PORT } = process.env;
+const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_PORT, POSTGRES_HOST } = process.env;
 
 const sequelizeOptions: SequelizeOptions = {
-  host: 'localhost',
+  host: POSTGRES_HOST,
   port: Number(POSTGRES_PORT),
   username: POSTGRES_USER,
   password: POSTGRES_PASSWORD,
   database: POSTGRES_DB,
   dialect: 'postgres',
-  models: [Comment, Topic, UserTheme],
+  models: [Comment, Topic],
   logging: (msg) => logger.info(msg),
 };
 

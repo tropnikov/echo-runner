@@ -1,32 +1,21 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 
 import { Button, Flex, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
-import { withMeta } from '@/hocs/withMeta';
+import { topicApi } from '@/api/apiForum';
+import TopicModal from '@/components/Forum/TopicModal';
+import { formatDate } from '@/helpers/dateformat';
+import { useTopicList } from '@/hooks/useTopicList';
+import { Topic } from '@/types/Forum';
 
-import TopicModal from '../../components/Forum/TopicModal';
+import { withMeta } from '@/hocs/withMeta';
 
 const { Text, Title } = Typography;
 
-interface DataType {
-  key: string;
-  topic: {
-    id: number;
-    title: string;
-    author: string;
-    created_at: string;
-  };
-  count: number;
-  last: {
-    user: string;
-    date: string;
-  };
-}
-
-const columns: TableProps<DataType>['columns'] = [
+const columns: TableProps<Topic>['columns'] = [
   {
     key: 'icon',
     width: 32,
@@ -36,12 +25,11 @@ const columns: TableProps<DataType>['columns'] = [
     dataIndex: 'topic',
     render: (topic) => (
       <Flex vertical>
-        <Link to={`${topic.id}`}>
+        <Link to={`/topics/${topic.id}`}>
           <Title level={4}>{topic.title}</Title>
         </Link>
-
         <Text>
-          Автор {topic.author}, {topic.created_at}
+          Автор {topic.authorLogin}, {topic.created_at}
         </Text>
       </Flex>
     ),
@@ -54,51 +42,37 @@ const columns: TableProps<DataType>['columns'] = [
   {
     dataIndex: 'last',
     width: 150,
-    render: (last) => (
+    render: (lastComment) => (
       <Flex vertical>
-        <Text>{last.user}</Text>
-        <Text>{last.date}</Text>
+        <Text>{lastComment.authorLogin}</Text>
+        <Text>{lastComment.created_at}</Text>
       </Flex>
     ),
   },
 ];
 
-const data: DataType[] = [
-  {
-    key: '1',
-    topic: {
-      id: 1,
-      title: 'Правила игры',
-      author: 'Пупкин',
-      created_at: '03 мая 2025г.',
-    },
-    count: 26,
-    last: {
-      user: 'david',
-      date: '15 мая 2025',
-    },
-  },
-  {
-    key: '2',
-    topic: {
-      id: 2,
-      title: 'Управление игрой',
-      author: 'Тюлькин',
-      created_at: '03 февраля 2025г.',
-    },
-    count: 12,
-    last: {
-      user: 'john',
-      date: '25 марта 2025',
-    },
-  },
-];
-
 function TopicList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
-  const handleOk = () => {
+  const { topics, loadTopics, count } = useTopicList(pageNumber - 1, pageSize);
+
+  const handleOk = async (name: string, comment: string) => {
     setIsModalOpen(false);
+    try {
+      const newTopic = await topicApi.createTopic(name);
+
+      if (newTopic.id)
+        await topicApi.createComment({
+          text: comment,
+          topicId: newTopic.id,
+        });
+
+      loadTopics();
+    } catch (error) {
+      console.error('Error creating topic:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -109,25 +83,52 @@ function TopicList() {
     setIsModalOpen(true);
   };
 
+  const data: Topic[] = useMemo<Topic[]>(
+    () =>
+      topics.map((item) => ({
+        key: item.id.toString(),
+        topic: {
+          id: item.id,
+          title: item.name,
+          authorId: item.ownerId,
+          authorLogin: item.ownerLogin,
+          created_at: formatDate(item?.createdAt),
+        },
+        count: item.commentsCount,
+        last: {
+          authorId: item.lastComment?.ownerId,
+          authorLogin: item.lastComment?.ownerLogin,
+          created_at: formatDate(item.lastComment?.createdAt),
+        },
+      })),
+    [topics],
+  );
+
   return (
     <Flex vertical>
       <Title level={2}>Форум игры</Title>
-      <Table<DataType>
+      <Table<Topic>
         columns={columns}
         dataSource={data}
         showHeader={false}
         pagination={{
-          showTotal: (total) => (
-            <div>
-              {`Всего тем: ${total}`}
-              <Button type="primary" icon={<FileTwoTone />} onClick={openModal} style={{ marginLeft: 8 }}>
-                Создать тему
-              </Button>
-              <TopicModal show={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
-            </div>
-          ),
+          showTotal: (total) => `Всего тем: ${total}`,
+          total: count,
+          pageSize,
+          current: pageNumber,
+          onChange: (page, pageSize) => {
+            setPageNumber(page);
+            setPageSize(pageSize);
+          },
         }}
       />
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+        <Button type="primary" icon={<FileTwoTone />} onClick={openModal}>
+          Создать тему
+        </Button>
+      </div>
+
+      <TopicModal show={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
     </Flex>
   );
 }

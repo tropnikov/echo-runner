@@ -8,13 +8,13 @@ export const topicApi = {
     pageSize: number,
   ): Promise<{ topics: GetTopicResponse[]; count: number }> => {
     const params = new URLSearchParams({ offset: pageNumber.toString(), limit: pageSize.toString() });
-    const response = await fetch(`${baseUrlAPI_dev}/topics?${params}`);
+    const response = await fetch(`${baseUrlAPI_dev}/topics?${params}`, { credentials: 'include' });
 
     return await handleResponse<{ topics: GetTopicResponse[]; count: number }>(response, 'Failed to fetch topics');
   },
 
   getTopicById: async (id: number): Promise<GetTopicResponse> => {
-    const response = await fetch(`${baseUrlAPI_dev}/topics/${id}`);
+    const response = await fetch(`${baseUrlAPI_dev}/topics/${id}`, { credentials: 'include' });
     return await handleResponse<GetTopicResponse>(response, 'Failed to fetch topic');
   },
 
@@ -34,6 +34,7 @@ export const topicApi = {
   deleteTopic: async (id: number): Promise<void> => {
     const response = await fetch(`${baseUrlAPI_dev}/topics/${id}`, {
       method: 'DELETE',
+      credentials: 'include',
     });
 
     return await handleResponse(response, 'Failed to delete topic');
@@ -49,7 +50,7 @@ export const topicApi = {
       limit: size.toString(),
       topicId: topic_id.toString(),
     });
-    const response = await fetch(`${baseUrlAPI_dev}/comments?${params}`);
+    const response = await fetch(`${baseUrlAPI_dev}/comments?${params}`, { credentials: 'include' });
 
     return await handleResponse<CommentResponseWithCount>(response, 'Failed to fetch comments');
   },

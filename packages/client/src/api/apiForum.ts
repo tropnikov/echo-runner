@@ -1,4 +1,5 @@
 import { baseUrlAPI_dev } from '@/constants/apiEndpoint';
+import { handleResponse } from '@/helpers/apiErrorHandler';
 import { CommentResponseWithCount, GetCommentResponse, GetTopicResponse } from '@/types/Forum';
 
 export const topicApi = {
@@ -6,36 +7,28 @@ export const topicApi = {
     pageNumber: number,
     pageSize: number,
   ): Promise<{ topics: GetTopicResponse[]; count: number }> => {
-    const response = await fetch(`${baseUrlAPI_dev}/topics?offset=${pageNumber}&limit=${pageSize}`);
+    const params = new URLSearchParams({ offset: pageNumber.toString(), limit: pageSize.toString() });
+    const response = await fetch(`${baseUrlAPI_dev}/topics?${params}`);
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch topics');
-    }
-    return response.json();
+    return await handleResponse<{ topics: GetTopicResponse[]; count: number }>(response, 'Failed to fetch topics');
   },
 
   getTopicById: async (id: number): Promise<GetTopicResponse> => {
     const response = await fetch(`${baseUrlAPI_dev}/topics/${id}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch topic');
-    }
-    return response.json();
+    return await handleResponse<GetTopicResponse>(response, 'Failed to fetch topic');
   },
 
-  createTopic: async (name: string, owner_id: number, owner_login: string): Promise<GetTopicResponse> => {
+  createTopic: async (name: string): Promise<GetTopicResponse> => {
     const response = await fetch(`${baseUrlAPI_dev}/topics`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name: name, ownerId: owner_id, ownerLogin: owner_login }),
+      body: JSON.stringify({ name: name }),
+      credentials: 'include',
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create topic');
-    }
-
-    return response.json();
+    return await handleResponse<GetTopicResponse>(response, 'Failed to create topic');
   },
 
   deleteTopic: async (id: number): Promise<void> => {
@@ -43,9 +36,7 @@ export const topicApi = {
       method: 'DELETE',
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete topic');
-    }
+    return await handleResponse(response, 'Failed to delete topic');
   },
 
   getTopicComments: async (
@@ -53,14 +44,14 @@ export const topicApi = {
     comment_start: number,
     size: number,
   ): Promise<CommentResponseWithCount> => {
-    const response = await fetch(
-      `${baseUrlAPI_dev}/comments?offset=${comment_start}&limit=${size}&topicId=${topic_id}`,
-    );
+    const params = new URLSearchParams({
+      offset: comment_start.toString(),
+      limit: size.toString(),
+      topicId: topic_id.toString(),
+    });
+    const response = await fetch(`${baseUrlAPI_dev}/comments?${params}`);
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch topics');
-    }
-    return response.json();
+    return await handleResponse<CommentResponseWithCount>(response, 'Failed to fetch comments');
   },
 
   createComment: async (comment: GetCommentResponse): Promise<GetCommentResponse> => {
@@ -71,17 +62,12 @@ export const topicApi = {
       },
       body: JSON.stringify({
         text: comment.text,
-        ownerId: comment.ownerId,
-        ownerLogin: comment.ownerLogin,
         topicId: comment.topicId,
         replyCommentId: comment.replyCommentId,
       }),
+      credentials: 'include',
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create topic');
-    }
-
-    return response.json();
+    return await handleResponse<GetCommentResponse>(response, 'Failed to create comment');
   },
 };

@@ -8,7 +8,6 @@ import { topicApi } from '@/api/apiForum';
 import { formatDate } from '@/helpers/dateformat';
 import { useComments } from '@/hooks/useComments';
 import { useTopic } from '@/hooks/useTopic';
-import { useAppSelector } from '@/redux/store';
 import type { Comment, Topic } from '@/types/Forum';
 
 import { withMeta } from '@/hocs/withMeta';
@@ -33,7 +32,6 @@ function Topic() {
   const [comment_start, setCommentStart] = useState(1);
   const [size, setSize] = useState(4);
   const { topicId } = useParams();
-  const user = useAppSelector((state) => state.auth.user);
 
   const onCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
@@ -43,8 +41,6 @@ function Topic() {
     if (topicId) {
       await topicApi.createComment({
         text: comment,
-        ownerId: user!.id,
-        ownerLogin: user!.login,
         topicId: Number(topicId),
       });
       loadComments();

@@ -1,7 +1,7 @@
-export const formatDate = (dateString?: string | Date | null): string => {
-  if (!dateString) return '';
+export const formatDate = (input?: string | Date | null): string => {
+  if (!input) return '';
 
-  const date = new Date(dateString);
+  const date = new Date(input);
   if (isNaN(date.getTime())) return 'Неверная дата';
 
   const formatted = new Intl.DateTimeFormat('ru-RU', {

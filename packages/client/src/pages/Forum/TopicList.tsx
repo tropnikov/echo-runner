@@ -9,7 +9,6 @@ import { topicApi } from '@/api/apiForum';
 import TopicModal from '@/components/Forum/TopicModal';
 import { formatDate } from '@/helpers/dateformat';
 import { useTopicList } from '@/hooks/useTopicList';
-import { useAppSelector } from '@/redux/store';
 import { Topic } from '@/types/Forum';
 
 import { withMeta } from '@/hocs/withMeta';
@@ -58,18 +57,15 @@ function TopicList() {
   const [pageSize, setPageSize] = useState(5);
 
   const { topics, loadTopics, count } = useTopicList(pageNumber - 1, pageSize);
-  const user = useAppSelector((state) => state.auth.user);
 
   const handleOk = async (name: string, comment: string) => {
     setIsModalOpen(false);
     try {
-      const newTopic = await topicApi.createTopic(name, user!.id, user!.login);
+      const newTopic = await topicApi.createTopic(name);
 
       if (newTopic.id)
         await topicApi.createComment({
           text: comment,
-          ownerId: user!.id,
-          ownerLogin: user!.login,
           topicId: newTopic.id,
         });
 

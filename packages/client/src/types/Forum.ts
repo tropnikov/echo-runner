@@ -10,8 +10,8 @@ export interface GetTopicResponse {
 }
 export interface GetCommentResponse {
   id?: number;
-  ownerId: number;
-  ownerLogin: string;
+  ownerId?: number;
+  ownerLogin?: string;
   replyCommentId?: number;
   text?: string;
   topicId?: number;

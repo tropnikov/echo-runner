@@ -7,7 +7,7 @@ export const useTopic = (topicId: number) => {
   const [topic, setTopic] = useState<GetTopicResponse>(getDefaultTopic());
 
   useEffect(() => {
-    const loadTopicById = async (topicId: number) => {
+    const loadTopicById = async () => {
       try {
         const data = await topicApi.getTopicById(topicId);
         setTopic(data);
@@ -15,7 +15,7 @@ export const useTopic = (topicId: number) => {
         console.error(`Error loading topic:${topicId}`, error);
       }
     };
-    loadTopicById(topicId);
+    loadTopicById();
   }, [topicId]);
 
   return { topic };

@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
+import { ProtectedRequest } from 'ProtectedRequest';
 import { col, fn } from 'sequelize';
 
 import { Reaction } from '../models/reaction';
 
 export class ReactionController {
-  static async upsert(req: Request, res: Response) {
+  static async upsert(req: ProtectedRequest, res: Response) {
     const topicId = Number(req.params.topicId);
-    const ownerId = Number((req as any).user?.id);
-    const { emoji, ownerLogin } = req.body as { emoji: string; ownerLogin?: string };
+    const { id: ownerId, login: ownerLogin } = req.user;
+    const { emoji } = req.body as { emoji: string };
 
     try {
       const existing = await Reaction.findOne({ where: { topicId, ownerId } });
@@ -33,9 +34,9 @@ export class ReactionController {
     }
   }
 
-  static async remove(req: Request, res: Response) {
+  static async remove(req: ProtectedRequest, res: Response) {
     const topicId = Number(req.params.topicId);
-    const ownerId = Number((req as any).user?.id);
+    const ownerId = Number(req.user?.id);
 
     try {
       const deleted = await Reaction.destroy({ where: { topicId, ownerId } });
@@ -48,7 +49,7 @@ export class ReactionController {
 
   static async getTopicReactions(req: Request, res: Response) {
     const topicId = Number(req.params.topicId);
-    const ownerId = (req as any).user?.id as number | undefined;
+    const ownerId = req.user?.id as number | undefined;
 
     try {
       const rows = await Reaction.findAll({

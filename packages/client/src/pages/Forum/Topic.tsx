@@ -12,6 +12,8 @@ import type { Comment, Topic } from '@/types/Forum';
 
 import { withMeta } from '@/hocs/withMeta';
 
+import TopicReactions from './TopicReactions';
+
 const { Text, Title } = Typography;
 
 function TopicComment({ id, author, date, comment }: Comment) {
@@ -65,6 +67,7 @@ function Topic() {
   return (
     <Flex vertical>
       <Title level={2}>{topic.name}</Title>
+      <TopicReactions />
       <List
         itemLayout="vertical"
         size="large"

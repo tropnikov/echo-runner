@@ -1,6 +1,11 @@
 import { baseUrlAPI_dev } from '@/constants/apiEndpoint';
 import { handleResponse } from '@/helpers/apiErrorHandler';
-import { CommentResponseWithCount, GetCommentResponse, GetTopicResponse } from '@/types/Forum';
+import {
+  CommentResponseWithCount,
+  GetCommentResponse,
+  GetTopicReactionsResponse,
+  GetTopicResponse,
+} from '@/types/Forum';
 
 export const topicApi = {
   getAllTopics: async (
@@ -70,5 +75,32 @@ export const topicApi = {
     });
 
     return await handleResponse<GetCommentResponse>(response, 'Failed to create comment');
+  },
+
+  getTopicReactions: async (topicId: number, ownerId?: number): Promise<GetTopicReactionsResponse> => {
+    const url = new URL(`${baseUrlAPI_dev}/topics/${topicId}/reactions`);
+    if (ownerId) {
+      url.searchParams.set('ownerId', String(ownerId));
+    }
+    const response = await fetch(url.toString(), {
+      credentials: 'include',
+    });
+    return await handleResponse<GetTopicReactionsResponse>(response, 'Failed to fetch topic reactions');
+  },
+
+  setTopicReaction: async (
+    topicId: number,
+    emoji: string,
+    owner: { ownerId: number; ownerLogin?: string | null },
+  ): Promise<void> => {
+    const response = await fetch(`${baseUrlAPI_dev}/topics/${topicId}/reactions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ emoji, ownerId: owner.ownerId, ownerLogin: owner.ownerLogin ?? null }),
+    });
+    await handleResponse(response, 'Failed to set topic reaction');
   },
 };

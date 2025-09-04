@@ -26,7 +26,9 @@ const columns: TableProps<Topic>['columns'] = [
     render: (topic) => (
       <Flex vertical>
         <Link to={`/topics/${topic.id}`}>
-          <Title level={4}>{topic.title}</Title>
+          <Title level={4} style={{ margin: 0 }}>
+            {topic.title}
+          </Title>
         </Link>
         <Text>
           Автор {topic.authorLogin}, {topic.created_at}

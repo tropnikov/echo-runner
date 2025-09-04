@@ -70,3 +70,11 @@ export interface Comment {
   date?: string;
   comment?: string;
 }
+
+export interface GetTopicReactionsResponse {
+  reactions: {
+    emoji: string;
+    count: number;
+  }[];
+  myEmoji: string | null;
+}

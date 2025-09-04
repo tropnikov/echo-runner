@@ -12,23 +12,21 @@ export class ReactionController {
     try {
       const existing = await Reaction.findOne({ where: { topicId, ownerId } });
 
-      // toggle off: same emoji -> delete
       if (existing && existing.emoji === emoji) {
+        const deletedEmoji = existing.emoji;
         await existing.destroy();
-        return res.status(200).json({ deleted: true });
+        return res.status(200).json({ deleted: true, emoji: deletedEmoji });
       }
 
-      // update to new emoji
       if (existing) {
         existing.emoji = emoji;
         if (ownerLogin) existing.ownerLogin = ownerLogin;
         await existing.save();
-        return res.status(200).json(existing);
+        return res.status(200).json({ deleted: false, emoji });
       }
 
-      // create new reaction
-      const created = await Reaction.create({ topicId, ownerId, ownerLogin: ownerLogin || null, emoji });
-      return res.status(201).json(created);
+      await Reaction.create({ topicId, ownerId, ownerLogin: ownerLogin || null, emoji });
+      return res.status(201).json({ deleted: false, emoji });
     } catch (err) {
       const error = err as Error;
       return res.status(500).json({ message: error.message });

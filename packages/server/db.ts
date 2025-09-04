@@ -2,6 +2,7 @@ import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 import winston from 'winston';
 
 import { Comment } from './models/comment';
+import { Reaction } from './models/reaction';
 import { Topic } from './models/topic';
 import { UserTheme } from './models/UserTheme';
 
@@ -20,7 +21,7 @@ const sequelizeOptions: SequelizeOptions = {
   password: POSTGRES_PASSWORD,
   database: POSTGRES_DB,
   dialect: 'postgres',
-  models: [Comment, Topic, UserTheme],
+  models: [Comment, Topic, UserTheme, Reaction],
   logging: (msg) => logger.info(msg),
 };
 

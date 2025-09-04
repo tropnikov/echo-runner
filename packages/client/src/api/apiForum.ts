@@ -1,6 +1,11 @@
 import { baseUrlAPI_dev } from '@/constants/apiEndpoint';
 import { handleResponse } from '@/helpers/apiErrorHandler';
-import { CommentResponseWithCount, GetCommentResponse, GetTopicResponse } from '@/types/Forum';
+import {
+  CommentResponseWithCount,
+  GetCommentResponse,
+  GetTopicReactionsResponse,
+  GetTopicResponse,
+} from '@/types/Forum';
 
 export const topicApi = {
   getAllTopics: async (
@@ -70,5 +75,25 @@ export const topicApi = {
     });
 
     return await handleResponse<GetCommentResponse>(response, 'Failed to create comment');
+  },
+
+  getTopicReactions: async (topicId: number): Promise<GetTopicReactionsResponse> => {
+    const response = await fetch(`${baseUrlAPI_dev}/topics/${topicId}/reactions`, {
+      credentials: 'include',
+    });
+    return await handleResponse<GetTopicReactionsResponse>(response, 'Failed to fetch topic reactions');
+  },
+
+  setTopicReaction: async (topicId: number, emoji: string): Promise<{ deleted: boolean; emoji: string }> => {
+    const response = await fetch(`${baseUrlAPI_dev}/topics/${topicId}/reactions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ emoji }),
+    });
+    const data = await handleResponse<{ deleted?: boolean; emoji: string }>(response, 'Failed to set topic reaction');
+    return { deleted: Boolean(data.deleted), emoji: data.emoji };
   },
 };

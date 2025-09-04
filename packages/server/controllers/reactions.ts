@@ -5,8 +5,8 @@ import { Reaction } from '../models/reaction';
 
 export class ReactionController {
   static async upsert(req: Request, res: Response) {
-    const topicId = req.params.topicId ? Number(req.params.topicId) : Number(req.body.topicId);
-    const ownerId = Number(req.body.ownerId);
+    const topicId = Number(req.params.topicId);
+    const ownerId = Number((req as any).user?.id);
     const { emoji, ownerLogin } = req.body as { emoji: string; ownerLogin?: string };
 
     try {
@@ -35,7 +35,7 @@ export class ReactionController {
 
   static async remove(req: Request, res: Response) {
     const topicId = Number(req.params.topicId);
-    const ownerId = Number(req.body.ownerId);
+    const ownerId = Number((req as any).user?.id);
 
     try {
       const deleted = await Reaction.destroy({ where: { topicId, ownerId } });
@@ -48,7 +48,7 @@ export class ReactionController {
 
   static async getTopicReactions(req: Request, res: Response) {
     const topicId = Number(req.params.topicId);
-    const maybeOwnerId = req.query.ownerId ? Number(req.query.ownerId) : undefined;
+    const ownerId = (req as any).user?.id as number | undefined;
 
     try {
       const rows = await Reaction.findAll({
@@ -63,11 +63,11 @@ export class ReactionController {
         return { emoji: plain.emoji, count: Number((plain as unknown as { count: string }).count) };
       });
 
-      if (!maybeOwnerId) {
+      if (!ownerId) {
         return res.status(200).json({ reactions });
       }
 
-      const mine = await Reaction.findOne({ where: { topicId, ownerId: maybeOwnerId } });
+      const mine = await Reaction.findOne({ where: { topicId, ownerId: ownerId } });
       const myEmoji = mine?.emoji || null;
 
       return res.status(200).json({ reactions, myEmoji });

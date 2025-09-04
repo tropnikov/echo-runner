@@ -8,8 +8,8 @@ import { withAuth } from '../utils/withAuth';
 
 const topicRouter = Router();
 
-topicRouter.get('/', getTopicsValidation, TopicController.getAll);
+topicRouter.get('/', getTopicsValidation, withAuth(TopicController.getAll));
 topicRouter.post('/', createTopicValidation, withAuth(TopicController.create));
-topicRouter.get('/:topicId', getTopicByIdValidation, TopicController.getById);
+topicRouter.get('/:topicId', getTopicByIdValidation, withAuth(TopicController.getById));
 
 export default topicRouter;

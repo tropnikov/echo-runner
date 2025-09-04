@@ -33,14 +33,14 @@
 - Лидерборд: **45.1 → 48.2 МБ** (при обновлении)
 - Возврат в игру: **45.2 МБ**
 
-![Скриншот вкладки Memory](./31.08.2025/memory_screenshot.jpg)
+![Скриншот вкладки Memory](./memoryLeaks/31.08.2025/memory_screenshot.jpg)
 
 ### Дополнительно (Chrome DevTools → Performance, Memory)
 
 - Проделаны те же действия при включённой записи памяти.
 - Результаты повторились, график показывает отсутствие монотонного роста.
 
-![Скриншот вкладки Performance](./31.08.2025/performance_screenshot.jpg)
+![Скриншот вкладки Performance](./memoryLeaks/31.08.2025/performance_screenshot.jpg)
 
 ### Итог
 

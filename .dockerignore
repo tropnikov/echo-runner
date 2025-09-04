@@ -62,4 +62,4 @@ docs/
 lefthook.yml
 
 # Memory leak analysis
-memoryLeaks/
+docs/memoryLeaks/

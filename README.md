@@ -197,8 +197,6 @@ docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 `yarn preview --scope client`
 `yarn preview --scope server`
 
-
-
 ## Хуки
 
 В проекте используется [lefthook](https://github.com/evilmartians/lefthook)
@@ -233,3 +231,4 @@ docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 
 - [Игровой движок](./docs/gameEngine.md) - Описание игрового движка
 - [Сценарий игры](./docs/scenario.md) - Разработка сценария игры
+- [Утечки памяти](./docs/MEMORYLEAKS.md) - Утечки памяти

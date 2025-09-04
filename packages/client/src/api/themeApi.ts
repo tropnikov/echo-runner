@@ -1,33 +1,56 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { GetUserThemeArgs, GetUserThemeResponse, SetUserThemeArgs, SetUserThemeResponse } from '@/types/themes';
-
-import { themeMock } from './themeMock';
+import { baseUrlAPI_dev } from '@/constants/apiEndpoint';
+import { GetUserThemeResponse, SetUserThemeArgs, SetUserThemeResponse } from '@/types/themes';
 
 export const themeApi = createApi({
   reducerPath: 'themeApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/v1/theme',
+    baseUrl: baseUrlAPI_dev,
+    credentials: 'include',
   }),
   tagTypes: ['UserTheme'],
   endpoints: (build) => ({
-    getUserTheme: build.query<GetUserThemeResponse, GetUserThemeArgs>({
-      queryFn: async ({ userId }: GetUserThemeArgs) => {
-        const theme = themeMock.getTheme(userId);
-        return {
-          data: { theme },
-        };
+    getUserTheme: build.query<GetUserThemeResponse, void>({
+      queryFn: async () => {
+        const response = await fetch(`${baseUrlAPI_dev}/theme`, {
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            return { data: null };
+          }
+
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return { data: await response.json() };
       },
-      providesTags: (_result, _error, { userId }) => [{ type: 'UserTheme', id: userId }],
+      providesTags: ['UserTheme'],
     }),
     setUserTheme: build.mutation<SetUserThemeResponse, SetUserThemeArgs>({
-      queryFn: async ({ userId, theme }: SetUserThemeArgs) => {
-        const newTheme = themeMock.setTheme(userId, theme);
-        return {
-          data: { theme: newTheme },
-        };
+      queryFn: async ({ theme }: SetUserThemeArgs) => {
+        const response = await fetch(`${baseUrlAPI_dev}/theme`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ theme }),
+        });
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            return { data: null };
+          }
+
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return { data: await response.json() };
       },
-      invalidatesTags: (_result, _error, { userId }) => [{ type: 'UserTheme', id: userId }],
+      invalidatesTags: ['UserTheme'],
     }),
   }),
 });

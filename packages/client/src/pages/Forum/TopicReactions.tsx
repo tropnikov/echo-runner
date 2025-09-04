@@ -17,10 +17,8 @@ function TopicReactions() {
       <Flex gap={8} wrap>
         {emojis.map((emoji) => (
           <Button key={emoji} type={myEmoji === emoji ? 'primary' : 'default'} onClick={() => setReaction(emoji)}>
-            {emoji}{' '}
-            <Text style={{ marginLeft: 6, color: myEmoji === emoji ? 'white' : 'black' }}>
-              {reactionMap[emoji] ?? 0}
-            </Text>
+            {emoji}
+            <span style={{ marginLeft: 6 }}>{reactionMap[emoji] ?? 0}</span>
           </Button>
         ))}
       </Flex>

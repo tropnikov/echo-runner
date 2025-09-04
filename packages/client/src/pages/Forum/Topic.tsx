@@ -1,32 +1,27 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
+import { useParams } from 'react-router';
 
-import { Avatar, Button, Flex, Input, List, Typography } from 'antd';
+import { Button, Flex, Input, List, Typography } from 'antd';
+import { FolderTwoTone } from '@ant-design/icons';
+
+import { topicApi } from '@/api/apiForum';
+import { formatDate } from '@/helpers/dateformat';
+import { useComments } from '@/hooks/useComments';
+import { useTopic } from '@/hooks/useTopic';
+import type { Comment, Topic } from '@/types/Forum';
 
 import { withMeta } from '@/hocs/withMeta';
 
 const { Text, Title } = Typography;
 
-const data = Array.from({ length: 23 }).map((_, i) => ({
-  id: i,
-  avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`,
-  author: 'John',
-  date: '15 мая 2025',
-  comment:
-    'Отличный раздел! Часто возникают спорные моменты в правилах. Хорошо, что здесь можно уточнить детали у опытных игроков.',
-}));
-
-interface TopicItemProps {
-  id: number;
-  avatar: string;
-  author: string;
-  date: string;
-  comment: string;
-}
-
-function TopicItem({ id, avatar, author, date, comment }: TopicItemProps) {
+function TopicComment({ id, author, date, comment }: Comment) {
   return (
     <List.Item key={id}>
-      <List.Item.Meta avatar={<Avatar src={avatar} />} title={author} description={date} />
+      <List.Item.Meta
+        avatar={<FolderTwoTone twoToneColor="#eb2f96" style={{ fontSize: '64px' }} />}
+        title={author}
+        description={date}
+      />
       {comment}
     </List.Item>
   );
@@ -34,26 +29,65 @@ function TopicItem({ id, avatar, author, date, comment }: TopicItemProps) {
 
 function Topic() {
   const [comment, setComment] = useState('');
+  const [comment_start, setCommentStart] = useState(1);
+  const [size, setSize] = useState(4);
+  const { topicId } = useParams();
 
   const onCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
   };
 
-  const onSendComment = () => {
+  const onSendComment = async () => {
+    if (topicId) {
+      await topicApi.createComment({
+        text: comment,
+        topicId: Number(topicId),
+      });
+      loadComments();
+    }
     setComment('');
   };
 
+  const { topic } = useTopic(Number(topicId));
+  const { comments, loadComments, count } = useComments(Number(topicId), comment_start - 1, size);
+
+  const data: Comment[] = useMemo<Comment[]>(
+    () =>
+      comments.map((item) => ({
+        id: item.id,
+        comment: item.text,
+        author: item.ownerLogin,
+        date: formatDate(item.createdAt),
+      })),
+    [comments],
+  );
+
   return (
     <Flex vertical>
-      <Title level={2}>Правила игры</Title>
+      <Title level={2}>{topic.name}</Title>
       <List
         itemLayout="vertical"
         size="large"
         pagination={{
-          pageSize: 4,
+          showTotal: (total) => `Всего комментариев: ${total}`,
+          total: count,
+          pageSize: size,
+          current: comment_start,
+          onChange: (page, pageSize) => {
+            setCommentStart(page);
+            setSize(pageSize);
+          },
         }}
         dataSource={data}
-        renderItem={(item) => <TopicItem {...item} />}
+        renderItem={(item) => (
+          <TopicComment
+            id={item.id}
+            {...(<FolderTwoTone twoToneColor="#eb2f96" style={{ fontSize: '64px' }} />)}
+            author={item.author}
+            date={item.date}
+            comment={item.comment}
+          />
+        )}
       />
       <Flex vertical gap="middle" style={{ padding: '16px' }}>
         <Text>Напишите комментарий</Text>

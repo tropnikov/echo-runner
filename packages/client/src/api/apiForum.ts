@@ -77,29 +77,21 @@ export const topicApi = {
     return await handleResponse<GetCommentResponse>(response, 'Failed to create comment');
   },
 
-  getTopicReactions: async (topicId: number, ownerId?: number): Promise<GetTopicReactionsResponse> => {
-    const url = new URL(`${baseUrlAPI_dev}/topics/${topicId}/reactions`);
-    if (ownerId) {
-      url.searchParams.set('ownerId', String(ownerId));
-    }
-    const response = await fetch(url.toString(), {
+  getTopicReactions: async (topicId: number): Promise<GetTopicReactionsResponse> => {
+    const response = await fetch(`${baseUrlAPI_dev}/topics/${topicId}/reactions`, {
       credentials: 'include',
     });
     return await handleResponse<GetTopicReactionsResponse>(response, 'Failed to fetch topic reactions');
   },
 
-  setTopicReaction: async (
-    topicId: number,
-    emoji: string,
-    owner: { ownerId: number; ownerLogin?: string | null },
-  ): Promise<{ deleted: boolean; emoji: string }> => {
+  setTopicReaction: async (topicId: number, emoji: string): Promise<{ deleted: boolean; emoji: string }> => {
     const response = await fetch(`${baseUrlAPI_dev}/topics/${topicId}/reactions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ emoji, ownerId: owner.ownerId, ownerLogin: owner.ownerLogin ?? null }),
+      body: JSON.stringify({ emoji }),
     });
     const data = await handleResponse<{ deleted?: boolean; emoji: string }>(response, 'Failed to set topic reaction');
     return { deleted: Boolean(data.deleted), emoji: data.emoji };

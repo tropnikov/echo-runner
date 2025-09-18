@@ -1,0 +1,21 @@
+http://localhost {
+	handle /api/v1* {
+		reverse_proxy server:3001
+	}
+
+	handle {
+		reverse_proxy client:3000
+	}
+
+	encode gzip zstd
+
+	log {
+        output file /data/caddy/access.log
+    }
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer-when-downgrade"
+	}
+}

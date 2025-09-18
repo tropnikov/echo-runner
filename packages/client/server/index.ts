@@ -46,7 +46,7 @@ async function createServer() {
       target: 'https://ya-praktikum.tech/api/v2',
       changeOrigin: true,
       cookieDomainRewrite: {
-        'ya-praktikum.tech': isDev ? 'localhost' : process.env.COOKIE_DOMAIN,
+        '*': isDev ? 'localhost' : (process.env.APP_DOMAIN ?? 'localhost'),
       },
       logger: console,
     }),

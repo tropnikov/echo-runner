@@ -3,4 +3,7 @@ export const baseUrl =
     ? 'http://localhost:3000'
     : 'https://ya-praktikum.tech/api/v2';
 
-export const baseUrlAPI_dev = 'http://localhost:3001/api/v1';
+export const baseUrlAPI_dev =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3001/api/v1'
+    : `https://${import.meta.env.VITE_APP_DOMAIN}/api/v1`;

@@ -1,8 +1,8 @@
 import { ChangeEvent, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
-import { Button, Flex, Input, List, Typography } from 'antd';
-import { FolderTwoTone } from '@ant-design/icons';
+import { Button, Flex, Input, List, Spin, Typography } from 'antd';
+import { ArrowLeftOutlined, FolderTwoTone } from '@ant-design/icons';
 
 import { topicApi } from '@/api/apiForum';
 import { formatDate } from '@/helpers/dateformat';
@@ -34,6 +34,7 @@ function Topic() {
   const [comment_start, setCommentStart] = useState(1);
   const [size, setSize] = useState(4);
   const { topicId } = useParams();
+  const navigate = useNavigate();
 
   const onCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
@@ -50,7 +51,7 @@ function Topic() {
     setComment('');
   };
 
-  const { topic } = useTopic(Number(topicId));
+  const { topic, isLoading } = useTopic(Number(topicId));
   const { comments, loadComments, count } = useComments(Number(topicId), comment_start - 1, size);
 
   const data: Comment[] = useMemo<Comment[]>(
@@ -66,32 +67,39 @@ function Topic() {
 
   return (
     <Flex vertical>
-      <Title level={2}>{topic.name}</Title>
-      <TopicReactions />
-      <List
-        itemLayout="vertical"
-        size="large"
-        pagination={{
-          showTotal: (total) => `Всего комментариев: ${total}`,
-          total: count,
-          pageSize: size,
-          current: comment_start,
-          onChange: (page, pageSize) => {
-            setCommentStart(page);
-            setSize(pageSize);
-          },
-        }}
-        dataSource={data}
-        renderItem={(item) => (
-          <TopicComment
-            id={item.id}
-            {...(<FolderTwoTone twoToneColor="#eb2f96" style={{ fontSize: '64px' }} />)}
-            author={item.author}
-            date={item.date}
-            comment={item.comment}
-          />
-        )}
-      />
+      <Flex align="center" gap="middle" style={{ marginBottom: '16px' }}>
+        <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)} style={{ padding: '4px 8px' }}>
+          Назад
+        </Button>
+      </Flex>
+      <Spin spinning={isLoading}>
+        <Title level={2}>{topic.name}</Title>
+        <TopicReactions />
+        <List
+          itemLayout="vertical"
+          size="large"
+          pagination={{
+            showTotal: (total) => `Всего комментариев: ${total}`,
+            total: count,
+            pageSize: size,
+            current: comment_start,
+            onChange: (page, pageSize) => {
+              setCommentStart(page);
+              setSize(pageSize);
+            },
+          }}
+          dataSource={data}
+          renderItem={(item) => (
+            <TopicComment
+              id={item.id}
+              {...(<FolderTwoTone twoToneColor="#eb2f96" style={{ fontSize: '64px' }} />)}
+              author={item.author}
+              date={item.date}
+              comment={item.comment}
+            />
+          )}
+        />
+      </Spin>
       <Flex vertical gap="middle" style={{ padding: '16px' }}>
         <Text>Напишите комментарий</Text>
         <Input.TextArea id="topic_comment" value={comment} placeholder="Текст комментария" onChange={onCommentChange} />

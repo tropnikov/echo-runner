@@ -7,6 +7,7 @@ export interface GetTopicResponse {
   updatedAt?: string;
   commentsCount: number;
   lastComment?: GetCommentResponse;
+  reactions?: Array<{ emoji: string; count: number }>;
 }
 export interface GetCommentResponse {
   id?: number;
@@ -56,6 +57,7 @@ export interface Topic {
     created_at?: string;
   };
   count: number;
+  reactions: Array<{ emoji: string; count: number }>;
   last?: {
     authorId?: number;
     authorLogin?: string;

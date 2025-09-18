@@ -1,13 +1,13 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { ProtectedRequest } from 'ProtectedRequest';
-import { col, fn } from 'sequelize';
+import { col, fn, literal } from 'sequelize';
 
 import { Reaction } from '../models/reaction';
 
 export class ReactionController {
   static async upsert(req: ProtectedRequest, res: Response) {
     const topicId = Number(req.params.topicId);
-    const { id: ownerId, login: ownerLogin } = req.user;
+    const ownerId = req.user.id;
     const { emoji } = req.body as { emoji: string };
 
     try {
@@ -21,12 +21,11 @@ export class ReactionController {
 
       if (existing) {
         existing.emoji = emoji;
-        if (ownerLogin) existing.ownerLogin = ownerLogin;
         await existing.save();
         return res.status(200).json({ deleted: false, emoji });
       }
 
-      await Reaction.create({ topicId, ownerId, ownerLogin: ownerLogin || null, emoji });
+      await Reaction.create({ topicId, ownerId, emoji });
       return res.status(201).json({ deleted: false, emoji });
     } catch (err) {
       const error = err as Error;
@@ -47,31 +46,43 @@ export class ReactionController {
     }
   }
 
-  static async getTopicReactions(req: Request, res: Response) {
+  static async getTopicReactions(req: ProtectedRequest, res: Response) {
     const topicId = Number(req.params.topicId);
-    const ownerId = req.user?.id as number | undefined;
+    const ownerId = req.user.id;
 
     try {
+      // Один запрос для получения всех данных
       const rows = await Reaction.findAll({
         where: { topicId },
-        attributes: ['emoji', [fn('COUNT', col('emoji')), 'count']],
+        attributes: [
+          'emoji',
+          [fn('COUNT', col('emoji')), 'count'],
+          [fn('MAX', literal(`CASE WHEN "owner_id" = ${ownerId} THEN 1 ELSE 0 END`)), 'isMyReaction'],
+        ],
         group: ['emoji'],
         order: [[fn('COUNT', col('emoji')), 'DESC']],
       });
 
       const reactions = rows.map((r) => {
-        const plain = r.toJSON() as Reaction & { count: string };
-        return { emoji: plain.emoji, count: Number((plain as unknown as { count: string }).count) };
+        const plain = r.toJSON() as Reaction & { count: string; isMyReaction: string };
+        return {
+          emoji: plain.emoji,
+          count: Number(plain.count),
+          isMyReaction: Number(plain.isMyReaction) === 1,
+        };
       });
 
       if (!ownerId) {
         return res.status(200).json({ reactions });
       }
 
-      const mine = await Reaction.findOne({ where: { topicId, ownerId: ownerId } });
-      const myEmoji = mine?.emoji || null;
+      const myReaction = reactions.find((r) => r.isMyReaction);
+      const myEmoji = myReaction?.emoji || null;
 
-      return res.status(200).json({ reactions, myEmoji });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const cleanReactions = reactions.map(({ isMyReaction, ...rest }) => rest);
+
+      return res.status(200).json({ reactions: cleanReactions, myEmoji });
     } catch (err) {
       const error = err as Error;
       return res.status(500).json({ message: error.message });

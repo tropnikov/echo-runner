@@ -34,6 +34,7 @@ services:
       - PORT=${CLIENT_PORT:-3000}
       - SERVER_PORT=${SERVER_PORT:-3001}
       - NODE_ENV=development
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN:-localhost}
       - APP_DOMAIN=${APP_DOMAIN:-localhost}
     volumes:
       - ./packages/client:/app/packages/client

@@ -1,5 +1,5 @@
 FROM caddy:2
 
-COPY caddy-config/Caddyfile /etc/caddy/Caddyfile
+COPY Caddyfile /etc/caddy/Caddyfile
 
 EXPOSE 80 443

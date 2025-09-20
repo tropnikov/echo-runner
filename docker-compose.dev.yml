@@ -41,7 +41,9 @@ services:
       server:
         condition: service_healthy
     networks:
-      - echo-runner-network
+      echo-runner-network:
+        aliases:
+          - client
     healthcheck:
       test: ['CMD', 'sh', '-c', 'PORT=${CLIENT_PORT:-3000} node ./healthcheck.js']
       interval: 30s
@@ -78,7 +80,9 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - echo-runner-network
+      echo-runner-network:
+        aliases:
+          - server
     healthcheck:
       test: ['CMD', 'sh', '-c', 'PORT=${SERVER_PORT:-3001} node ./healthcheck.js']
       interval: 30s
@@ -117,7 +121,7 @@ services:
     container_name: praktikum-pgadmin-dev
     restart: unless-stopped
     ports:
-      - '${PGADMIN_PORT:-8081}:80'
+      - '${PGADMIN_PORT:-8080}:80'
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
@@ -136,7 +140,3 @@ services:
 networks:
   echo-runner-network:
     driver: bridge
-
-volumes:
-  caddy-data:
-  caddy-config:

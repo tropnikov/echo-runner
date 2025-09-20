@@ -46,7 +46,9 @@ services:
       server:
         condition: service_healthy
     networks:
-      - echo-runner-network
+      echo-runner-network:
+        aliases:
+          - client
     healthcheck:
       test: ['CMD', 'sh', '-c', 'PORT=${CLIENT_PORT:-3000} node ./healthcheck.js']
       interval: 30s
@@ -84,7 +86,9 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - echo-runner-network
+      echo-runner-network:
+        aliases:
+          - server
     healthcheck:
       test: ['CMD', 'sh', '-c', 'PORT=${SERVER_PORT:-3001} node ./healthcheck.js']
       interval: 30s
@@ -123,7 +127,7 @@ services:
       - 'com.echo-runner.version=${VERSION:-latest}'
 
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4:8.12
     container_name: praktikum-pgadmin
     restart: always
     env_file:
@@ -149,7 +153,3 @@ services:
 networks:
   echo-runner-network:
     driver: bridge
-
-volumes:
-  caddy-data:
-  caddy-config:

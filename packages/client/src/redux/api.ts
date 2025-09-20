@@ -55,6 +55,7 @@ const baseQuery: BaseQueryFn = async (args, api, extraOptions) => {
 
         const modifiedCookies = cookieStrings.map((cookie) => {
           const trimmedCookie = cookie.trim();
+          ``;
           if (isDev) {
             return trimmedCookie.replace(/; Domain=ya-praktikum\.tech/g, '; Domain=localhost').replace(/; Secure/g, '');
           } else {

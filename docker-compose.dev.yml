@@ -1,4 +1,23 @@
 services:
+  caddy:
+    image: caddy:2
+    container_name: praktikum-caddy-dev
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile
+      - ./caddy-data:/data
+      - ./caddy-config:/config
+    networks:
+      - echo-runner-network
+    labels:
+      - 'com.echo-runner.service=caddy'
+      - 'com.echo-runner.environment=development'
+    depends_on:
+      - client
+      - server
   client:
     container_name: praktikum-client-dev
     image: praktikum-client-dev
@@ -16,13 +35,16 @@ services:
       - SERVER_PORT=${SERVER_PORT:-3001}
       - NODE_ENV=development
       - COOKIE_DOMAIN=${COOKIE_DOMAIN:-localhost}
+      - APP_DOMAIN=${APP_DOMAIN:-localhost}
     volumes:
       - ./packages/client:/app/packages/client
     depends_on:
       server:
         condition: service_healthy
     networks:
-      - echo-runner-network
+      echo-runner-network:
+        aliases:
+          - client
     healthcheck:
       test: ['CMD', 'sh', '-c', 'PORT=${CLIENT_PORT:-3000} node ./healthcheck.js']
       interval: 30s
@@ -59,7 +81,9 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - echo-runner-network
+      echo-runner-network:
+        aliases:
+          - server
     healthcheck:
       test: ['CMD', 'sh', '-c', 'PORT=${SERVER_PORT:-3001} node ./healthcheck.js']
       interval: 30s
@@ -98,7 +122,7 @@ services:
     container_name: praktikum-pgadmin-dev
     restart: unless-stopped
     ports:
-      - '${PGADMIN_PORT:-8081}:80'
+      - '${PGADMIN_PORT:-8080}:80'
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}

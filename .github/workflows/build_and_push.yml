@@ -38,6 +38,9 @@ jobs:
         with:
           context: .
           file: Dockerfile.client
+          build-args: |
+            APP_DOMAIN=${{ vars.APP_DOMAIN }}
+            VITE_APP_DOMAIN=${{ vars.APP_DOMAIN }}
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/${{ env.REPO_LC }}/client:${{ github.sha }}

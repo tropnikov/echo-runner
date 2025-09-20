@@ -9,7 +9,7 @@
 
 	tls {$EMAIL}
 
-	encode gzip zstd br
+	encode gzip zstd
 
 	log {
         output file /data/access.log

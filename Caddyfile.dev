@@ -7,7 +7,7 @@ http://localhost {
 		reverse_proxy client:3000
 	}
 
-	encode gzip zstd br
+	encode gzip zstd
 
 	log {
         output file /data/access.log

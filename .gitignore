@@ -9,3 +9,5 @@ tmp
 package-lock.json
 # Logs
 *.log
+caddy-config/
+caddy-data/

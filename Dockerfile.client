@@ -7,6 +7,10 @@ WORKDIR /app
 
 FROM base as builder
 
+ARG APP_DOMAIN
+
+ENV VITE_APP_DOMAIN=$APP_DOMAIN
+
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 

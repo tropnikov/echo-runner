@@ -24,6 +24,30 @@ if (typeof window.TextDecoder === 'undefined') {
 // Mock fetch for fetchBaseQuery
 global.fetch = jest.fn();
 
+// Mock import.meta for Vite environment variables
+Object.defineProperty(global, 'importMeta', {
+  value: {
+    env: {
+      VITE_APP_DOMAIN: 'test-domain.com',
+    },
+  },
+});
+
+// Mock import.meta.env for ES modules
+const mockImportMeta = {
+  env: {
+    VITE_APP_DOMAIN: process.env.VITE_APP_DOMAIN || 'test-domain.com',
+  },
+};
+
+// Define import.meta globally for Jest
+Object.defineProperty(globalThis, 'import', {
+  value: {
+    meta: mockImportMeta,
+  },
+  writable: true,
+});
+
 // Mock the document.head for react-helmet-async
 Object.defineProperty(document, 'head', {
   value: {

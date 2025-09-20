@@ -1,4 +1,27 @@
 services:
+  caddy:
+    image: caddy:2
+    container_name: praktikum-caddy
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN}
+      - EMAIL=${EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy-data:/data
+      - ./caddy-config:/config
+    networks:
+      - echo-runner-network
+    labels:
+      - 'com.echo-runner.service=caddy'
+      - 'com.echo-runner.environment=production'
+      - 'com.echo-runner.version=${VERSION:-latest}'
+    depends_on:
+      - client
+      - server
   client:
     container_name: praktikum-client
     image: praktikum-client
@@ -7,6 +30,7 @@ services:
       dockerfile: Dockerfile.client
       args:
         CLIENT_PORT: ${CLIENT_PORT:-3000}
+        APP_DOMAIN: ${APP_DOMAIN}
     restart: always
     env_file:
       - .env
@@ -16,8 +40,7 @@ services:
       - CLIENT_PORT=${CLIENT_PORT:-3000}
       - PORT=${CLIENT_PORT:-3000}
       - SERVER_PORT=${SERVER_PORT:-3001}
-      - NODE_ENV=${NODE_ENV:-production}
-      - COOKIE_DOMAIN=${COOKIE_DOMAIN}
+      - NODE_ENV=production # Захардкодил, иначе в контейнере development даже если укажешь production в .env
 
     depends_on:
       server:
@@ -51,7 +74,7 @@ services:
     environment:
       SERVER_PORT: ${SERVER_PORT:-3001}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-echo_runner}
-      NODE_ENV: ${NODE_ENV:-production}
+      NODE_ENV: production #Захардкодил, иначе в контейнере development даже если укажешь production в .env
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -126,3 +149,7 @@ services:
 networks:
   echo-runner-network:
     driver: bridge
+
+volumes:
+  caddy-data:
+  caddy-config:

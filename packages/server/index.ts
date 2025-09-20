@@ -24,12 +24,24 @@ const startServer = async () => {
 
     const app = express();
 
+    const allowedOrigins = [
+      'http://localhost',
+      ...(process.env.APP_DOMAIN ? ['https://' + process.env.APP_DOMAIN] : []),
+    ];
+
     app.use(
       cors({
-        origin: 'http://localhost:3000',
+        origin: (origin, callback) => {
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            callback(new Error('Not allowed by CORS'));
+          }
+        },
         credentials: true,
       }),
     );
+
     app.use(helmet());
     app.use(cookieParser());
     app.use(bodyParser.json());

@@ -20,7 +20,9 @@ export class UserThemeController {
       const theme = await this.userThemeService.getUserTheme(dto.userId);
 
       if (!theme) {
-        return res.status(404).json({ error: 'Theme not found' });
+        const defaultTheme = await this.userThemeService.setUserTheme(dto.userId, 'light');
+        res.json(defaultTheme);
+        return;
       }
 
       res.json(theme);

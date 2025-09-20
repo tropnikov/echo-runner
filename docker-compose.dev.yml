@@ -1,4 +1,23 @@
 services:
+  caddy:
+    image: caddy:2
+    container_name: praktikum-caddy-dev
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile
+      - ./caddy-data:/data
+      - ./caddy-config:/config
+    networks:
+      - echo-runner-network
+    labels:
+      - 'com.echo-runner.service=caddy'
+      - 'com.echo-runner.environment=development'
+    depends_on:
+      - client
+      - server
   client:
     container_name: praktikum-client-dev
     image: praktikum-client-dev
@@ -15,7 +34,7 @@ services:
       - PORT=${CLIENT_PORT:-3000}
       - SERVER_PORT=${SERVER_PORT:-3001}
       - NODE_ENV=development
-      - COOKIE_DOMAIN=${COOKIE_DOMAIN:-localhost}
+      - APP_DOMAIN=${APP_DOMAIN:-localhost}
     volumes:
       - ./packages/client:/app/packages/client
     depends_on:
@@ -117,3 +136,7 @@ services:
 networks:
   echo-runner-network:
     driver: bridge
+
+volumes:
+  caddy-data:
+  caddy-config:

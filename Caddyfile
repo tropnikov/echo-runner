@@ -1,24 +1,41 @@
-{$APP_DOMAIN} {
-	handle /api/v1* {
-		reverse_proxy server:3001
-	}
+{
+	email {$EMAIL}
+}
 
-	handle {
-		reverse_proxy client:3000
-	}
-
-	tls {$EMAIL}
-
+https://{$APP_DOMAIN} {
 	encode gzip zstd
 
 	log {
-        output file /data/access.log
-    }
+		output file /data/access.log
+	}
 
-	header {
-		Strict-Transport-Security "max-age=31536000;"
-		X-Content-Type-Options "nosniff"
-		X-Frame-Options "DENY"
-		Referrer-Policy "no-referrer-when-downgrade"
+	# --- API ---
+	handle_path /api/v1/* {
+		header {
+			-Server
+			-X-Powered-By
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+			X-Frame-Options "SAMEORIGIN"
+			Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+			Content-Security-Policy "default-src 'none'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none';"
+		}
+		reverse_proxy server:3001
+	}
+
+	# --- Клиент ---
+	handle {
+		header {
+			-Server
+			-X-Powered-By
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+			X-Frame-Options "SAMEORIGIN"
+			Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+			Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data:; font-src 'self' data:; media-src 'self'; worker-src 'self'; manifest-src 'self'; connect-src 'self' https://{$APP_DOMAIN} wss://{$APP_DOMAIN}; style-src 'self'; script-src 'self';"
+		}
+		reverse_proxy client:3000
 	}
 }

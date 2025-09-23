@@ -20,6 +20,10 @@ export class Player extends GameObject {
 
   private isJumping = false;
 
+  private maxJumps: number = config.player.maxJumps;
+
+  private remainingJumps: number = config.player.maxJumps;
+
   private animator: SpriteAnimator<PlayerAnimationState>;
 
   effectType = ObjectEffectType.None;
@@ -82,9 +86,12 @@ export class Player extends GameObject {
    * Прыжок.
    */
   jump() {
-    if (this.isJumping) return;
+    // Разрешаем прыжок, если есть оставшиеся попытки (поддержка двойного прыжка)
+    if (this.remainingJumps <= 0) return;
+
     this.isJumping = true;
     this.jumpVelocity = this.jumpPower;
+    this.remainingJumps -= 1;
 
     this.updateAnimationState();
   }
@@ -102,6 +109,7 @@ export class Player extends GameObject {
 
       const wasJumping = this.isJumping;
       this.isJumping = false;
+      this.remainingJumps = this.maxJumps;
 
       if (wasJumping) {
         this.updateAnimationState();
@@ -114,5 +122,21 @@ export class Player extends GameObject {
   render() {
     const renderPosition = this.toCanvasCoords(this._collision);
     this.animator.render(this.ctx, renderPosition.x, renderPosition.y, this._collision.width, this._collision.height);
+  }
+
+  /**
+   * Сброс состояния игрока (для рестартов сцены).
+   */
+  reset() {
+    super.reset();
+    this.jumpVelocity = 0;
+    this.isJumping = false;
+    this.remainingJumps = this.maxJumps;
+    this._collision = {
+      ...config.player.collisionSize,
+      ...config.player.offset,
+    };
+    this.updateAnimationState();
+    return this;
   }
 }

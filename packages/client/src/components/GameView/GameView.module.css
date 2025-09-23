@@ -13,10 +13,6 @@
   background-color: var(--ant-layout-body-bg, #f1f5f9);
 }
 
-.perfPanelButton {
-  left: 5px;
-}
-
 .gameContainer {
   position: relative;
 }
@@ -48,6 +44,6 @@
   display: flex;
   justify-content: start;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   z-index: 10;
 }

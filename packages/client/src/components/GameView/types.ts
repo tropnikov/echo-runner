@@ -11,4 +11,7 @@ export type GameViewProps = {
   onRestart: () => void;
   onPause: (e: React.MouseEvent<HTMLButtonElement>) => void;
   stats?: Stats;
+  tourOpen: boolean;
+  onTourClose: () => void;
+  onTourOpen: () => void;
 };

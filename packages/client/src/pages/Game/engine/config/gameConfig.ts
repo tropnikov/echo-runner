@@ -52,7 +52,11 @@ export const config: GameConfig = {
     /**
      * Сила прыжка.
      */
-    jumpPower: 40,
+    jumpPower: 25,
+    /**
+     * Количество прыжков до касания земли (2 — двойной прыжок).
+     */
+    maxJumps: 2,
   },
 
   /**

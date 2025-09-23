@@ -40,7 +40,9 @@ function PlayButton({ onClick, StartIcon }: { onClick: () => void; StartIcon: Pl
           <StartIcon style={{ fontSize: 32 }} />
         )
       }
-      onClick={() => setIsCounting(true)}
+      onClick={() => {
+        setIsCounting(true);
+      }}
       disabled={isCounting}
       style={{ width: 64, height: 64 }}
     />

@@ -25,6 +25,7 @@ const startServer = async () => {
     const app = express();
 
     const allowedOrigins = [
+      'http://localhost:3000',
       'http://localhost',
       ...(process.env.APP_DOMAIN ? ['https://' + process.env.APP_DOMAIN] : []),
     ];

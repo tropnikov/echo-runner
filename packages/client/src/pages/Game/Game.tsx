@@ -1,0 +1,126 @@
+import { useCallback, useMemo, useState } from 'react';
+
+import GameView from '@/components/GameView/GameView';
+import { teamName } from '@/constants/leaderboardStats';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useAppSelector } from '@/redux/store';
+
+import { withMeta } from '@/hocs/withMeta';
+
+import PlayerJump from './assets/player/jump.png';
+import PlayerRun from './assets/player/run.png';
+import { getCanvasContext } from './helpers/getCanvasContext';
+import { useGameSetup } from './hooks/useGameSetup';
+import { useKeyboardControls } from './hooks/useKeyboardControls';
+
+function Game({ maxDamage = 10 }: { maxDamage?: number }) {
+  const [score, setScore] = useState(0);
+  const [damage, setDamage] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isStarted, setIsStarted] = useState(false);
+
+  const handleOnScore = useCallback(() => {
+    setScore((prev) => prev + 1);
+  }, []);
+
+  const { sendNewRating } = useLeaderboard();
+  const user = useAppSelector((state) => state.auth.user);
+
+  const handleOnDamage = useCallback(() => {
+    setDamage((prev) => {
+      const next = prev + 1;
+      if (next >= maxDamage) {
+        engineRef.current?.stop();
+        setIsPaused(false);
+        setScore((prevScore) => {
+          sendNewRating({
+            data: { score: prevScore, login: user?.login, user_id: user?.id },
+            ratingFieldName: 'score',
+            teamName,
+          });
+          return prevScore;
+        });
+        setIsStarted(false);
+      }
+      return next;
+    });
+  }, [maxDamage]);
+
+  const handleStart = () => {
+    if (isStarted) return;
+    const ctx = getCanvasContext(canvasRef);
+    if (!ctx) return;
+    initGame(ctx);
+    setIsStarted(true);
+    setIsPaused(false);
+  };
+
+  const handleOnPause = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.blur();
+    pauseGame();
+  };
+
+  const handleRestart = () => {
+    setScore(0);
+    setDamage(0);
+    setIsPaused(false);
+
+    resetScene();
+
+    setIsStarted(true);
+  };
+
+  const pauseGame = useCallback(() => {
+    setIsPaused((prev) => {
+      const newState = !prev;
+      if (engineRef.current) {
+        newState ? engineRef.current.pause() : engineRef.current.resume();
+      }
+      return newState;
+    });
+  }, []);
+
+  useKeyboardControls({
+    isActive: isStarted,
+    onJump: () => playerRef.current?.jump(),
+    onPause: pauseGame,
+  });
+
+  const playerSprites = useMemo(
+    () => ({
+      running: PlayerRun,
+      jumping: PlayerJump,
+    }),
+    [],
+  );
+
+  const { canvasRef, engineRef, playerRef, initGame, resetScene, stats } = useGameSetup({
+    handleOnScore,
+    handleOnDamage,
+    playerSprites,
+  });
+
+  return (
+    <GameView
+      canvasRef={canvasRef}
+      score={score}
+      damage={damage}
+      maxDamage={maxDamage}
+      isPaused={isPaused}
+      isStarted={isStarted}
+      onStart={handleStart}
+      onRestart={handleRestart}
+      onPause={handleOnPause}
+      stats={stats}
+    />
+  );
+}
+
+export default withMeta(Game, {
+  title: 'Игра',
+  description:
+    'Играйте в Echo Runner! Управляйте персонажем, преодолевайте препятствия, набирайте очки и устанавливайте новые рекорды.',
+  keywords: 'игра, играть, echo runner, платформер, очки, рекорды, геймплей',
+  url: '/game',
+  noIndex: true,
+});

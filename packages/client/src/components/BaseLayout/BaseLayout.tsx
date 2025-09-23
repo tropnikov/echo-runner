@@ -1,109 +1,136 @@
-import { Button, Layout, Menu, Space, theme } from 'antd/lib';
-import { LoginOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
+import { useMemo } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router';
+
+import { Button, Layout, Menu, Space, Switch } from 'antd';
+import { LoginOutlined, LogoutOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
+
+import { useNotification } from '@/components/NotificationProvider/NotificationProvider';
+import { appRoutes, protectedRoutes } from '@/constants/appRoutes';
+import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { useLogout } from '@/hooks/useLogout';
+import { useTheme } from '@/hooks/useTheme';
+import { useYandexOAuth } from '@/hooks/useYandexOAuth';
+import { useAppSelector } from '@/redux/store';
+import { isErrorWithReason } from '@/types/errors';
 
 import styles from './BaseLayout.module.css';
 
 const { Header, Content, Footer } = Layout;
 
-const { useToken } = theme;
-
 const menuItems = [
   {
-    key: 'main',
-    path: '/',
-    label: 'Главная',
+    key: appRoutes.GAME,
+    path: appRoutes.GAME,
+    label: <NavLink to={appRoutes.GAME}>Игра</NavLink>,
   },
   {
-    key: 'game',
-    path: 'play',
-    label: 'Игра',
+    key: appRoutes.TOPICS,
+    path: appRoutes.TOPICS,
+    label: <NavLink to={appRoutes.TOPICS}>Форум</NavLink>,
   },
   {
-    key: 'forum',
-    path: 'forum',
-    label: 'Форум',
-  },
-  {
-    key: 'leaderboard',
-    path: 'leaderboard',
-    label: 'Лидерборд',
+    key: appRoutes.LEADERBOARD,
+    path: appRoutes.LEADERBOARD,
+    label: <NavLink to={appRoutes.LEADERBOARD}>Лидерборд</NavLink>,
   },
 ];
 
 function BaseLayout({ children }: { children: React.ReactNode }) {
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = useToken();
+  const { currentTheme, switchTheme } = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const notification = useNotification();
+  const { user } = useAppSelector((state) => state.auth);
+  const { isAuthorized, isLoading } = useAuthCheck();
+  const { logout } = useLogout();
+
+  useYandexOAuth();
+
+  const currentSelectedKey = useMemo(() => {
+    const pathname = location.pathname;
+    const currentPath = pathname === '/' ? '/' : pathname.replace(/^\//, '');
+
+    const routeKey = Object.values(appRoutes).find((route) => route === currentPath);
+
+    return routeKey ? [routeKey] : [];
+  }, [location.pathname]);
+
+  const currentMenuItems = useMemo(() => {
+    return menuItems.filter((item) => {
+      const isProtected = protectedRoutes.includes(item.path);
+      return isAuthorized ? isProtected : !isProtected;
+    });
+  }, [isAuthorized]);
 
   const handleAuthClick = (action: string) => {
-    console.log(`Клик по кнопке: ${action}`);
+    navigate(`/${action}`);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate(appRoutes.MAIN);
+    } catch (error) {
+      notification.error({
+        message: isErrorWithReason(error) ? error.data.reason : 'Произошла ошибка при выходе',
+      });
+    }
   };
 
   return (
-    <Layout>
+    <Layout className={styles.layout}>
       <Header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerContentLeft}>
-            <div className={styles.headerLogo}>Echo Runner</div>
+            <div className={styles.headerLogo}>
+              <NavLink to={appRoutes.MAIN} className={styles.headerLogoLink}>
+                Echo Runner
+              </NavLink>
+            </div>
             <Menu
-              theme="dark"
               mode="horizontal"
-              defaultSelectedKeys={['2']}
-              items={menuItems}
-              style={{ flex: 1, minWidth: 0, border: 'none' }}
+              selectedKeys={currentSelectedKey}
+              items={currentMenuItems}
+              className={styles.menu}
             />
           </div>
 
           <Space className={styles.headerContentRight}>
-            {/* когда авторизован показывать профиль, когда нет – показывать кнопки входа и регистрации */}
-            <Button
-              type="text"
-              icon={<UserOutlined />}
-              style={{ color: 'white' }}
-              onClick={() => handleAuthClick('profile')}>
-              Профиль
-            </Button>
-
-            {/* когда авторизован показывать профиль, когда нет – показывать кнопки входа и регистрации */}
-            <Button
-              type="text"
-              icon={<LoginOutlined />}
-              style={{ color: 'white' }}
-              onClick={() => handleAuthClick('login')}>
-              Вход
-            </Button>
-            <Button type="primary" icon={<UserAddOutlined />} onClick={() => handleAuthClick('registration')}>
-              Регистрация
-            </Button>
+            {isLoading ? (
+              <div>Loading...</div> // Или другой индикатор загрузки
+            ) : isAuthorized ? (
+              <>
+                <div className={styles.headerThemeSwitch}>
+                  Темная тема: <Switch checked={currentTheme === 'dark'} onChange={switchTheme} />
+                </div>
+                <Button
+                  variant="filled"
+                  type="text"
+                  icon={<UserOutlined />}
+                  onClick={() => handleAuthClick(appRoutes.PROFILE)}>
+                  {user?.first_name}
+                </Button>
+                <Button variant="solid" color="danger" icon={<LogoutOutlined />} onClick={handleLogout}>
+                  Выход
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button type="text" icon={<LoginOutlined />} onClick={() => handleAuthClick(appRoutes.SIGNIN)}>
+                  Вход
+                </Button>
+                <Button type="primary" icon={<UserAddOutlined />} onClick={() => handleAuthClick(appRoutes.SIGNUP)}>
+                  Регистрация
+                </Button>
+              </>
+            )}
           </Space>
         </div>
       </Header>
 
-      <Content className={styles.layoutContainer} style={{ overflowY: 'auto' }}>
-        <div
-          style={{
-            background: colorBgContainer,
-            minHeight: '100%',
-            borderRadius: borderRadiusLG,
-            height: '100%',
-            padding: '24px',
-            maxWidth: '1440px',
-            margin: '0 auto',
-          }}>
-          {children}
-        </div>
-      </Content>
+      <Content className={styles.layoutContainer}>{children}</Content>
 
-      <Footer
-        style={{
-          textAlign: 'center',
-          position: 'fixed',
-          bottom: 0,
-          width: '100%',
-          borderTop: '1px solid #1677FF',
-        }}>
-        © {new Date().getFullYear()} Created by Echo Team
-      </Footer>
+      <Footer className={styles.footer}>© {new Date().getFullYear()} Created by Echo Team</Footer>
     </Layout>
   );
 }

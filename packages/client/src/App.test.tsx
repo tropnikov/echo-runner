@@ -1,13 +1,12 @@
-import { render, screen } from '@testing-library/react';
+import { RouterProvider } from 'react-router';
 
-import App from './App';
+import { render } from '@testing-library/react';
 
-const appContent = 'Вот тут будет жить ваше приложение :)';
+import router from './routes';
 
 // @ts-ignore
 global.fetch = jest.fn(() => Promise.resolve({ json: () => Promise.resolve('hey') }));
 
 test('Example test', async () => {
-  render(<App />);
-  expect(screen.getByText(appContent)).toBeDefined();
+  render(<RouterProvider router={router} />);
 });

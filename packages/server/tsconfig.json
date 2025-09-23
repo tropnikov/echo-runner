@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "composite": true,
-    "target": "es2019",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "target": "es2022",
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -17,13 +19,15 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
-    "importsNotUsedAsValues": "error",
-    "lib": ["es2019", "esnext.asynciterable"],
-    "types": ["node", "jest"],
+    "skipLibCheck": true,
+    "lib": ["es2022", "esnext.asynciterable"],
+    "types": ["node", "jest", "./types/ExpressUpdate"],
     "baseUrl": ".",
     "paths": {
       "*": ["types/*"]
     },
-    "outDir": "dist"
-  }
+    "outDir": "dist",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
 }

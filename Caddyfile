@@ -1,0 +1,24 @@
+{$APP_DOMAIN} {
+	handle /api/v1* {
+		reverse_proxy server:3001
+	}
+
+	handle {
+		reverse_proxy client:3000
+	}
+
+	tls {$EMAIL}
+
+	encode gzip zstd
+
+	log {
+        output file /data/access.log
+    }
+
+	header {
+		Strict-Transport-Security "max-age=31536000;"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer-when-downgrade"
+	}
+}

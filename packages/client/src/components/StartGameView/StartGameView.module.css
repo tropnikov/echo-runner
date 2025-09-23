@@ -1,0 +1,33 @@
+@import '@/helpers/breakpoints.css';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin: auto;
+  align-items: center;
+}
+
+.text {
+  margin: 0;
+  line-height: 1;
+  font-size: 32px;
+}
+
+@media (--lg) {
+  .text {
+    font-size: 24px;
+  }
+}
+
+@media (--md) {
+  .text {
+    font-size: 20px;
+  }
+}
+
+@media (--sm) {
+  .text {
+    font-size: 16px;
+  }
+}

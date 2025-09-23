@@ -1,3 +1,7 @@
+## Отчет по 7-8 спринтам
+
+[Яндекс Диск](https://disk.yandex.ru/i/F2NoqLX0vP1S6g)
+
 ## Как работать с проектом:
 
 - Используем [Ant Design](https://ant.design/components/overview/)
@@ -18,6 +22,7 @@
 - Экспортируем компоненты по умолчанию
 - Желательно установить плагины Prettier, Eslint, Stylelint для своей IDE
 - При коммите запускается prettier, stylelint, eslint, проверка типов. Нужно исправить их ошибки для успешного коммита
+- Для генерации апи и хуков RTK Query запустить `yarn generate-api`
 
 ## Порядок работы с git
 
@@ -33,11 +38,125 @@
 
 ## Как запускать?
 
+### Вариант 1: Docker (рекомендуется)
+
+#### Предварительные требования
+1. Установите [Docker Desktop](https://www.docker.com/products/docker-desktop/) для вашей ОС
+2. Убедитесь, что Docker запущен и работает
+
+#### Настройка переменных окружения
+1. Создайте файл `.env` в корне проекта:
+   ```bash
+   yarn bootstrap
+   ```
+2. Замените `POSTGRES_HOST` в `.env.local` на `localhost`
+
+#### Запуск приложения
+
+**Development режим (с hot reload):**
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+Или поднять только базу в докере:
+```bash
+docker compose -f docker-compose.dev.yml up postgres -d --build
+yarn dev
+```
+
+**Production режим:**
+```bash
+docker compose up --build -d
+```
+3. Дождитесь завершения сборки (может занять несколько минут при первом запуске)
+4. Проверьте статус контейнеров:
+   ```bash
+   # Для development
+   docker compose -f docker-compose.dev.yml ps
+   
+   # Для production  
+   docker compose ps
+   ```
+5. Дождитесь, пока все сервисы станут здоровыми (health check пройдет успешно)
+
+#### Проверка работоспособности
+После запуска проверьте доступность сервисов:
+- **Клиент**: http://localhost:${CLIENT_PORT}
+- **Сервер API**: http://localhost:${SERVER_PORT}
+
+#### Доступ к приложению
+После успешного запуска приложение будет доступно по адресам:
+- **Клиент**: http://localhost:${CLIENT_PORT}
+- **Сервер API**: http://localhost:${SERVER_PORT}
+- **База данных**: localhost:${POSTGRES_PORT}
+
+#### Полезные команды для работы с Docker
+```bash
+# Просмотр логов всех сервисов (dev)
+docker compose -f docker-compose.dev.yml logs -f
+
+# Просмотр логов конкретного сервиса (prod)
+docker compose logs -f postgres
+docker compose logs -f server
+docker compose logs -f client
+
+# Остановка всех сервисов
+docker compose down                          # production
+docker compose -f docker-compose.dev.yml down  # development
+
+# Перезапуск конкретного сервиса
+docker compose restart postgres
+
+# Подключение к базе данных
+docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+
+# Полная очистка (удалит все данные БД)
+docker compose down -v
+```
+
+#### Устранение неполадок
+- **Если порты заняты**: Измените значения `CLIENT_PORT`, `SERVER_PORT`, `POSTGRES_PORT` в файле `.env`
+- **Если контейнеры не запускаются**: Проверьте логи командой `docker compose logs`
+- **Если нужно пересобрать образы**: Выполните `docker compose up --build -d`
+- **Если нужно сбросить данные БД**: Выполните `docker compose down -v` и запустите заново
+- **Если health check не проходит**: Подождите немного, сервисы могут инициализироваться до 1-2 минут
+
+### Вариант 2: Локальная разработка
+
+#### Предварительные требования
 1. Убедитесь что у вас установлен `node` и `docker`
 2. Выполните команду `yarn bootstrap` - это обязательный шаг, без него ничего работать не будет :)
-3. Выполните команду `yarn dev`
-4. Выполните команду `yarn dev --scope=client` чтобы запустить только клиент
-5. Выполните команду `yarn dev --scope=server` чтобы запустить только server
+
+#### Запуск базы данных
+Для локальной разработки нужно запустить только PostgreSQL контейнер:
+```bash
+docker compose up postgres -d
+```
+
+#### Запуск приложения
+После запуска базы данных выполните одну из команд:
+
+- **Запуск всего приложения**: `yarn dev`
+- **Только клиент**: `yarn dev --scope=client`
+- **Только сервер**: `yarn dev --scope=server`
+
+#### Проверка работоспособности
+После запуска проверьте доступность сервисов:
+- **Клиент**: http://localhost:${CLIENT_PORT}
+- **Сервер API**: http://localhost:${SERVER_PORT}
+- **База данных**: localhost:${POSTGRES_PORT}
+
+#### Полезные команды для локальной разработки
+```bash
+# Остановка базы данных
+docker compose down postgres
+
+# Просмотр логов базы данных
+docker compose logs -f postgres
+
+# Подключение к базе данных
+docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+```
 
 ## Как добавить зависимости?
 
@@ -107,3 +226,9 @@
 
 Если вам понадобится только один сервис, просто уточните какой в команде
 `docker compose up {sevice_name}`, например `docker compose up server`
+
+## Документация
+
+- [Игровой движок](./docs/gameEngine.md) - Описание игрового движка
+- [Сценарий игры](./docs/scenario.md) - Разработка сценария игры
+- [Утечки памяти](./docs/MEMORYLEAKS.md) - Утечки памяти

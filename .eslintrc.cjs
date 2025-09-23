@@ -7,6 +7,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended-legacy',
     'prettier',
   ],
   parser: '@typescript-eslint/parser',
@@ -16,6 +17,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     '@typescript-eslint/ban-ts-comment': 1,
+    '@typescript-eslint/no-explicit-any': 'error',
   },
-  ignorePatterns: ['**/node_modules/*', '**/dist/*'],
-}
+  ignorePatterns: ['**/node_modules/*', '**/dist/*', '**/api/generated*', 'packages/client/server/build/**'],
+};

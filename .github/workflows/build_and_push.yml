@@ -1,0 +1,67 @@
+name: Push to GitHub Container Registry
+
+on:
+  push:
+    branches:
+      - dev
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set lower-case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+      - name: Set lower-case repo name
+        run: |
+          echo "REPO_LC=${REPO,,}" >>${GITHUB_ENV}
+        env:
+          REPO: '${{ github.event.repository.name }}'
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push client image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.client
+          build-args: |
+            APP_DOMAIN=${{ vars.APP_DOMAIN }}
+            VITE_APP_DOMAIN=${{ vars.APP_DOMAIN }}
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.REPO_LC }}/client:${{ github.sha }}
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.REPO_LC }}/client:dev
+
+      - name: Build and push server image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.server
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.REPO_LC }}/server:${{ github.sha }}
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.REPO_LC }}/server:dev
+
+      - name: Build and push caddy image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.caddy
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.REPO_LC }}/caddy:${{ github.sha }}
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.REPO_LC }}/caddy:dev

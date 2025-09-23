@@ -1,65 +1,120 @@
-Файлы
+# Content Security Policy (CSP)
 
-Caddyfile — prod (строгая CSP, HSTS, без inline/eval).
+Настройка прокси и безопасности через Caddy для продакшена и разработки.
+Поддержка строгих CSP в проде, разрешённых unsafe-\* в dev для Vite HMR.
+Автоматический HTTPS в проде через Let’s Encrypt.
 
-Caddyfile.dev — dev/localhost (разрешены inline/eval/ws для Vite HMR).
+## 📁 Структура файлов
 
-Запуск
-Dev (localhost)
+Caddyfile - Продакшен: строгая CSP, HSTS, HTTPS
 
-# читаем именно Caddyfile.dev
+Caddyfile.dev - Локальная разработка: разрешены unsafe-inline, unsafe-eval, ws://localhost:\* для Vite
+
+docker-compose.yml - Продакшен: использует Caddyfile
+
+docker-compose.dev.yml - Dev: использует Caddyfile.dev
+
+## 🚀 Запуск
+
+### Запуск dev-окружения (использует Caddyfile.dev)
 
 docker compose -f docker-compose.dev.yml up -d --build
+Доступ:
 
-# форматнуть и перечитать конфиг при правках
+💡 Клиент: http://localhost
+
+💡 API: http://localhost/api/v1/... (Caddy убирает /api/v1 → бэк получает /...)
+
+🔄 Перезагрузка Caddy после правок конфига
+
+#### Форматировать Caddyfile.dev
 
 docker run --rm -v "$PWD/Caddyfile.dev:/etc/caddy/Caddyfile" caddy:2 caddy fmt --overwrite /etc/caddy/Caddyfile
+
+#### Перезапустить Caddy
+
 docker compose -f docker-compose.dev.yml restart caddy
 
-Открывать:
+### 🌐 Продакшен (домен + HTTPS)
 
-Клиент: http://localhost (через Caddy)
+Перед запуском:
 
-API: http://localhost/api/v1/... (Caddy режет префикс → у бэка путь без /api/v1)
+Убедитесь, что DNS (A/AAAA) ведёт на сервер
 
-Быстрые проверки:
+Порты 80 и 443 открыты
 
-curl -sI http://localhost/ | grep -i content-security-policy
-curl -sI http://localhost/api/v1/health | head
-
-Prod (домен)
-
-# нужно: A/AAAA DNS → сервер, открыты 80/443
-
+bash
 export APP_DOMAIN=echo-runner-51.ya-praktikum.tech
 export EMAIL=admin@example.com
 
-docker compose up -d --build
+#### Запуск продакшена (использует Caddyfile)
 
-# форматнуть при правках
+docker compose up -d --build
+🔄 Перезагрузка Caddy в проде
+bash
+
+#### Форматировать Caddyfile (с переменными окружения)
 
 docker run --rm -e EMAIL=$EMAIL -v "$PWD/Caddyfile:/etc/caddy/Caddyfile" caddy:2 caddy fmt --overwrite /etc/caddy/Caddyfile
-docker compose restart caddy
 
-Проверки:
+#### Перезапустить Caddy
+
+docker compose restart caddy
+🧪 Проверки
+👨‍💻 Быстрые проверки (dev)
+bash
+
+#### Проверить CSP клиента
+
+curl -sI http://localhost/ | grep -i content-security-policy
+
+#### Проверить заголовки API
+
+curl -sI http://localhost/api/v1/health | head -n 10
+🌐 Проверки (prod)
+bash
+
+#### Проверить ключевые заголовки безопасности
 
 curl -sI https://$APP_DOMAIN/ | grep -E "Content-Security-Policy|Strict-Transport|X-Content-Type|X-Frame-Options"
-curl -sI https://$APP_DOMAIN/api/v1/health | head
 
-CSP (кратко)
+#### Проверить API
 
-Dev (client): script-src 'self' 'unsafe-inline' 'unsafe-eval', style-src 'self' 'unsafe-inline', connect-src ... ws://localhost:\*, img-src 'self' data: blob: https:.
+curl -sI https://$APP_DOMAIN/api/v1/health | head -n 10
 
-Prod (client): без 'unsafe-inline'/'unsafe-eval'; connect-src 'self' https://$APP_DOMAIN wss://$APP_DOMAIN.
+## 🔐 Content Security Policy (CSP)
 
-API (везде): строгая заглушка: default-src 'none'; ... form-action 'none';.
+👨‍💻 Dev (localhost — клиент)
+caddy
+script-src 'self' 'unsafe-inline' 'unsafe-eval';
+style-src 'self' 'unsafe-inline';
+connect-src 'self' http://localhost:3000 http://localhost:3001 ws://localhost:\*;
+img-src 'self' data: blob: https:;
+worker-src 'self' blob:;
+✅ Необходимо для работы Vite HMR, React Fast Refresh и т.п.
 
-Частые команды
+🌐 Prod (домен — клиент)
+caddy
+script-src 'self';
+style-src 'self';
+connect-src 'self' wss://{$APP_DOMAIN};
+img-src 'self' data:;
+✅ Без unsafe-inline и unsafe-eval — безопасно для продакшена.
 
-# логи Caddy
+🤖 API (везде — dev и prod)
+caddy
+default-src 'none';
+base-uri 'none';
+object-src 'none';
+frame-ancestors 'none';
+form-action 'none';
+✅ Только для JSON API. Не отдаёт HTML — поэтому CSP максимально строгий.
 
+## 🛠️ Частые команды
+
+📜 Логи Caddy (dev)
+bash
 docker compose -f docker-compose.dev.yml logs -f caddy
-
-# список сервисов
-
+📋 Список запущенных сервисов (dev)
+bash
 docker compose -f docker-compose.dev.yml ps

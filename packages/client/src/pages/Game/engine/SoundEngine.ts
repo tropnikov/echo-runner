@@ -24,17 +24,17 @@ export class SoundEngine {
   }
 
   private getSound(name: SoundName) {
-    const sound = this.sounds.get(name);
-
-    if (!sound) {
-      throw new Error(`Звук ${name} не найден`);
-    }
-
-    return sound;
+    return this.sounds.get(name);
   }
 
   play(name: SoundName, loop = false) {
     const sound = this.getSound(name);
+
+    if (!sound) {
+      console.warn(`Звук ${name} не найден`);
+      return;
+    }
+
     sound.currentTime = 0;
     sound.loop = loop;
     sound.muted = this.muted;
@@ -43,11 +43,23 @@ export class SoundEngine {
 
   pause(name: SoundName) {
     const sound = this.getSound(name);
+
+    if (!sound) {
+      console.warn(`Звук ${name} не найден`);
+      return;
+    }
+
     sound.pause();
   }
 
   stop(name: SoundName) {
     const sound = this.getSound(name);
+
+    if (!sound) {
+      console.warn(`Звук ${name} не найден`);
+      return;
+    }
+
     sound.currentTime = 0;
     sound.pause();
   }

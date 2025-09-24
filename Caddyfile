@@ -28,7 +28,7 @@
 	handle /pgadmin* {
 		# Базовая аутентификация для дополнительной защиты
 		basicauth {
-			admin $2a$14$OXgScN/EB6o6KLWoX3zBaugGqno5I5BDxWlZO8X5fnoOZ./zA0yIS
+			admin {$ADMIN_PASSWORD_HASH}
 		}
 
 		header {

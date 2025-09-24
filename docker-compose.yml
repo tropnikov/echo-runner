@@ -9,6 +9,7 @@ services:
     environment:
       - APP_DOMAIN=${APP_DOMAIN}
       - EMAIL=${EMAIL}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy-data:/data

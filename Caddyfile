@@ -24,6 +24,40 @@
 		reverse_proxy server:3001
 	}
 
+	# --- pgAdmin (только для администрирования) ---
+	handle /pgadmin* {
+		# Базовая аутентификация для дополнительной защиты
+		basicauth {
+			admin $2a$14$OXgScN/EB6o6KLWoX3zBaugGqno5I5BDxWlZO8X5fnoOZ./zA0yIS
+		}
+
+		header {
+			-Server
+			-X-Powered-By
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			X-Frame-Options "SAMEORIGIN"
+			Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+			# Запрет индексации поисковиками
+			X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+		}
+		uri strip_prefix /pgadmin
+		reverse_proxy pgadmin:80
+	}
+
+	# --- Статические ресурсы (прямая отдача) ---
+	handle /assets/* {
+		header {
+			-Server
+			-X-Powered-By
+			Cache-Control "public, max-age=31536000, immutable"
+			X-Content-Type-Options "nosniff"
+		}
+		root * /var/www/static
+		uri strip_prefix /assets
+		file_server
+	}
+
 	# --- Клиент ---
 	handle {
 		header {

@@ -48,6 +48,10 @@ export type GameConfig = {
     };
     gravity: number;
     jumpPower: number;
+    /**
+     * Максимальное количество прыжков до касания земли (например, 2 — двойной прыжок).
+     */
+    maxJumps: number;
   };
   obstacles: {
     collisionSize: number;

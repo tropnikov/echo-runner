@@ -1,12 +1,13 @@
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useRef, useState } from 'react';
 
-import { Button } from 'antd';
+import { Button, Tour } from 'antd';
 import {
   DashboardOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   PauseCircleOutlined,
   PlayCircleOutlined,
+  QuestionCircleOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
 
@@ -29,9 +30,17 @@ function GameView({
   onRestart,
   onPause,
   stats,
+  tourOpen,
+  onTourClose,
+  onTourOpen,
 }: GameViewProps) {
   const { elementRef, isFullscreen, toggleFullscreen } = useFullscreen();
   const [isPerformancePanelVisible, setPerformancePanelVisible] = useState(false);
+
+  const pauseBtnRef = useRef<HTMLButtonElement | null>(null);
+  const helpBtnRef = useRef<HTMLButtonElement | null>(null);
+  const perfBtnRef = useRef<HTMLButtonElement | null>(null);
+  const fsBtnRef = useRef<HTMLButtonElement | null>(null);
 
   function handleFullscreenButtonClick(e: MouseEvent<HTMLButtonElement>) {
     if (e.currentTarget && e.currentTarget instanceof HTMLButtonElement) {
@@ -39,6 +48,10 @@ function GameView({
     }
     toggleFullscreen();
   }
+
+  const handleHelpClick = () => {
+    onTourOpen();
+  };
 
   return (
     <section ref={elementRef} className={styles.gameViewContainer}>
@@ -66,7 +79,8 @@ function GameView({
               <Button
                 type="primary"
                 icon={isPaused ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
-                onClick={onPause}>
+                onClick={onPause}
+                ref={pauseBtnRef}>
                 {isPaused ? 'Продолжить' : 'Пауза'}
               </Button>
               <span>
@@ -82,11 +96,21 @@ function GameView({
       {isPerformancePanelVisible && stats && <PerformancePanel stats={stats} />}
 
       <div className={styles.controlButtons}>
+        {isStarted && (
+          <Button
+            type="primary"
+            shape="circle"
+            icon={<QuestionCircleOutlined />}
+            onClick={handleHelpClick}
+            aria-label="Показать обучение"
+            ref={helpBtnRef}
+          />
+        )}
         <Button
           type="primary"
           shape="circle"
           icon={<DashboardOutlined />}
-          className={styles.perfPanelButton}
+          ref={perfBtnRef}
           onClick={() => setPerformancePanelVisible((prev) => !prev)}
           aria-label={
             isPerformancePanelVisible ? 'Скрыть панель производительности' : 'Показать панель производительности'
@@ -96,11 +120,55 @@ function GameView({
           type="primary"
           shape="circle"
           icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-          className={styles.fullScreenButton}
+          ref={fsBtnRef}
           onClick={handleFullscreenButtonClick}
           aria-label={isFullscreen ? 'Выйти из полноэкранного режима' : 'На весь экран'}
         />
       </div>
+
+      <Tour
+        open={tourOpen}
+        onClose={onTourClose}
+        steps={[
+          {
+            title: 'А как играть?',
+            description:
+              'Персонаж всегда куда-то бежит. Зарабатывайте очки, собирая монетки, и перепрыгивайте ящики, чтобы не получать урон. Когда урон станет невыносимым (10), игра закончится. Прыгать можно по пробелу, а дважды прыгать по дважды пробелу',
+            target: canvasRef.current ? () => canvasRef.current as unknown as HTMLElement : null,
+            placement: 'center',
+          },
+          {
+            title: 'Управление',
+            description: 'Для паузы нажмите эту кнопку или клавишу P.',
+            target: pauseBtnRef.current ? () => pauseBtnRef.current as unknown as HTMLElement : null,
+            placement: 'bottom',
+          },
+          {
+            title: 'Обучение',
+            description: 'Нажмите на "?", чтобы снова открыть это обучение.',
+            target: helpBtnRef.current ? () => helpBtnRef.current as unknown as HTMLElement : null,
+            placement: 'left',
+          },
+          {
+            title: 'Производительность',
+            description: 'Откройте панель производительности, чтобы посмотреть FPS и другие параметры.',
+            target: perfBtnRef.current ? () => perfBtnRef.current as unknown as HTMLElement : null,
+            placement: 'left',
+          },
+          {
+            title: 'Во весь экран',
+            description: 'Игру можно развернуть на весь экран',
+            target: fsBtnRef.current ? () => fsBtnRef.current as unknown as HTMLElement : null,
+            placement: 'left',
+          },
+          {
+            title: 'Лидерборд',
+            description: 'Ваш лучший результат попадёт в таблицу лидеров. Ссылка — в шапке.',
+            target: () => document.querySelector('a[href$="leaderboard"]') as unknown as HTMLElement,
+            placement: 'bottom',
+          },
+        ]}
+      />
     </section>
   );
 }

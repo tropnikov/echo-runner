@@ -34,6 +34,9 @@ export class Coin extends GameObject {
   }
 
   update(delta: number, gameSpeed: number): void {
+    // Удаляем собранные монеты и вышедшие за экран
+    this._collisions = this._collisions.filter((c) => !c.handled && c.x + c.width > 0);
+
     this.updateCollisions({
       minDistanceX: config.coins.minDistanceX,
       maxDistanceX: config.coins.maxDistanceX,
@@ -49,6 +52,8 @@ export class Coin extends GameObject {
 
   render(): void {
     this._collisions.forEach((collision) => {
+      // Не отображаем монеты, которые уже собраны
+      if (collision.handled) return;
       const invertCollision = this.toCanvasCoords(collision);
 
       if (this.coinImage.complete) {

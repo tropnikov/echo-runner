@@ -41,10 +41,12 @@
 ### Вариант 1: Docker (рекомендуется)
 
 #### Предварительные требования
+
 1. Установите [Docker Desktop](https://www.docker.com/products/docker-desktop/) для вашей ОС
 2. Убедитесь, что Docker запущен и работает
 
 #### Настройка переменных окружения
+
 1. Создайте файл `.env` в корне проекта:
    ```bash
    yarn bootstrap
@@ -54,43 +56,54 @@
 #### Запуск приложения
 
 **Development режим (с hot reload):**
+
 ```bash
 docker compose -f docker-compose.dev.yml up --build
 ```
 
 Или поднять только базу в докере:
+
 ```bash
 docker compose -f docker-compose.dev.yml up postgres -d --build
 yarn dev
 ```
 
 **Production режим:**
+
 ```bash
 docker compose up --build -d
 ```
+
 3. Дождитесь завершения сборки (может занять несколько минут при первом запуске)
 4. Проверьте статус контейнеров:
+
    ```bash
    # Для development
    docker compose -f docker-compose.dev.yml ps
-   
-   # Для production  
+
+   # Для production
    docker compose ps
    ```
+
 5. Дождитесь, пока все сервисы станут здоровыми (health check пройдет успешно)
 
 #### Проверка работоспособности
+
 После запуска проверьте доступность сервисов:
+
 - **Клиент**: http://localhost:${CLIENT_PORT}
 - **Сервер API**: http://localhost:${SERVER_PORT}
 
 #### Доступ к приложению
+
 После успешного запуска приложение будет доступно по адресам:
+
 - **Клиент**: http://localhost:${CLIENT_PORT}
 - **Сервер API**: http://localhost:${SERVER_PORT}
 - **База данных**: localhost:${POSTGRES_PORT}
 
 #### Полезные команды для работы с Docker
+
 ```bash
 # Просмотр логов всех сервисов (dev)
 docker compose -f docker-compose.dev.yml logs -f
@@ -115,6 +128,7 @@ docker compose down -v
 ```
 
 #### Устранение неполадок
+
 - **Если порты заняты**: Измените значения `CLIENT_PORT`, `SERVER_PORT`, `POSTGRES_PORT` в файле `.env`
 - **Если контейнеры не запускаются**: Проверьте логи командой `docker compose logs`
 - **Если нужно пересобрать образы**: Выполните `docker compose up --build -d`
@@ -124,16 +138,20 @@ docker compose down -v
 ### Вариант 2: Локальная разработка
 
 #### Предварительные требования
+
 1. Убедитесь что у вас установлен `node` и `docker`
 2. Выполните команду `yarn bootstrap` - это обязательный шаг, без него ничего работать не будет :)
 
 #### Запуск базы данных
+
 Для локальной разработки нужно запустить только PostgreSQL контейнер:
+
 ```bash
 docker compose up postgres -d
 ```
 
 #### Запуск приложения
+
 После запуска базы данных выполните одну из команд:
 
 - **Запуск всего приложения**: `yarn dev`
@@ -141,12 +159,15 @@ docker compose up postgres -d
 - **Только сервер**: `yarn dev --scope=server`
 
 #### Проверка работоспособности
+
 После запуска проверьте доступность сервисов:
+
 - **Клиент**: http://localhost:${CLIENT_PORT}
 - **Сервер API**: http://localhost:${SERVER_PORT}
 - **База данных**: localhost:${POSTGRES_PORT}
 
 #### Полезные команды для локальной разработки
+
 ```bash
 # Остановка базы данных
 docker compose down postgres
@@ -156,6 +177,38 @@ docker compose logs -f postgres
 
 # Подключение к базе данных
 docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+```
+
+#### Caddy: форматирование и перезапуск
+
+**Форматировать `Caddyfile`:**
+
+```bash
+docker run --rm -v "$PWD/Caddyfile:/etc/caddy/Caddyfile" \
+  caddy:2 caddy fmt --overwrite /etc/caddy/Caddyfile
+```
+
+**Проверить адаптацию:**
+
+```bash
+docker run --rm -v "$PWD/Caddyfile:/etc/caddy/Caddyfile" \
+  caddy:2 caddy adapt --config /etc/caddy/Caddyfile
+```
+
+**Перезагрузить запущенный контейнер:**
+
+Dev:
+
+```bash
+docker compose -f docker-compose.dev.yml exec caddy \
+  caddy reload --config /etc/caddy/Caddyfile
+```
+
+Prod:
+
+```bash
+docker compose exec caddy \
+  caddy reload --config /etc/caddy/Caddyfile
 ```
 
 ## Как добавить зависимости?

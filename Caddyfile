@@ -1,8 +1,4 @@
-{
-	email {$EMAIL}
-}
-
-https://{$APP_DOMAIN} {
+{$APP_DOMAIN} {
 	encode gzip zstd
 
 	log {
@@ -10,7 +6,7 @@ https://{$APP_DOMAIN} {
 	}
 
 	# --- API ---
-	handle_path /api/v1/* {
+	handle /api/v1/* {
 		header {
 			-Server
 			-X-Powered-By

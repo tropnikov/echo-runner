@@ -10,14 +10,7 @@ dotenv.config();
 export default defineConfig({
   server: {
     port: Number(process.env.CLIENT_PORT) || 3000,
-    proxy: {
-      '/api': { target: 'http://localhost:3001', changeOrigin: true },
-    },
     host: true,
-    hmr: {
-      host: 'localhost',
-      protocol: 'ws',
-    },
   },
   build: {
     outDir: 'dist/client',

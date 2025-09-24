@@ -67,3 +67,18 @@ export type GameConfig = {
     maxDistanceY: number;
   };
 };
+
+export enum Events {
+  PlayerJumpUp = 'player_jump_up',
+  PlayerJumpDown = 'player_jump_down',
+  PlayerJumpOnGround = 'player_jump_on_ground',
+}
+
+export enum SoundName {
+  Coin = 'coin',
+  Obstacle = 'obstacle',
+  PlayerJumpUp = 'jump_up',
+  PlayerJumpDown = 'jump_down',
+  PlayerJumpOnGround = 'player_jump_on_ground',
+  Main = 'main',
+}

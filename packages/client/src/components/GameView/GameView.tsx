@@ -5,10 +5,12 @@ import {
   DashboardOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
+  MutedOutlined,
   PauseCircleOutlined,
   PlayCircleOutlined,
   QuestionCircleOutlined,
   ReloadOutlined,
+  SoundOutlined,
 } from '@ant-design/icons';
 
 import { PerformancePanel } from '@/components/PerformancePanel/PerformancePanel';
@@ -29,6 +31,7 @@ function GameView({
   onStart,
   onRestart,
   onPause,
+  onMute,
   stats,
   tourOpen,
   onTourClose,
@@ -36,6 +39,7 @@ function GameView({
 }: GameViewProps) {
   const { elementRef, isFullscreen, toggleFullscreen } = useFullscreen();
   const [isPerformancePanelVisible, setPerformancePanelVisible] = useState(false);
+  const [isMute, setIsMute] = useState(false);
 
   const pauseBtnRef = useRef<HTMLButtonElement | null>(null);
   const helpBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -51,6 +55,18 @@ function GameView({
 
   const handleHelpClick = () => {
     onTourOpen();
+  };
+
+  const handleMuteButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (e.currentTarget && e.currentTarget instanceof HTMLButtonElement) {
+      e.currentTarget.blur();
+    }
+
+    setIsMute((prev) => {
+      const next = !prev;
+      onMute(next);
+      return next;
+    });
   };
 
   return (
@@ -96,6 +112,14 @@ function GameView({
       {isPerformancePanelVisible && stats && <PerformancePanel stats={stats} />}
 
       <div className={styles.controlButtons}>
+        <Button
+          type="primary"
+          shape="circle"
+          icon={isMute ? <MutedOutlined /> : <SoundOutlined />}
+          ref={perfBtnRef}
+          onClick={handleMuteButtonClick}
+          aria-label="Отключить звук"
+        />
         {isStarted && (
           <Button
             type="primary"

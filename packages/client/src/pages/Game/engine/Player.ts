@@ -1,8 +1,9 @@
 import { config } from './config/gameConfig';
 import { playerAnimations, PlayerAnimationState } from './config/playerAnimations';
+import { EventBus } from './EventBus';
 import { GameObject } from './GameObject';
 import { SpriteAnimator } from './SpriteAnimator';
-import { Collision, ObjectEffectType } from './types';
+import { Collision, Events, ObjectEffectType } from './types';
 
 /**
  * Класс для создания игровых объектов типа "игрок".
@@ -26,6 +27,12 @@ export class Player extends GameObject {
 
   private animator: SpriteAnimator<PlayerAnimationState>;
 
+  private eventBus: EventBus;
+
+  private jumpUpEmitted = false;
+
+  private jumpDownEmitted = false;
+
   effectType = ObjectEffectType.None;
 
   constructor(ctx: CanvasRenderingContext2D, spriteSheet: CanvasImageSource) {
@@ -35,6 +42,8 @@ export class Player extends GameObject {
       ...config.player.collisionSize,
       ...config.player.offset,
     };
+
+    this.eventBus = EventBus.getInstance();
 
     // Инициализируем аниматор
     this.animator = this.createAnimator(spriteSheet);
@@ -86,6 +95,9 @@ export class Player extends GameObject {
    * Прыжок.
    */
   jump() {
+    this.jumpUpEmitted = false;
+    this.jumpDownEmitted = false;
+
     // Разрешаем прыжок, если есть оставшиеся попытки (поддержка двойного прыжка)
     if (this.remainingJumps <= 0) return;
 
@@ -113,7 +125,22 @@ export class Player extends GameObject {
 
       if (wasJumping) {
         this.updateAnimationState();
+
+        // Игрок приземлился на землю
+        this.eventBus.emit(Events.PlayerJumpOnGround);
       }
+    }
+
+    // Когда игрок движется вверх при прыжке
+    if (this.jumpVelocity > 0 && !this.jumpUpEmitted) {
+      this.eventBus.emit(Events.PlayerJumpUp);
+      this.jumpUpEmitted = true;
+    }
+
+    // Когда игрок движется вниз при прыжке
+    if (this.jumpVelocity < 0 && !this.jumpDownEmitted) {
+      this.eventBus.emit(Events.PlayerJumpDown);
+      this.jumpDownEmitted = true;
     }
 
     this.animator.update(delta, gameSpeed);

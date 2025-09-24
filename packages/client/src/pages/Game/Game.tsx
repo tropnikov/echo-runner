@@ -177,6 +177,13 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     setPausedByTour(false);
   }, [pausedByTour, isStarted, isPaused, engineRef]);
 
+  const handleMute = useCallback(
+    (status: boolean) => {
+      engineRef.current?.muteSound(status);
+    },
+    [engineRef],
+  );
+
   return (
     <GameView
       canvasRef={canvasRef}
@@ -188,6 +195,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
       onStart={handleStart}
       onRestart={handleRestart}
       onPause={handleOnPause}
+      onMute={handleMute}
       stats={stats}
       tourOpen={isTourOpen}
       onTourClose={handleTourClose}

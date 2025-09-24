@@ -232,3 +232,4 @@ docker compose exec postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 - [Игровой движок](./docs/gameEngine.md) - Описание игрового движка
 - [Сценарий игры](./docs/scenario.md) - Разработка сценария игры
 - [Утечки памяти](./docs/MEMORYLEAKS.md) - Утечки памяти
+- [Защита от XSS](./docs/XSS_REPORT.md) - Защита от XSS

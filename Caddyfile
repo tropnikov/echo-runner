@@ -41,8 +41,13 @@
 			# Запрет индексации поисковиками
 			X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
 		}
-		uri strip_prefix /pgadmin
-		reverse_proxy pgadmin:80
+		reverse_proxy pgadmin:80 {
+			header_up X-Script-Name /pgadmin
+			header_up X-Forwarded-Prefix /pgadmin
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-Host {host}
+		}
 	}
 
 	# --- Статические ресурсы (прямая отдача) ---

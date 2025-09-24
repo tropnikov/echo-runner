@@ -285,7 +285,3 @@ docker compose exec caddy \
 - [Игровой движок](./docs/gameEngine.md) - Описание игрового движка
 - [Сценарий игры](./docs/scenario.md) - Разработка сценария игры
 - [Утечки памяти](./docs/MEMORYLEAKS.md) - Утечки памяти
-
-```
-
-```

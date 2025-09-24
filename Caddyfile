@@ -1,3 +1,7 @@
+{
+	email {$EMAIL}
+}
+
 {$APP_DOMAIN} {
 	encode gzip zstd
 

@@ -1,5 +1,8 @@
 http://localhost {
-	encode gzip zstd
+	# --- API ---
+	handle /api/v1/* {
+		reverse_proxy server:3001
+	}
 
 	# --- Клиент ---
 	handle {

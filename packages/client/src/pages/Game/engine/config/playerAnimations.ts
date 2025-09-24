@@ -25,7 +25,7 @@ export const playerAnimations: Record<PlayerAnimationState, AnimationConfig> = {
   [PlayerAnimationState.JUMPING]: {
     frames: generateFrames({
       width: 204,
-      height: 273,
+      height: 250,
       frames: 10,
     }),
     frameRate: 8,

@@ -65,11 +65,14 @@ self.addEventListener('fetch', ((event: FetchEvent) => {
           return response;
         }
 
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          console.log('put into cache');
-          cache.put(event.request, responseToCache);
-        });
+        // Кэшируем только GET-запросы
+        if (event.request.method === 'GET') {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            console.log('put into cache');
+            cache.put(event.request, responseToCache);
+          });
+        }
         return response;
       });
     }),
@@ -107,14 +110,14 @@ function handleApiRequest(event: FetchEvent): Promise<Response> {
       return fetch(fetchRequest)
         .then((response) => {
           console.log('Network response received, status:', response.status);
-          // Кэшируем только успешные ответы
-          if (response && response.status === 200) {
+          // Кэшируем только успешные GET-запросы
+          if (response && response.status === 200 && event.request.method === 'GET') {
             const responseToCache = response.clone();
             cache.put(event.request, responseToCache).then(() => {
               console.log('API response cached successfully');
             });
           } else {
-            console.log('Response not cached due to status:', response.status);
+            console.log('Response not cached due to status:', response.status, 'or method:', event.request.method);
           }
           return response;
         })

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { Button, Col, Row } from 'antd';
 import { PlayCircleFilled } from '@ant-design/icons';
 
+import hero from '@/assets/hero.jpeg?url';
 import { appRoutes } from '@/constants/appRoutes';
 
 import styles from './HeroBlock.module.css';
@@ -13,8 +14,7 @@ const HeroBlock = () => {
   const description =
     'Погрузись в мир Echo Runner — где каждый прыжок звучит эхом твоей смелости, а скорость уносит навстречу приключениям. Здесь горизонты бесконечны, а каждый уровень — новая история, полная азарта, дружбы и побед. Оставь свой след на трассе, стань героем легенды и почувствуй, как игра становится частью тебя. Твой забег начинается сейчас — осмелишься ли ты сделать первый шаг?';
 
-  const cover =
-    'https://images.unsplash.com/photo-1580464360012-948b4fe5ddc2?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+  const cover = hero;
 
   const handleStartClick = () => {
     navigate(appRoutes.SIGNIN);

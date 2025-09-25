@@ -26,6 +26,7 @@ services:
       dockerfile: Dockerfile.client.dev
       args:
         CLIENT_PORT: ${CLIENT_PORT:-3000}
+        SERVER_PORT: ${SERVER_PORT:-3001}
     restart: unless-stopped
     ports:
       - '${CLIENT_PORT:-3000}:${CLIENT_PORT:-3000}'

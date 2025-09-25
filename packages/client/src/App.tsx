@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Outlet } from 'react-router';
 
 import { ConfigProvider } from 'antd';
@@ -21,17 +20,6 @@ const THEMES = {
 function App() {
   const { currentTheme } = useTheme();
   const themeConfig = THEMES[currentTheme];
-
-  useEffect(() => {
-    const fetchServerData = async () => {
-      const url = `http://localhost:${__SERVER_PORT__}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      console.log(data);
-    };
-
-    fetchServerData();
-  }, []);
 
   return (
     <ErrorBoundary>

@@ -1,5 +1,6 @@
 ARG NODE_VERSION=20
 ARG CLIENT_PORT
+ARG SERVER_PORT
 
 FROM node:$NODE_VERSION-bullseye as base
 
@@ -9,8 +10,10 @@ FROM base as builder
 
 ARG APP_DOMAIN
 ARG VITE_APP_DOMAIN
+ARG SERVER_PORT
 
 ENV VITE_APP_DOMAIN=${VITE_APP_DOMAIN:-$APP_DOMAIN}
+ENV SERVER_PORT=${SERVER_PORT}
 
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile

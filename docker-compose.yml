@@ -31,6 +31,7 @@ services:
       dockerfile: Dockerfile.client
       args:
         CLIENT_PORT: ${CLIENT_PORT:-3000}
+        SERVER_PORT: ${SERVER_PORT:-3001}
         APP_DOMAIN: ${APP_DOMAIN}
     restart: always
     env_file:

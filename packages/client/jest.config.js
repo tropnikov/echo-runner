@@ -18,8 +18,9 @@ export default {
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
+    '\\.(jpg|jpeg|png|gif|webp|svg|mp3)(\\?.*)?$': '<rootDir>/src/__mocks__/fileMock.js',
+    '^@/(.*)\\?(.*)$': '<rootDir>/src/$1',
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '\\.(jpg|jpeg|png|gif|webp|svg|mp3)$': '<rootDir>/src/__mocks__/fileMock.js',
   },
 };

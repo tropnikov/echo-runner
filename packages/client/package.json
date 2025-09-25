@@ -6,7 +6,6 @@
     "build": "yarn build:client && yarn build:server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "tsc -p tsconfig.server.json && vite build --outDir dist/server --ssr src/entry-server.tsx",
-    "build:sw": "tsc -p tsconfig.sw.json",
     "preview": "ts-node --project tsconfig.server.json server/index.ts",
     "start": "NODE_ENV=production node server/build/index.js",
     "typecheck": "tsc --noEmit",

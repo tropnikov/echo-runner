@@ -1,8 +1,14 @@
+import SoundBoom from '../assets/sound/boom.mp3';
+import SoundJumpUp from '../assets/sound/jump-up.mp3';
+import SoundMain from '../assets/sound/main.mp3';
+import SoundScore from '../assets/sound/score.mp3';
 import { config } from './config/gameConfig';
+import { EventBus } from './EventBus';
 import { GameObject } from './GameObject';
 import { ParallaxBackground } from './ParallaxBackground';
 import { Player } from './Player';
-import { Collision, ObjectEffectType } from './types';
+import { SoundEngine } from './SoundEngine';
+import { Collision, Events, ObjectEffectType, SoundName } from './types';
 
 export type FrameHooks = { before?: () => void; after?: () => void };
 
@@ -22,6 +28,8 @@ export class GameEngine {
 
   private parallaxBackground: ParallaxBackground | null = null;
 
+  private soundEngine: SoundEngine;
+
   private animationId: number | null = null;
 
   private gameSpeed = config.initialSpeed;
@@ -32,10 +40,14 @@ export class GameEngine {
 
   private hooks: FrameHooks = {};
 
+  private eventBus: EventBus;
+
   constructor(props: { ctx: CanvasRenderingContext2D; onDamage: () => void; onScore: () => void }) {
     this.onDamage = props.onDamage;
     this.onScore = props.onScore;
     this.ctx = props.ctx;
+    this.eventBus = EventBus.getInstance();
+    this.soundEngine = new SoundEngine();
   }
 
   setFrameHooks(h: FrameHooks) {
@@ -109,10 +121,20 @@ export class GameEngine {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
   }
 
+  // Сохраняем ссылки на bound методы для возможности отписки
+  private boundHandlePlayerJumpUp = this.handlePlayerJumpUp.bind(this);
+
   /**
-   * Инициализирует движок (метод-заглушка, будем расширять).
+   * Инициализирует движок.
    */
   init() {
+    this.eventBus.on(Events.PlayerJumpUp, this.boundHandlePlayerJumpUp);
+
+    this.soundEngine.addSound(SoundName.PlayerJumpUp, SoundJumpUp);
+    this.soundEngine.addSound(SoundName.Obstacle, SoundBoom);
+    this.soundEngine.addSound(SoundName.Coin, SoundScore);
+    this.soundEngine.addSound(SoundName.Main, SoundMain);
+
     return this;
   }
 
@@ -129,22 +151,29 @@ export class GameEngine {
     this.speedTimer = 0;
     this.lastTime = null;
     this.loop();
+    this.soundEngine.play(SoundName.Main, true);
   }
 
-  /**
-   * Останавливает игру.
-   */
-  stop() {
+  private resetAnimationFrame() {
     if (!this.animationId) return;
     cancelAnimationFrame(this.animationId);
     this.animationId = null;
   }
 
   /**
+   * Останавливает игру.
+   */
+  stop() {
+    this.resetAnimationFrame();
+    this.soundEngine.stop(SoundName.Main);
+  }
+
+  /**
    * Приостанавливает игру.
    */
   pause() {
-    this.stop();
+    this.resetAnimationFrame();
+    this.soundEngine.pause(SoundName.Main);
   }
 
   /**
@@ -154,6 +183,30 @@ export class GameEngine {
     if (this.animationId) return;
     this.lastTime = null;
     this.loop();
+    this.soundEngine.play(SoundName.Main, true);
+  }
+
+  muteSound(status: boolean) {
+    this.soundEngine.setMute(status);
+  }
+
+  /**
+   * Полная очистка ресурсов движка.
+   * Отписывается от событий, очищает звуки, останавливает анимацию.
+   */
+  destroy() {
+    // Останавливаем игру
+    this.stop();
+
+    // Отписываемся от событий EventBus
+    this.eventBus.off(Events.PlayerJumpUp, this.boundHandlePlayerJumpUp);
+
+    // Очищаем звуковой движок
+    this.soundEngine.destroy();
+
+    // Очищаем ссылки на объекты
+    this.gameObjects = [];
+    this.parallaxBackground = null;
   }
 
   /**
@@ -200,10 +253,16 @@ export class GameEngine {
 
         switch (obj.effectType) {
           case ObjectEffectType.Score:
+            // Проигрывает звук когда игрок хватает монету
+            this.soundEngine?.play(SoundName.Coin);
+
             this.onScore();
             collision.handled = true;
             break;
           case ObjectEffectType.Damage:
+            // Проигрывает звук при столкновении игрока с препятствием
+            this.soundEngine?.play(SoundName.Obstacle);
+
             this.onDamage();
             collision.handled = true;
             break;
@@ -234,5 +293,12 @@ export class GameEngine {
   private renderBackground() {
     this.ctx.fillStyle = 'lightblue';
     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+  }
+
+  /**
+   * Проигрывает звук когда игрок летит вверх
+   */
+  private handlePlayerJumpUp() {
+    this.soundEngine?.play(SoundName.PlayerJumpUp);
   }
 }

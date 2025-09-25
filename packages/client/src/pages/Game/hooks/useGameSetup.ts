@@ -98,7 +98,9 @@ export function useGameSetup({ handleOnScore, handleOnDamage, playerSprites }: G
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       if (engineRef.current) {
-        engineRef.current.stop();
+        // Используем новый метод destroy для полной очистки ресурсов
+        engineRef.current.destroy();
+        engineRef.current = null;
       }
       startedRef.current = false;
     };

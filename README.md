@@ -1,6 +1,10 @@
-## Отчет по 7-8 спринтам
+## Документация
 
-[Яндекс Диск](https://disk.yandex.ru/i/F2NoqLX0vP1S6g)
+- [Игровой движок](./docs/gameEngine.md) - Описание игрового движка
+- [Сценарий игры](./docs/scenario.md) - Разработка сценария игры
+- [Утечки памяти](./docs/MEMORYLEAKS.md) - Утечки памяти
+- [Защита от XSS](./docs/XSS_REPORT.md) - Защита от XSS
+
 
 ## Как работать с проектом:
 
@@ -253,36 +257,3 @@ docker compose exec caddy \
 ## Хуки
 
 В проекте используется [lefthook](https://github.com/evilmartians/lefthook)
-Если очень-очень нужно пропустить проверки, используйте `--no-verify` (но не злоупотребляйте :)
-
-## Ой, ничего не работает :(
-
-Откройте issue, я приду :)
-
-## Автодеплой статики на vercel
-
-Зарегистрируйте аккаунт на [vercel](https://vercel.com/)
-Следуйте [инструкции](https://vitejs.dev/guide/static-deploy.html#vercel-for-git)
-В качестве `root directory` укажите `packages/client`
-
-Все ваши PR будут автоматически деплоиться на vercel. URL вам предоставит деплоящий бот
-
-## Production окружение в докере
-
-Перед первым запуском выполните `node init.js`
-
-`docker compose up` - запустит три сервиса
-
-1. nginx, раздающий клиентскую статику (client)
-2. node, ваш сервер (server)
-3. postgres, вашу базу данных (postgres)
-
-Если вам понадобится только один сервис, просто уточните какой в команде
-`docker compose up {sevice_name}`, например `docker compose up server`
-
-## Документация
-
-- [Игровой движок](./docs/gameEngine.md) - Описание игрового движка
-- [Сценарий игры](./docs/scenario.md) - Разработка сценария игры
-- [Утечки памяти](./docs/MEMORYLEAKS.md) - Утечки памяти
-- [Защита от XSS](./docs/XSS_REPORT.md) - Защита от XSS

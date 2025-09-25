@@ -41,6 +41,8 @@ jobs:
           build-args: |
             APP_DOMAIN=${{ vars.APP_DOMAIN }}
             VITE_APP_DOMAIN=${{ vars.APP_DOMAIN }}
+            CLIENT_PORT=3000
+            SERVER_PORT=3001
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/${{ env.REPO_LC }}/client:${{ github.sha }}
@@ -51,6 +53,8 @@ jobs:
         with:
           context: .
           file: Dockerfile.server
+          build-args: |
+            SERVER_PORT=3001
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/${{ env.REPO_LC }}/server:${{ github.sha }}

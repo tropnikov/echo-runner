@@ -1,12 +1,8 @@
 import { useParams } from 'react-router';
 
-import { Button, Flex, Typography } from 'antd';
+import { Button, Flex } from 'antd';
 
 import { useTopicReactions } from '@/hooks/useTopicReactions';
-
-import { withMeta } from '@/hocs/withMeta';
-
-const { Text } = Typography;
 
 function TopicReactions() {
   const { topicId } = useParams();
@@ -26,9 +22,4 @@ function TopicReactions() {
   );
 }
 
-export default withMeta(TopicReactions, {
-  title: 'Правила игры | Форум',
-  description: 'Обсуждение правил игры Echo Runner. Читайте комментарии, задавайте вопросы и участвуйте в дискуссии.',
-  keywords: 'правила игры, echo runner, форум, комментарии, дискуссия',
-  noIndex: true,
-});
+export default TopicReactions;

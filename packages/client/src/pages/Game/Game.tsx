@@ -1,7 +1,8 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import GameView from '@/components/GameView/GameView';
 import { teamName } from '@/constants/leaderboardStats';
+import { TOUR_WATCHED } from '@/constants/tourWatched';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useAppSelector } from '@/redux/store';
 
@@ -18,6 +19,9 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
   const [damage, setDamage] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
+  const [isTourOpen, setIsTourOpen] = useState(false);
+  const [tourSeen, setTourSeen] = useState(false);
+  const [pausedByTour, setPausedByTour] = useState(false);
 
   const handleOnScore = useCallback(() => {
     setScore((prev) => prev + 1);
@@ -57,7 +61,7 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
 
   const handleOnPause = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.blur();
-    pauseGame();
+    pauseOrResumeGame();
   };
 
   const handleRestart = () => {
@@ -70,7 +74,19 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
     setIsStarted(true);
   };
 
-  const pauseGame = useCallback(() => {
+  const { canvasRef, engineRef, playerRef, initGame, resetScene, stats } = useGameSetup({
+    handleOnScore,
+    handleOnDamage,
+    playerSprites: useMemo(
+      () => ({
+        running: PlayerRun,
+        jumping: PlayerJump,
+      }),
+      [],
+    ),
+  });
+
+  const pauseOrResumeGame = useCallback(() => {
     setIsPaused((prev) => {
       const newState = !prev;
       if (engineRef.current) {
@@ -78,27 +94,95 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
       }
       return newState;
     });
-  }, []);
+  }, [engineRef]);
 
   useKeyboardControls({
     isActive: isStarted,
     onJump: () => playerRef.current?.jump(),
-    onPause: pauseGame,
+    onPause: pauseOrResumeGame,
   });
 
-  const playerSprites = useMemo(
-    () => ({
-      running: PlayerRun,
-      jumping: PlayerJump,
-    }),
-    [],
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(TOUR_WATCHED);
+      setTourSeen(saved === 'true');
+    } catch (error) {
+      console.warn('Failed to load tour state:', error);
+    }
+  }, []);
+
+  // Автозапуск тура после старта игры
+  // Ждем 2 кадра: первый для инициализации canvas, второй для стабилизации рендера
+  useEffect(() => {
+    if (!isStarted || tourSeen) return;
+
+    let rafId: number;
+    let frameCount = 0;
+
+    const waitForCanvasReady = () => {
+      frameCount++;
+
+      // Ждем 2 кадра для полной инициализации canvas и первого рендера
+      if (frameCount >= 2) {
+        // Ставим игру на паузу только если она не была поставлена на паузу вручную
+        if (!isPaused) {
+          setIsPaused(true);
+          engineRef.current?.pause();
+          setPausedByTour(true);
+        }
+        setIsTourOpen(true);
+        return;
+      }
+
+      rafId = requestAnimationFrame(waitForCanvasReady);
+    };
+
+    rafId = requestAnimationFrame(waitForCanvasReady);
+
+    return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, [isStarted, tourSeen, isPaused, engineRef]);
+
+  const handleTourOpen = useCallback(() => {
+    setIsTourOpen(true);
+    if (isStarted && !isPaused) {
+      setIsPaused(true);
+      engineRef.current?.pause();
+      setPausedByTour(true);
+    } else {
+      setPausedByTour(false);
+    }
+  }, [isStarted, isPaused, engineRef]);
+
+  const handleTourClose = useCallback(() => {
+    setIsTourOpen(false);
+
+    try {
+      localStorage.setItem(TOUR_WATCHED, 'true');
+    } catch (error) {
+      console.warn('Failed to save tour state:', error);
+    }
+
+    setTourSeen(true);
+
+    // Возобновляем игру только если она была поставлена на паузу именно туром
+    if (pausedByTour && isStarted && isPaused) {
+      setIsPaused(false);
+      engineRef.current?.resume();
+    }
+
+    setPausedByTour(false);
+  }, [pausedByTour, isStarted, isPaused, engineRef]);
+
+  const handleMute = useCallback(
+    (status: boolean) => {
+      engineRef.current?.muteSound(status);
+    },
+    [engineRef],
   );
-
-  const { canvasRef, engineRef, playerRef, initGame, resetScene, stats } = useGameSetup({
-    handleOnScore,
-    handleOnDamage,
-    playerSprites,
-  });
 
   return (
     <GameView
@@ -111,7 +195,11 @@ function Game({ maxDamage = 10 }: { maxDamage?: number }) {
       onStart={handleStart}
       onRestart={handleRestart}
       onPause={handleOnPause}
+      onMute={handleMute}
       stats={stats}
+      tourOpen={isTourOpen}
+      onTourClose={handleTourClose}
+      onTourOpen={handleTourOpen}
     />
   );
 }

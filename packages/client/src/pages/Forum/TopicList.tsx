@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 
-import { Button, Flex, Table, Typography } from 'antd';
+import { Button, Flex, Spin, Table, Typography } from 'antd';
 import type { TableProps } from 'antd';
 import { FileTwoTone, FolderTwoTone } from '@ant-design/icons';
 
 import { topicApi } from '@/api/apiForum';
 import TopicModal from '@/components/Forum/TopicModal';
+import TopicReactionsSummary from '@/components/Forum/TopicReactionsSummary';
 import { formatDate } from '@/helpers/dateformat';
 import { useTopicList } from '@/hooks/useTopicList';
 import { Topic } from '@/types/Forum';
@@ -37,15 +38,21 @@ const columns: TableProps<Topic>['columns'] = [
     ),
   },
   {
+    dataIndex: 'reactions',
+    width: 250,
+    render: (_, record: Topic) => <TopicReactionsSummary reactions={record.reactions || []} />,
+  },
+  {
     dataIndex: 'count',
     width: 150,
     render: (count) => <Text>Комментариев: {count}</Text>,
   },
   {
     dataIndex: 'last',
-    width: 150,
+    width: 200,
     render: (lastComment) => (
       <Flex vertical>
+        <Text type="secondary">Последний от:</Text>
         <Text>{lastComment.authorLogin}</Text>
         <Text>{lastComment.created_at}</Text>
       </Flex>
@@ -58,7 +65,7 @@ function TopicList() {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
-  const { topics, loadTopics, count } = useTopicList(pageNumber - 1, pageSize);
+  const { topics, loadTopics, count, isLoading } = useTopicList(pageNumber - 1, pageSize);
 
   const handleOk = async (name: string, comment: string) => {
     setIsModalOpen(false);
@@ -97,6 +104,7 @@ function TopicList() {
           created_at: formatDate(item?.createdAt),
         },
         count: item.commentsCount,
+        reactions: item.reactions || [],
         last: {
           authorId: item.lastComment?.ownerId,
           authorLogin: item.lastComment?.ownerLogin,
@@ -109,21 +117,23 @@ function TopicList() {
   return (
     <Flex vertical>
       <Title level={2}>Форум игры</Title>
-      <Table<Topic>
-        columns={columns}
-        dataSource={data}
-        showHeader={false}
-        pagination={{
-          showTotal: (total) => `Всего тем: ${total}`,
-          total: count,
-          pageSize,
-          current: pageNumber,
-          onChange: (page, pageSize) => {
-            setPageNumber(page);
-            setPageSize(pageSize);
-          },
-        }}
-      />
+      <Spin spinning={isLoading}>
+        <Table<Topic>
+          columns={columns}
+          dataSource={data}
+          showHeader={false}
+          pagination={{
+            showTotal: (total) => `Всего тем: ${total}`,
+            total: count,
+            pageSize,
+            current: pageNumber,
+            onChange: (page, pageSize) => {
+              setPageNumber(page);
+              setPageSize(pageSize);
+            },
+          }}
+        />
+      </Spin>
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
         <Button type="primary" icon={<FileTwoTone />} onClick={openModal}>
           Создать тему

@@ -1,8 +1,9 @@
 import { config } from './config/gameConfig';
 import { playerAnimations, PlayerAnimationState } from './config/playerAnimations';
+import { EventBus } from './EventBus';
 import { GameObject } from './GameObject';
 import { SpriteAnimator } from './SpriteAnimator';
-import { Collision, ObjectEffectType } from './types';
+import { Collision, Events, ObjectEffectType } from './types';
 
 /**
  * Класс для создания игровых объектов типа "игрок".
@@ -20,7 +21,17 @@ export class Player extends GameObject {
 
   private isJumping = false;
 
+  private maxJumps: number = config.player.maxJumps;
+
+  private remainingJumps: number = config.player.maxJumps;
+
   private animator: SpriteAnimator<PlayerAnimationState>;
+
+  private eventBus: EventBus;
+
+  private jumpUpEmitted = false;
+
+  private jumpDownEmitted = false;
 
   effectType = ObjectEffectType.None;
 
@@ -31,6 +42,8 @@ export class Player extends GameObject {
       ...config.player.collisionSize,
       ...config.player.offset,
     };
+
+    this.eventBus = EventBus.getInstance();
 
     // Инициализируем аниматор
     this.animator = this.createAnimator(spriteSheet);
@@ -82,9 +95,15 @@ export class Player extends GameObject {
    * Прыжок.
    */
   jump() {
-    if (this.isJumping) return;
+    this.jumpUpEmitted = false;
+    this.jumpDownEmitted = false;
+
+    // Разрешаем прыжок, если есть оставшиеся попытки (поддержка двойного прыжка)
+    if (this.remainingJumps <= 0) return;
+
     this.isJumping = true;
     this.jumpVelocity = this.jumpPower;
+    this.remainingJumps -= 1;
 
     this.updateAnimationState();
   }
@@ -102,10 +121,23 @@ export class Player extends GameObject {
 
       const wasJumping = this.isJumping;
       this.isJumping = false;
+      this.remainingJumps = this.maxJumps;
 
       if (wasJumping) {
         this.updateAnimationState();
       }
+    }
+
+    // Когда игрок движется вверх при прыжке
+    if (this.jumpVelocity > 0 && !this.jumpUpEmitted) {
+      this.eventBus.emit(Events.PlayerJumpUp);
+      this.jumpUpEmitted = true;
+    }
+
+    // Когда игрок движется вниз при прыжке
+    if (this.jumpVelocity < 0 && !this.jumpDownEmitted) {
+      this.eventBus.emit(Events.PlayerJumpDown);
+      this.jumpDownEmitted = true;
     }
 
     this.animator.update(delta, gameSpeed);
@@ -114,5 +146,21 @@ export class Player extends GameObject {
   render() {
     const renderPosition = this.toCanvasCoords(this._collision);
     this.animator.render(this.ctx, renderPosition.x, renderPosition.y, this._collision.width, this._collision.height);
+  }
+
+  /**
+   * Сброс состояния игрока (для рестартов сцены).
+   */
+  reset() {
+    super.reset();
+    this.jumpVelocity = 0;
+    this.isJumping = false;
+    this.remainingJumps = this.maxJumps;
+    this._collision = {
+      ...config.player.collisionSize,
+      ...config.player.offset,
+    };
+    this.updateAnimationState();
+    return this;
   }
 }

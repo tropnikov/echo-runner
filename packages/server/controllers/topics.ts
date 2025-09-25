@@ -6,60 +6,91 @@ import { createdCode } from '../constants/createdCode';
 import { topicNotFoundErrorMessage } from '../constants/topicNotFoundErrorMessage';
 import NotFoundError from '../errors/NotFoundError';
 import { Comment } from '../models/comment';
+import { Reaction } from '../models/reaction';
 import { Topic } from '../models/topic';
 
 export class TopicController {
-  static getAll(req: Request, res: Response, next: NextFunction) {
+  static async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     const offset = Number(req.query.offset) || 0;
     const limit = Number(req.query.limit) || 10;
 
-    Promise.all([
-      Topic.findAll({
-        limit,
-        offset,
-        attributes: {
-          include: [[fn('COUNT', col('comments.id')), 'commentsCount']],
+    try {
+      const [rawTopics, count] = await Promise.all([
+        Topic.findAll({
+          limit,
+          offset,
+          attributes: {
+            include: [[fn('COUNT', col('comments.id')), 'commentsCount']],
+          },
+          include: [
+            {
+              model: Comment,
+              as: 'comments',
+              attributes: [],
+              required: false,
+              order: [['id', 'DESC']],
+            },
+            {
+              model: Comment,
+              as: 'lastComment',
+              separate: true,
+              limit: 1,
+              order: [['createdAt', 'DESC']],
+              required: false,
+            },
+          ],
+          group: ['Topic.id'],
+          order: [['id', 'ASC']],
+          subQuery: false,
+        }),
+        Topic.count(),
+      ]);
+
+      const topicIds = rawTopics.map((topic) => topic.id);
+      const reactions = await Reaction.findAll({
+        where: { topicId: topicIds },
+        attributes: ['topicId', 'emoji', [fn('COUNT', col('emoji')), 'count']],
+        group: ['topicId', 'emoji'],
+        order: [[fn('COUNT', col('emoji')), 'DESC']],
+      });
+
+      const reactionsByTopic = reactions.reduce(
+        (acc, reaction) => {
+          const plainReaction = reaction.toJSON() as Reaction & { count: string };
+          const topicId = plainReaction.topicId;
+
+          if (!acc[topicId]) {
+            acc[topicId] = [];
+          }
+
+          acc[topicId].push({
+            emoji: plainReaction.emoji,
+            count: Number(plainReaction.count),
+          });
+
+          return acc;
         },
-        include: [
-          {
-            model: Comment,
-            as: 'comments',
-            attributes: [],
-            required: false,
-            order: [['id', 'DESC']],
-          },
-          {
-            model: Comment,
-            as: 'lastComment',
-            separate: true,
-            limit: 1,
-            order: [['createdAt', 'DESC']],
-            required: false,
-          },
-        ],
-        group: ['Topic.id'],
-        order: [['id', 'ASC']],
-        subQuery: false,
-      }),
-      Topic.count(),
-    ])
-      .then(([rawTopics, count]) => {
-        const topics = rawTopics.map((topic) => {
-          const plainTopic = topic.toJSON() as Topic & {
-            commentsCount: string;
-            lastComment: Comment[];
-          };
+        {} as Record<number, Array<{ emoji: string; count: number }>>,
+      );
 
-          return {
-            ...plainTopic,
-            lastComment: plainTopic.lastComment?.[0] || null,
-            commentsCount: Number(plainTopic.commentsCount),
-          };
-        });
+      const topics = rawTopics.map((topic) => {
+        const plainTopic = topic.toJSON() as Topic & {
+          commentsCount: string;
+          lastComment: Comment[];
+        };
 
-        return res.json({ topics, count });
-      })
-      .catch(next);
+        return {
+          ...plainTopic,
+          lastComment: plainTopic.lastComment?.[0] || null,
+          commentsCount: Number(plainTopic.commentsCount),
+          reactions: reactionsByTopic[topic.id] || [],
+        };
+      });
+
+      res.json({ topics, count });
+    } catch (error) {
+      next(error);
+    }
   }
 
   static create(req: ProtectedRequest, res: Response, next: NextFunction) {

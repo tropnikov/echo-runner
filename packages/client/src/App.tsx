@@ -1,7 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { Outlet } from 'react-router';
 
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider } from 'antd';
+import ruRU from 'antd/locale/ru_RU';
 
 import { Helmet } from 'react-helmet-async';
 
@@ -57,6 +58,7 @@ function App() {
         />
       </Helmet>
       <ConfigProvider
+        locale={ruRU}
         theme={{
           cssVar: true,
           ...themeConfig,

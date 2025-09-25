@@ -23,13 +23,6 @@ export class Reaction extends Model<InferAttributes<Reaction>, InferCreationAttr
   })
   declare ownerId: number;
 
-  @Column({
-    type: DataType.STRING,
-    field: 'owner_login',
-    allowNull: true,
-  })
-  declare ownerLogin: CreationOptional<string | null>;
-
   @ForeignKey(() => Topic)
   @Column({
     type: DataType.INTEGER,

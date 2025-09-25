@@ -31,4 +31,4 @@ COPY --from=builder /app/healthcheck.js /app/healthcheck.js
 RUN yarn install --production=true
 
 EXPOSE $CLIENT_PORT
-CMD [ "node", "/app/server/index.js" ]
+CMD [ "sh", "-c", "cp -r /app/dist/client/assets/* /shared/static/ 2>/dev/null || true && node /app/server/index.js" ]

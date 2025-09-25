@@ -10,6 +10,7 @@ dotenv.config();
 export default defineConfig({
   server: {
     port: Number(process.env.CLIENT_PORT) || 3000,
+    host: true,
   },
   build: {
     outDir: 'dist/client',

@@ -9,6 +9,7 @@ services:
     environment:
       - APP_DOMAIN=${APP_DOMAIN}
       - EMAIL=${EMAIL}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy-data:/data
@@ -138,6 +139,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
+      SCRIPT_NAME: /pgadmin
     volumes:
       - ./tmp/pgadmin_data:/var/lib/pgadmin
     depends_on:

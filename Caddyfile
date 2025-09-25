@@ -1,24 +1,80 @@
+{
+	email {$EMAIL}
+}
+
 {$APP_DOMAIN} {
-	handle /api/v1* {
-		reverse_proxy server:3001
-	}
-
-	handle {
-		reverse_proxy client:3000
-	}
-
-	tls {$EMAIL}
-
 	encode gzip zstd
 
 	log {
-        output file /data/access.log
-    }
+		output file /data/access.log
+	}
 
-	header {
-		Strict-Transport-Security "max-age=31536000;"
-		X-Content-Type-Options "nosniff"
-		X-Frame-Options "DENY"
-		Referrer-Policy "no-referrer-when-downgrade"
+	# --- API ---
+	handle /api/v1/* {
+		header {
+			-Server
+			-X-Powered-By
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+			X-Frame-Options "SAMEORIGIN"
+			Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+			Content-Security-Policy "default-src 'none'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none';"
+		}
+		reverse_proxy server:3001
+	}
+
+	# --- pgAdmin (только для администрирования) ---
+	handle /pgadmin* {
+		# Базовая аутентификация для дополнительной защиты
+		basicauth {
+			admin {$ADMIN_PASSWORD_HASH}
+		}
+
+		header {
+			-Server
+			-X-Powered-By
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			X-Frame-Options "SAMEORIGIN"
+			Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+			# Запрет индексации поисковиками
+			X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+		}
+		reverse_proxy pgadmin:80 {
+			header_up X-Script-Name /pgadmin
+			header_up X-Forwarded-Prefix /pgadmin
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-Host {host}
+		}
+	}
+
+	# --- Статические ресурсы (прямая отдача) ---
+	handle /assets/* {
+		header {
+			-Server
+			-X-Powered-By
+			Cache-Control "public, max-age=31536000, immutable"
+			X-Content-Type-Options "nosniff"
+		}
+		root * /var/www/static
+		uri strip_prefix /assets
+		file_server
+	}
+
+	# --- Клиент ---
+	handle {
+		header {
+			-Server
+			-X-Powered-By
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+			X-Frame-Options "SAMEORIGIN"
+			Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+			Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; connect-src 'self' https://{$APP_DOMAIN} wss://{$APP_DOMAIN}; style-src 'self' 'unsafe-inline'; script-src 'self';"
+		}
+		reverse_proxy client:3000
 	}
 }

@@ -1,9 +1,9 @@
-import fs from 'fs';
 import path from 'path';
 
 import react from '@vitejs/plugin-react';
 import dotenv from 'dotenv';
-import { defineConfig, transformWithEsbuild } from 'vite';
+import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 dotenv.config();
 
@@ -14,17 +14,6 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist/client',
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'index.html'),
-        sw: path.resolve(__dirname, 'src/sw.ts'),
-      },
-      output: {
-        entryFileNames: (chunkInfo) => {
-          return chunkInfo.name === 'sw' ? 'sw.js' : '[name]-[hash].js';
-        },
-      },
-    },
   },
   define: {
     __SERVER_PORT__: process.env.SERVER_PORT || 3001,
@@ -37,31 +26,18 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    {
-      name: 'serve-sw-in-dev',
-      apply: 'serve', // работает только в dev
-      configureServer(server) {
-        server.middlewares.use(async (req, res, next) => {
-          if (req.url === '/sw.js') {
-            const filePath = path.resolve(__dirname, 'src/sw.ts');
-            try {
-              const code = fs.readFileSync(filePath, 'utf-8');
-              const result = await transformWithEsbuild(code, filePath, {
-                loader: 'ts',
-                target: 'esnext',
-              });
-
-              res.setHeader('Content-Type', 'application/javascript');
-              res.end(result.code);
-            } catch (err) {
-              res.statusCode = 500;
-              res.end(`// Error compiling Service Worker\n${err}`);
-            }
-          } else {
-            next();
-          }
-        });
+    VitePWA({
+      strategies: 'injectManifest',
+      injectRegister: 'auto',
+      manifest: false,
+      injectManifest: {
+        injectionPoint: null,
       },
-    },
+      srcDir: './src',
+      filename: 'sw.ts',
+      workbox: {
+        globPatterns: ['**/*.js,css,html,png,svg'],
+      },
+    }),
   ],
 });

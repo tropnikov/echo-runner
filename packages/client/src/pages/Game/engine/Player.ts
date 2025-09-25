@@ -125,9 +125,6 @@ export class Player extends GameObject {
 
       if (wasJumping) {
         this.updateAnimationState();
-
-        // Игрок приземлился на землю
-        this.eventBus.emit(Events.PlayerJumpOnGround);
       }
     }
 

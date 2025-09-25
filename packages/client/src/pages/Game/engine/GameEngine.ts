@@ -1,5 +1,4 @@
 import SoundBoom from '../assets/sound/boom.mp3';
-import SoundJumpOnGround from '../assets/sound/jump-on-ground.mp3';
 import SoundJumpUp from '../assets/sound/jump-up.mp3';
 import SoundMain from '../assets/sound/main.mp3';
 import SoundScore from '../assets/sound/score.mp3';
@@ -122,15 +121,16 @@ export class GameEngine {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
   }
 
+  // Сохраняем ссылки на bound методы для возможности отписки
+  private boundHandlePlayerJumpUp = this.handlePlayerJumpUp.bind(this);
+
   /**
    * Инициализирует движок.
    */
   init() {
-    this.eventBus.on(Events.PlayerJumpUp, this.handlePlayerJumpUp.bind(this));
-    this.eventBus.on(Events.PlayerJumpOnGround, this.handlePlayerJumpOnGround.bind(this));
+    this.eventBus.on(Events.PlayerJumpUp, this.boundHandlePlayerJumpUp);
 
     this.soundEngine.addSound(SoundName.PlayerJumpUp, SoundJumpUp);
-    this.soundEngine.addSound(SoundName.PlayerJumpOnGround, SoundJumpOnGround);
     this.soundEngine.addSound(SoundName.Obstacle, SoundBoom);
     this.soundEngine.addSound(SoundName.Coin, SoundScore);
     this.soundEngine.addSound(SoundName.Main, SoundMain);
@@ -188,6 +188,25 @@ export class GameEngine {
 
   muteSound(status: boolean) {
     this.soundEngine.setMute(status);
+  }
+
+  /**
+   * Полная очистка ресурсов движка.
+   * Отписывается от событий, очищает звуки, останавливает анимацию.
+   */
+  destroy() {
+    // Останавливаем игру
+    this.stop();
+
+    // Отписываемся от событий EventBus
+    this.eventBus.off(Events.PlayerJumpUp, this.boundHandlePlayerJumpUp);
+
+    // Очищаем звуковой движок
+    this.soundEngine.destroy();
+
+    // Очищаем ссылки на объекты
+    this.gameObjects = [];
+    this.parallaxBackground = null;
   }
 
   /**
@@ -281,12 +300,5 @@ export class GameEngine {
    */
   private handlePlayerJumpUp() {
     this.soundEngine?.play(SoundName.PlayerJumpUp);
-  }
-
-  /**
-   * Проигрывает звук при касании игроком земли
-   */
-  private handlePlayerJumpOnGround() {
-    this.soundEngine?.play(SoundName.PlayerJumpOnGround);
   }
 }

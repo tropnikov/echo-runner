@@ -15,7 +15,6 @@ export class SoundEngine {
 
   addSound(name: SoundName, path: string) {
     if (this.sounds.has(name)) {
-      console.log(`Звук ${name} уже добавлен`);
       return;
     }
 
@@ -82,5 +81,27 @@ export class SoundEngine {
     for (const sound of this.sounds.values()) {
       sound.muted = value;
     }
+  }
+
+  /**
+   * Полная очистка звукового движка.
+   * Останавливает все звуки, очищает ресурсы и удаляет audio элементы.
+   */
+  destroy() {
+    for (const [name, sound] of this.sounds.entries()) {
+      // Останавливаем звук
+      sound.pause();
+      sound.currentTime = 0;
+
+      // Удаляем источник
+      sound.src = '';
+      sound.removeAttribute('src');
+
+      // Загружаем пустой звук для освобождения памяти
+      sound.load();
+    }
+
+    // Очищаем коллекцию
+    this.sounds.clear();
   }
 }

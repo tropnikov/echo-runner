@@ -45,7 +45,7 @@ function GameView({
   const helpBtnRef = useRef<HTMLButtonElement | null>(null);
   const perfBtnRef = useRef<HTMLButtonElement | null>(null);
   const fsBtnRef = useRef<HTMLButtonElement | null>(null);
-
+  const soundBtnRef = useRef<HTMLButtonElement | null>(null);
   function handleFullscreenButtonClick(e: MouseEvent<HTMLButtonElement>) {
     if (e.currentTarget && e.currentTarget instanceof HTMLButtonElement) {
       e.currentTarget.blur();
@@ -53,7 +53,10 @@ function GameView({
     toggleFullscreen();
   }
 
-  const handleHelpClick = () => {
+  const handleHelpClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (e.currentTarget && e.currentTarget instanceof HTMLButtonElement) {
+      e.currentTarget.blur();
+    }
     onTourOpen();
   };
 
@@ -67,6 +70,13 @@ function GameView({
       onMute(next);
       return next;
     });
+  };
+
+  const handlePerformancePanelClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (e.currentTarget && e.currentTarget instanceof HTMLButtonElement) {
+      e.currentTarget.blur();
+    }
+    setPerformancePanelVisible((prev) => !prev);
   };
 
   return (
@@ -116,7 +126,7 @@ function GameView({
           type="primary"
           shape="circle"
           icon={isMute ? <MutedOutlined /> : <SoundOutlined />}
-          ref={perfBtnRef}
+          ref={soundBtnRef}
           onClick={handleMuteButtonClick}
           aria-label="Отключить звук"
         />
@@ -135,7 +145,7 @@ function GameView({
           shape="circle"
           icon={<DashboardOutlined />}
           ref={perfBtnRef}
-          onClick={() => setPerformancePanelVisible((prev) => !prev)}
+          onClick={handlePerformancePanelClick}
           aria-label={
             isPerformancePanelVisible ? 'Скрыть панель производительности' : 'Показать панель производительности'
           }
@@ -166,6 +176,12 @@ function GameView({
             description: 'Для паузы нажмите эту кнопку или клавишу P.',
             target: pauseBtnRef.current ? () => pauseBtnRef.current as unknown as HTMLElement : null,
             placement: 'bottom',
+          },
+          {
+            title: 'Отключить звук',
+            description: 'Вы можете включить или отключить звуки в игре, нажав на эту кнопку.',
+            target: soundBtnRef.current ? () => soundBtnRef.current as unknown as HTMLElement : null,
+            placement: 'left',
           },
           {
             title: 'Обучение',
